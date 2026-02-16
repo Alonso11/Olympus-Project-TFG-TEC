@@ -1,0 +1,20 @@
+# Safety Architecture Diagram
+
+```mermaid
+graph TD
+    subgraph Safety Layers
+        MON[Health Monitor] --> WDG[Watchdog Timer]
+        WDG --> FSM[Fail-Safe State Machine]
+        FSM --> REC[Recovery Controller]
+    end
+    
+    subgraph Monitored Systems
+        NAV --> MON
+        PWR --> MON
+        THM[Thermal] --> MON
+        COM --> MON
+    end
+    
+    FSM --> ACT[Actuator Disable]
+    REC --> REST[System Restart]
+```

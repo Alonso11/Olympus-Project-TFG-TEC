@@ -1,0 +1,12 @@
+# System Context Diagram
+
+```mermaid
+graph TD
+    GCS[Ground Control Station] -->|Commands| COM[Rover Communication]
+    COM -->|Data| OBC[On-Board Computer]
+    OBC -->|Control| NAV[Navigation]
+    OBC -->|Control| PLD[Payload]
+    OBC -->|Control| PWR[Power]
+    NAV -->|Sensors| SNS[Sensors]
+    SNS -->|Data| OBC
+```

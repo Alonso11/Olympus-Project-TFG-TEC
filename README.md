@@ -3,34 +3,87 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Systems Engineering](https://img.shields.io/badge/Focus-Systems%20Engineering-blue.svg)](#)
 
-## Descripcion General
-Este repositorio contiene el desarrollo del Trabajo Final de Graduacion (TFG) para el Olympus Project. El proyecto se fundamenta en la aplicacion de metodologias de Ingenieria de Sistemas para el diseño, analisis y ejecucion de soluciones tecnologicas complejas.
+## Overview
 
-El enfoque principal reside en la trazabilidad de requisitos, el diseño de arquitectura modular y procesos sistematicos de verificacion para garantizar la integridad del sistema.
+This repository contains the development of the Final Graduation Project (TFG) for the Olympus Project. The project is based on the application of Systems Engineering methodologies for the design, analysis, and execution of complex technological solutions.
 
----
-
-## Metodologia de Ingenieria de Sistemas
-El ciclo de desarrollo se rige por los siguientes pilares de ingenieria:
-- Analisis de Partes Interesadas: Identificacion y gestion de necesidades criticas.
-- Ingenieria de Requisitos: Definicion rigurosa de especificaciones funcionales y tecnicas.
-- Diseño de Arquitectura: Estructuracion modular siguiendo estandares de la industria.
-- Verificacion y Validacion (V&V): Protocolos de pruebas para el aseguramiento de la calidad.
+The main focus lies on requirements traceability, modular architecture design, and systematic validation processes to ensure system integrity.
 
 ---
 
-## Estructura del Repositorio
-- docs/: Documentacion tecnica, marcos de requisitos y especificaciones.
-- project_management/: Planificacion estrategica, minutas y gestion de tareas.
-- references/: Material de investigacion y analisis de casos de estudio.
+## Systems Engineering Methodology
+
+The development cycle is governed by the following engineering pillars:
+- **Stakeholder Analysis**: Identification and management of critical needs.
+- **Requirements Engineering**: Rigorous definition of functional and technical specifications.
+- **Architecture Design**: Modular structuring following industry standards.
+- **Validation**: Systematic validation procedures to ensure quality and stakeholder needs are met.
 
 ---
 
-## Licencia
-Este proyecto se distribuye bajo la Licencia MIT. Para mas detalles, consulte el archivo LICENSE en la raiz del repositorio.
+## Repository Structure
+
+```
+olympus-project/
+├── 📄 README.md                          # This file - project overview and navigation
+├── 📄 CHANGELOG.md                       # Document version history and changes
+├── .github/workflows/                    # CI/CD for documentation quality
+│   └── markdown-check.yml
+│
+├── 📂 docs/                              # Main documentation folder
+│   ├── 📄 00-project-charter.md          # Project vision, scope, objectives, stakeholders
+│   ├── 📄 01-requirements-framework.md   # Complete ISO/IEC/IEEE 29148 framework
+│   ├── 📄 02-requirements-specification/ # **CORE SRS FOLDER**
+│   │   ├── 📄 index.md                   # Main SRS document
+│   │   ├── 📄 _traceability-matrix.md    # Live requirements traceability matrix
+│   │   ├── 📂 _use-cases/                # Detailed operational scenarios
+│   │   │   ├── uc-autonomous-navigation.md
+│   │   │   ├── uc-obstacle-avoidance.md
+│   │   │   └── uc-emergency-stop.md
+│   │   └── 📂 _diagrams/                 # System architecture and flow diagrams
+│   │       ├── system-context.mmd
+│   │       ├── navigation-flow.mmd
+│   │       └── safety-architecture.mmd
+│   │
+│   ├── 📄 03-architecture-design.md      # System and software architecture
+│   ├── 📄 04-validation.md               # Validation procedures and results
+│   ├── 📄 05-stakeholder-analysis.md     # Detailed stakeholder requirements mapping
+│   └── 📄 06-implementation-roadmap.md   # Project execution plan
+│
+├── 📂 templates/                         # Reusable document templates
+│   ├── srs-template.md
+│   └── traceability-template.md
+│
+├── 📂 project_management/                # Meeting notes, decisions, task tracking
+│   ├── meeting-notes/
+│   ├── stakeholder-interviews/
+│   └── project-kamban.md
+│
+└── 📂 references/                        # Supporting documents and research
+    ├── mars-rover-case-studies.md
+    └── [additional-reference-files.md]
+```
 
 ---
 
-## Autor
-Fabián Alonso Gómez Quesada
-Instituto Tecnológico de Costa Rica (TEC)
+## Standards and Compliance
+
+This project follows:
+- **ISO/IEC/IEEE 29148:2018** - Systems and Software Engineering - Requirements Engineering
+- **ISO/IEC/IEEE 12207** - Software Life Cycle Processes
+- **ISO/IEC/IEEE 15288** - System Life Cycle Processes
+
+---
+
+## License
+
+This project is distributed under the MIT License. See the LICENSE file for details.
+
+---
+
+## Author
+
+Fabián Alonso Gómez Quesada     
+Instituto Tecnológico de Costa Rica (TEC)        
+School of Electronics Engineering           
+SETEC Lab – Space Systems Laboratory                  
