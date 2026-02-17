@@ -1,0 +1,35 @@
+\section{Validación y Verificación (Objetivo Específico 4)}
+
+\subsection{Entornos Análogos de Prueba}
+Las pruebas se realizarán en entornos que simulen la morfología lunar:
+\begin{itemize}
+    \item \textbf{Cantera de arena/grava:} Para validar tracción y hundimiento.
+    \item \textbf{Circuito de obstáculos:} Para validar la detección y evasión autónoma.
+    \item \textbf{Zona de pendientes:} Para validar límites de estabilidad y par motor.
+\end{itemize}
+
+\subsection{Plan de Pruebas de Sistema}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|l|X|X|}
+        \hline
+        \textbf{ID Prueba} & \textbf{Req. Asociado} & \textbf{Procedimiento} & \textbf{Criterio de Éxito} \\ \hline
+        TP-01 & RF-NAV-01 & El rover debe avanzar 5m con 3 obstáculos aleatorios. & No colisiona y llega al destino. \\ \hline
+        TP-02 & RNF-PER-01 & Medir tiempo de recorrido en una recta de 10m. & Velocidad media $\ge$ 5 cm/s. \\ \hline
+        TP-03 & RF-ENE-02 & Forzar descarga de batería simulada. & El rover activa modo seguro a 15\%. \\ \hline
+    \end{tabularx}
+\end{table}
+
+\subsection{Matriz de Trazabilidad}
+Esta matriz asegura que cada objetivo del proyecto esté cubierto por requerimientos, arquitectura y pruebas.
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|X|l|l|l|}
+        \hline
+        \textbf{Objetivo Específico} & \textbf{Requerimiento} & \textbf{Subsistema} & \textbf{ID Prueba} \\ \hline
+        1. Definir requerimientos & RF-NAV-01 & Navegación & TP-01 \\ \hline
+        2. Diseñar arquitectura & RF-ENE-01 & Potencia & TP-03 \\ \hline
+        3. Construir prototipo & RNF-PER-01 & Movilidad & TP-02 \\ \hline
+    \end{tabularx}
+\end{table}

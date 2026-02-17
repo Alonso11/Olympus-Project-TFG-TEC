@@ -1,0 +1,35 @@
+\section{Arquitectura del Sistema (Objetivo Específico 2)}
+
+\subsection{Arquitectura General}
+El sistema se basa en una arquitectura de sistemas embebidos distribuida que conecta sensores, procesadores y actuadores a través de un bus de comunicaciones central (CAN/Ethernet).
+
+\subsection{Arquitectura de Hardware}
+\begin{enumerate}
+    \item \textbf{Unidad de Procesamiento Central:} Un SBC (Single Board Computer) como Raspberry Pi 5 o NVIDIA Jetson para procesamiento pesado.
+    \item \textbf{Microcontroladores de Bajo Nivel:} STM32 o ESP32 para control de motores y lectura de sensores de tiempo real.
+    \item \textbf{Sensores:} LiDAR, Cámaras Estéreo, IMU, y sensores de temperatura y carga.
+    \item \textbf{Sistema de Potencia:} Baterías de LiFePO4, reguladores de voltaje y BMS (Battery Management System).
+\end{enumerate}
+
+\subsection{Arquitectura de Software}
+La arquitectura de software utiliza \textbf{ROS 2 (Humble/Iron)} sobre Ubuntu 22.04 LTS/Real-time.
+\begin{enumerate}
+    \item \textbf{Capa de Percepción:} Procesamiento de nubes de puntos y visión artificial.
+    \item \textbf{Capa de Planificación:} Algoritmos de ruta (A*, Nav2) y gestión de misiones.
+    \item \textbf{Capa de Control:} Controladores PID para motores y gestión de telemetría.
+    \item \textbf{Capa de Gestión del Sistema:} Monitor de salud y gestión de estados de energía.
+\end{enumerate}
+
+\subsection{Asignación de Requerimientos a Subsistemas}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X l}
+        \toprule
+        \textbf{ID Req.} & \textbf{Descripción Breve} & \textbf{Subsistema Responsable} \\
+        \midrule
+        RF-MOV-01 & Superar pendientes de 15$^\circ$. & Tren de rodaje / Chasis \\
+        RF-NAV-01 & Detección de obstáculos. & Módulo de Navegación (Software) \\
+        RF-ENE-01 & Monitorización de SoC. & Módulo de Potencia (Hardware) \\
+        \bottomrule
+    \end{tabularx}
+\end{table}

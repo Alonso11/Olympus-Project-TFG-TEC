@@ -1,0 +1,76 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{caption}
+\usepackage{xcolor}
+
+% --- Custom Colors ---
+\definecolor{AgencyBlue}{RGB}{0, 51, 102}
+
+% --- Header & Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\color{AgencyBlue}\textbf{Rover Olympus - Proyecto TFG}}
+\rhead{\color{AgencyBlue}SRS - ISO/IEC/IEEE 29148:2018}
+\lfoot{\small \copyright \the\year \ Space Agency Engineering}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- Formatting ---
+\titleformat{\section}{\color{AgencyBlue}\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\color{AgencyBlue}\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+% --- Requirements Counter ---
+\newcounter{reqcount}
+\newcommand{\reqid}[1]{#1-\the\numexpr\value{reqcount}+1\relax\stepcounter{reqcount}}
+
+% --- Document Info ---
+\title{
+    \vspace{2cm}
+    \begin{center}
+        \includegraphics[height=2.5cm]{figures/TEC.png} \\[0.5cm]
+        \includegraphics[height=2.5cm]{figures/setecLAb.jpg}
+    \end{center}
+    \vspace{1cm}
+    \textbf{\Huge Especificación de Requerimientos del Sistema (SRS)}\\
+    \vspace{0.5cm}
+    \Large Rover Autónomo de Exploración Lunar "Olympus"\\
+    \vspace{1cm}
+    \large Alineado con ISO/IEC/IEEE 29148:2018
+}
+\author{Ingeniería de Sistemas - Space Agency}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\tableofcontents
+\newpage
+
+% --- Sections ---
+\input{sections/01_introduccion}
+\input{sections/02_analisis_casos_uso}
+\input{sections/03_requerimientos}
+\input{sections/04_arquitectura}
+\input{sections/05_integracion}
+\input{sections/06_validacion}
+\input{sections/07_gestion_riesgos}
+
+\end{document}

@@ -1,0 +1,60 @@
+\section{Especificación de Requerimientos}
+
+\subsection{Requerimientos Funcionales (RF)}
+
+\subsubsection{Movilidad y Navegación}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X p{3cm}}
+        \toprule
+        \textbf{ID} & \textbf{Descripción} & \textbf{Prioridad} \\
+        \midrule
+        RF-MOV-01 & El rover debe ser capaz de superar pendientes de hasta 15 grados. & Alta \\
+        RF-NAV-01 & El sistema debe detectar obstáculos en un rango de 2 metros mediante LiDAR/Cámaras. & Crítica \\
+        RF-NAV-02 & El rover debe realizar SLAM (Simultaneous Localization and Mapping) en tiempo real. & Alta \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsubsection{Gestión de Energía}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X p{3cm}}
+        \toprule
+        \textbf{ID} & \textbf{Descripción} & \textbf{Prioridad} \\
+        \midrule
+        RF-ENE-01 & El sistema debe monitorizar el estado de carga (SoC) de las baterías continuamente. & Crítica \\
+        RF-ENE-02 & El rover debe entrar en modo de bajo consumo si la batería es inferior al 15\%. & Alta \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Requerimientos No Funcionales (RNF)}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{Categoría} & \textbf{ID} & \textbf{Descripción} \\
+        \midrule
+        Rendimiento & RNF-PER-01 & La velocidad máxima de avance será de 10 cm/s en terreno llano. \\
+        Confiabilidad & RNF-REL-01 & El sistema debe tener un tiempo medio entre fallos (MTBF) de 500 horas. \\
+        Robustez & RNF-ENV-01 & Operación nominal en rango de temperaturas de -20$^\circ$C a 50$^\circ$C (análogo). \\
+        Seguridad & RNF-SAF-01 & El rover debe detenerse inmediatamente ante la pérdida de enlace de mando. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Matriz de Verificación Inicial}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{ID Req.} & \textbf{Método} & \textbf{Criterio de Aceptación} \\
+        \midrule
+        RF-NAV-01 & Prueba/Dem. & Detección exitosa de 9/10 obstáculos en entorno de prueba. \\
+        RNF-ENV-01 & Análisis/Prueba & Operación continua en cámara climática a límites térmicos. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+{\small *Métodos: (A)nálisis, (I)nspección, (D)emostración, (T)est/Prueba.}

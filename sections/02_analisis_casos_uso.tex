@@ -1,0 +1,42 @@
+\section{Análisis de Casos de Uso (Objetivo Específico 1)}
+
+\subsection{Escenario de Misión Lunar}
+Se definen los escenarios operacionales críticos para el éxito de la misión:
+
+\begin{enumerate}[label=\textbf{UC-\arabic*}]
+    \item \textbf{Desplazamiento autónomo hacia punto científico:} Navegación desde el punto de aterrizaje a coordenadas de interés.
+    \item \textbf{Análisis de terreno:} Uso de sensores para caracterizar la geología lunar.
+    \item \textbf{Comunicación con estación base:} Transmisión de telemetría y datos de carga útil.
+    \item \textbf{Operación en modo seguro:} Respuesta ante fallos críticos del sistema.
+    \item \textbf{Gestión energética:} Optimización del consumo durante el ciclo día/noche lunar.
+\end{enumerate}
+
+\subsection{Descripción Detallada de Casos de Uso}
+A continuación, se detalla un ejemplo de caso de uso para navegación:
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \textbf{ID} & UC-01 \\ \hline
+        \textbf{Nombre} & Desplazamiento autónomo hacia punto científico \\ \hline
+        \textbf{Descripción} & El rover debe calcular una ruta y moverse hacia un waypoint evitando obstáculos. \\ \hline
+        \textbf{Actor} & Sistema Autónomo / Operador Terrestre \\ \hline
+        \textbf{Pre-condiciones} & Batería > 20\%, GNSS/IMU calibrado, mapa local disponible. \\ \hline
+        \textbf{Flujo Principal} & 1. Recepción de coordenadas; 2. Generación de ruta; 3. Ejecución de movimiento; 4. Verificación de llegada. \\ \hline
+        \textbf{Condiciones Finales} & Rover posicionado en el waypoint con éxito. \\ \hline
+    \end{tabularx}
+\end{table}
+
+\subsection{Derivación de Requerimientos}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X l}
+        \toprule
+        \textbf{Caso de Uso} & \textbf{Descripción del Requerimiento Derivado} & \textbf{ID Req.} \\
+        \midrule
+        UC-01 & El rover deberá navegar autónomamente evitando obstáculos > 10cm. & RF-NAV-01 \\
+        UC-05 & El sistema deberá operar con autonomía energética $\ge$ 48 horas. & RNF-ENE-01 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
