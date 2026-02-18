@@ -12,6 +12,16 @@ El sistema Olympus es un rover autónomo diseñado para:
     \item Operación en entornos análogos terrestres para validación.
 \end{itemize}
 
+\subsection{Perspectiva del Producto}
+El Rover Olympus es un sistema independiente que interactúa con una Estación de Control Terrestre (GCS) y, potencialmente, con otros activos lunares (gateways o landers). El sistema debe ser capaz de operar en condiciones de baja iluminación y topografía irregular, manteniendo siempre la integridad de sus subsistemas críticos.
+
+\subsection{Suposiciones y Dependencias}
+\begin{itemize}
+    \item \textbf{Disponibilidad de Red:} Se asume un enlace de comunicación estable con la GCS para el inicio de misiones.
+    \item \textbf{Entorno Análogo:} La validación física inicial se realizará en entornos volcánicos/arenosos que simulen el regolito lunar.
+    \item \textbf{Hardware:} La arquitectura depende de la disponibilidad de procesadores con soporte para ROS 2.
+\end{itemize}
+
 \subsection{Definiciones y Acrónimos}
 \begin{table}[H]
     \centering

@@ -1,35 +1,43 @@
 \section{Validación y Verificación (Objetivo Específico 4)}
 
-\subsection{Entornos Análogos de Prueba}
-Las pruebas se realizarán en entornos que simulen la morfología lunar:
+\subsection{Estrategia de Verificación y Validación (V\&V)}
+La validación se define mediante una matriz que asigna a cada requerimiento un método de comprobación específico, siguiendo la norma ISO/IEC/IEEE 29148.
+
 \begin{itemize}
-    \item \textbf{Cantera de arena/grava:} Para validar tracción y hundimiento.
-    \item \textbf{Circuito de obstáculos:} Para validar la detección y evasión autónoma.
-    \item \textbf{Zona de pendientes:} Para validar límites de estabilidad y par motor.
+    \item \textbf{Análisis (A):} Uso de cálculos matemáticos o simulaciones para confirmar el cumplimiento.
+    \item \textbf{Inspección (I):} Verificación visual de componentes, planos o código fuente.
+    \item \textbf{Demostración (D):} Operación del sistema para validar una función cualitativa sin necesidad de instrumentación compleja.
+    \item \textbf{Prueba (T):} Medición cuantitativa del cumplimiento bajo condiciones controladas y con instrumentación.
 \end{itemize}
 
-\subsection{Plan de Pruebas de Sistema}
 \begin{table}[H]
     \centering
-    \begin{tabularx}{\textwidth}{|l|l|X|X|}
+    \begin{tabularx}{\textwidth}{|l|X|c|}
         \hline
-        \textbf{ID Prueba} & \textbf{Req. Asociado} & \textbf{Procedimiento} & \textbf{Criterio de Éxito} \\ \hline
-        TP-01 & RF-NAV-01 & El rover debe avanzar 5m con 3 obstáculos aleatorios. & No colisiona y llega al destino. \\ \hline
-        TP-02 & RNF-PER-01 & Medir tiempo de recorrido en una recta de 10m. & Velocidad media $\ge$ 5 cm/s. \\ \hline
-        TP-03 & RF-ENE-02 & Forzar descarga de batería simulada. & El rover activa modo seguro a 15\%. \\ \hline
+        \rowcolor{AgencyBlue!10} \textbf{ID Req.} & \textbf{Requerimiento} & \textbf{Método} \\ \hline
+        RF-GNC-01 & Navegación Autónoma y Evasión. & T / D \\ \hline
+        RF-MOV-01 & Capacidad de pendiente (15$^\circ$). & T \\ \hline
+        RE-PHY-01 & Masa total $\le$ 15 kg. & I / T \\ \hline
+        RNF-SAF-01 & Modo seguro por desconexión. & D \\ \hline
+        RI-SW-01 & Uso de ROS 2 Humble. & I \\ \hline
     \end{tabularx}
+    \caption{Asignación de métodos de verificación por requerimiento.}
 \end{table}
 
-\subsection{Matriz de Trazabilidad}
-Esta matriz asegura que cada objetivo del proyecto esté cubierto por requerimientos, arquitectura y pruebas.
+\subsection{Plan de Pruebas en Entornos Análogos}
+Las pruebas físicas se realizarán en un entorno que simule la topografía lunar (regolito, pendientes y obstáculos).
 
-\begin{table}[H]
-    \centering
-    \begin{tabularx}{\textwidth}{|X|l|l|l|}
-        \hline
-        \textbf{Objetivo Específico} & \textbf{Requerimiento} & \textbf{Subsistema} & \textbf{ID Prueba} \\ \hline
-        1. Definir requerimientos & RF-NAV-01 & Navegación & TP-01 \\ \hline
-        2. Diseñar arquitectura & RF-ENE-01 & Potencia & TP-03 \\ \hline
-        3. Construir prototipo & RNF-PER-01 & Movilidad & TP-02 \\ \hline
-    \end{tabularx}
-\end{table}
+\begin{enumerate}[label=\textbf{TP-\arabic*}]
+    \item \textbf{Prueba de Tracción y Pendiente:} El rover debe subir una rampa de 15$^\circ$ cubierta de material granular. Se mide el deslizamiento (slip) y el par motor.
+    \item \textbf{Prueba de Autonomía de Navegación:} El rover debe navegar de un punto A a un punto B (5 metros) con al menos 3 obstáculos imprevistos en la trayectoria.
+    \item \textbf{Prueba de Desconexión de Emergencia:} Se apaga el transmisor de la GCS de forma abrupta para validar que el rover se detiene en menos de 10 segundos (RNF-SAF-01).
+    \item \textbf{Prueba de Telemetría de Largo Alcance:} Verificación de la integridad de los paquetes CSP a una distancia de 50 metros en línea de vista.
+\end{enumerate}
+
+\subsection{Criterios de Aceptación Final}
+El sistema se considerará validado si:
+\begin{itemize}
+    \item El 100\% de los requerimientos críticos (Alta prioridad) son verificados satisfactoriamente.
+    \item El error de localización acumulado es inferior al 10\% de la distancia total recorrida.
+    \item No se presentan fallos críticos de integridad de datos en el bus CSP durante 1 hora de operación continua.
+\end{itemize}

@@ -1,25 +1,26 @@
 \section{Gestión de Riesgos}
 
-\subsection{Identificación de Riesgos Técnicos}
+\subsection{Identificación de Riesgos y Estrategias de Mitigación}
+La gestión de riesgos se centra en identificar amenazas a la integridad del rover y el éxito de la misión, categorizándolas por su nivel de criticidad y definiendo acciones preventivas y correctivas.
+
 \begin{table}[H]
     \centering
-    \begin{tabularx}{\textwidth}{l l X X}
-        \toprule
-        \textbf{ID} & \textbf{Riesgo} & \textbf{Impacto} & \textbf{Mitigación} \\
-        \midrule
-        R-01 & Pérdida de comunicación. & Crítico & Implementar modo "Heartbeat" y retorno a base automático. \\
-        R-02 & Atascamiento en terreno. & Alto & Algoritmo de detección de deslizamiento y maniobras de escape. \\
-        R-03 & Sobrecalentamiento. & Medio & Disipadores pasivos y corte de energía preventivo. \\
-        \bottomrule
+    \begin{tabularx}{\textwidth}{|l|l|c|X|}
+        \hline
+        \rowcolor{AgencyBlue!10} \textbf{ID} & \textbf{Riesgo} & \textbf{Nivel} & \textbf{Estrategia de Mitigación} \\ \hline
+        \textbf{RT-01} & Fallo en la estimación de estado (SLAM). & Alto & Implementar odometría visual como respaldo redundante a la IMU y encoders. \\ \hline
+        \textbf{RT-02} & Inestabilidad térmica en la SBC. & Medio & Uso de disipadores activos y monitorización de temperatura en tiempo real vía ROS 2. \\ \hline
+        \textbf{RT-03} & Pérdida de paquetes en el enlace CSP. & Bajo & Configuración de re-transmisión automática y optimización de antenas de RF. \\ \hline
+        \textbf{RT-04} & Agotamiento prematuro de batería. & Alto & Implementación de "Safe Mode" dinámico y priorización de tareas de bajo consumo. \\ \hline
     \end{tabularx}
+    \caption{Matriz de riesgos técnicos y sus medidas de mitigación.}
 \end{table}
 
 \section{Apéndices}
-\subsection{Glosario Técnico Detallado}
+\subsection{Glosario Técnico}
 \begin{itemize}
-    \item \textbf{SLAM:} Método por el cual un robot puede construir un mapa y posicionarse en él simultáneamente.
-    \item \textbf{Heurística:} Técnica para resolver problemas más rápidamente cuando los métodos clásicos son demasiado lentos.
+    \item \textbf{CSP:} CubeSat Space Protocol.
+    \item \textbf{CCSDS:} Consultative Committee for Space Data Systems.
+    \item \textbf{GNC:} Guidance, Navigation, and Control.
+    \item \textbf{PBIT:} Power-On Built-In Test.
 \end{itemize}
-
-\subsection{Diagramas Adicionales}
-(Reservado para esquemas eléctricos, planos mecánicos y diagramas de flujo de software detallados).

@@ -16,7 +16,7 @@
 \usepackage{float}
 \usepackage{longtable}
 \usepackage{caption}
-\usepackage{xcolor}
+\usepackage[table]{xcolor}
 
 % --- Custom Colors ---
 \definecolor{AgencyBlue}{RGB}{0, 51, 102}
@@ -24,9 +24,9 @@
 % --- Header & Footer ---
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{\color{AgencyBlue}\textbf{Rover Olympus - Proyecto TFG}}
+\lhead{\color{AgencyBlue}\textbf{Rover Olympus }}
 \rhead{\color{AgencyBlue}SRS - ISO/IEC/IEEE 29148:2018}
-\lfoot{\small \copyright \the\year \ Space Agency Engineering}
+\lfoot{\small \copyright \the\year \ SETEC Lab - Space Systems Laboratory}
 \rfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -40,25 +40,38 @@
 
 % --- Document Info ---
 \title{
-    \vspace{2cm}
+    \vspace{0.1cm}
     \begin{center}
-        \includegraphics[height=2.5cm]{figures/TEC.png} \\[0.5cm]
-        \includegraphics[height=2.5cm]{figures/setecLAb.jpg}
+        \includegraphics[height=4cm]{figures/TEC.png} \\[0.5cm]
+        \includegraphics[height=5cm]{figures/setecLAb.jpg}
     \end{center}
     \vspace{1cm}
     \textbf{\Huge Especificación de Requerimientos del Sistema (SRS)}\\
-    \vspace{0.5cm}
-    \Large Rover Autónomo de Exploración Lunar "Olympus"\\
+    \vspace{2cm}
+    \Large Rover Autónomo de Exploración Lunar Olympus\\
     \vspace{1cm}
     \large Alineado con ISO/IEC/IEEE 29148:2018
 }
-\author{Ingeniería de Sistemas - Space Agency}
+
 \date{\today}
 
 \begin{document}
 
 \maketitle
 \thispagestyle{empty}
+\newpage
+
+% --- Revision History ---
+\section*{Control de Versiones}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|l|X|l|}
+        \hline
+        \rowcolor{AgencyBlue!20} \textbf{Fecha} & \textbf{Versión} & \textbf{Descripción} & \textbf{Autor} \\ \hline
+        10/02/2026 & 1.0 & Creación inicial del documento. & SETEC Lab \\ \hline
+        17/02/2026 & 2.0 & Reestructuración bajo híbrido ISO 29148 y NASA SE. & Gemini CLI \\ \hline
+    \end{tabularx}
+\end{table}
 \newpage
 
 \tableofcontents

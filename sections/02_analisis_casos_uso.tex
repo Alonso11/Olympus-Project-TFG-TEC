@@ -1,42 +1,57 @@
 \section{Análisis de Casos de Uso (Objetivo Específico 1)}
 
-\subsection{Escenario de Misión Lunar}
-Se definen los escenarios operacionales críticos para el éxito de la misión:
+\subsection{Escenarios Operacionales del Sistema}
+Para asegurar la cobertura funcional del Rover Olympus, se definen los escenarios operativos divididos en tres categorías críticas: Misión, Contingencia y Soporte.
 
-\begin{enumerate}[label=\textbf{UC-\arabic*}]
-    \item \textbf{Desplazamiento autónomo hacia punto científico:} Navegación desde el punto de aterrizaje a coordenadas de interés.
-    \item \textbf{Análisis de terreno:} Uso de sensores para caracterizar la geología lunar.
-    \item \textbf{Comunicación con estación base:} Transmisión de telemetría y datos de carga útil.
-    \item \textbf{Operación en modo seguro:} Respuesta ante fallos críticos del sistema.
-    \item \textbf{Gestión energética:} Optimización del consumo durante el ciclo día/noche lunar.
+\subsubsection{Operaciones de Misión (Flujo Nominal)}
+\begin{enumerate}[label=\textbf{UC-NOM-\arabic*}]
+    \item \textbf{Inicialización y Auto-diagnóstico (PBIT):} Verificación del estado de salud de sensores y actuadores al encendido.
+    \item \textbf{Navegación Autónoma a Waypoint:} Cálculo y ejecución de trayectorias evitando obstáculos detectados por LiDAR/Cámaras.
+    \item \textbf{Recolección de Datos Científicos:} Activación de carga útil y almacenamiento de datos en puntos de interés.
+    \item \textbf{Transmisión de Telemetría:} Envío de estados del sistema y datos científicos a la estación base.
 \end{enumerate}
 
-\subsection{Descripción Detallada de Casos de Uso}
-A continuación, se detalla un ejemplo de caso de uso para navegación:
+\subsubsection{Gestión de Contingencias (Flujo de Fallos)}
+\begin{enumerate}[label=\textbf{UC-CONT-\arabic*}]
+    \item \textbf{Recuperación por Pérdida de Enlace:} Ejecución de protocolo de seguridad ante la interrupción de comunicaciones.
+    \item \textbf{Respuesta a Baja Energía:} Transición a modo de bajo consumo y priorización de recarga.
+\end{enumerate}
+
+\subsubsection{Mantenimiento y Soporte}
+\begin{enumerate}[label=\textbf{UC-SUP-\arabic*}]
+    \item \textbf{Actualización de Software (OTA):} Recepción e instalación de parches críticos en el sistema de archivos del rover.
+\end{enumerate}
+
+\subsection{Descripción Detallada de Casos de Uso Críticos}
 
 \begin{table}[H]
     \centering
     \begin{tabularx}{\textwidth}{|l|X|}
         \hline
-        \textbf{ID} & UC-01 \\ \hline
-        \textbf{Nombre} & Desplazamiento autónomo hacia punto científico \\ \hline
-        \textbf{Descripción} & El rover debe calcular una ruta y moverse hacia un waypoint evitando obstáculos. \\ \hline
-        \textbf{Actor} & Sistema Autónomo / Operador Terrestre \\ \hline
-        \textbf{Pre-condiciones} & Batería > 20\%, GNSS/IMU calibrado, mapa local disponible. \\ \hline
-        \textbf{Flujo Principal} & 1. Recepción de coordenadas; 2. Generación de ruta; 3. Ejecución de movimiento; 4. Verificación de llegada. \\ \hline
-        \textbf{Condiciones Finales} & Rover posicionado en el waypoint con éxito. \\ \hline
+        \textbf{ID} & UC-NOM-01 \\ \hline
+        \textbf{Nombre} & Inicialización y Auto-diagnóstico (PBIT - Power-On Built-In Test) \\ \hline
+        \textbf{Descripción} & El rover realiza una verificación sistemática de todos los subsistemas críticos al recibir energía. \\ \hline
+        \textbf{Actor} & Sistema Interno / Operador (en caso de rearme manual). \\ \hline
+        \textbf{Pre-condiciones} & Batería $>$ 20\%, Suministro de energía estable. \\ \hline
+        \textbf{Flujo Principal} & 1. Inicio de microcontroladores de bajo nivel; 2. Verificación de integridad de sensores (IMU, LiDAR); 3. Comprobación de conectividad con motores; 4. Reporte de estado nominal a GCS. \\ \hline
+        \textbf{Excepciones} & Si un sensor crítico falla, el rover entra en modo de "Fallo Crítico" y notifica a la base. \\ \hline
+        \textbf{Condiciones Finales} & Rover listo para recibir comandos de navegación. \\ \hline
     \end{tabularx}
 \end{table}
 
-\subsection{Derivación de Requerimientos}
+\subsection{Derivación de Requerimientos desde Casos de Uso}
+A través del análisis de los escenarios operativos, se extraen las capacidades técnicas necesarias que el rover debe cumplir.
+
 \begin{table}[H]
     \centering
     \begin{tabularx}{\textwidth}{l X l}
         \toprule
-        \textbf{Caso de Uso} & \textbf{Descripción del Requerimiento Derivado} & \textbf{ID Req.} \\
+        \textbf{ID Caso de Uso} & \textbf{Requerimiento Derivado} & \textbf{ID Req. SRS} \\
         \midrule
-        UC-01 & El rover deberá navegar autónomamente evitando obstáculos > 10cm. & RF-NAV-01 \\
-        UC-05 & El sistema deberá operar con autonomía energética $\ge$ 48 horas. & RNF-ENE-01 \\
+        UC-NOM-01 & El sistema debe realizar diagnósticos de salud automáticos. & RF-ENE-01 \\
+        UC-NOM-02 & El rover debe navegar evitando obstáculos $>$ 10 cm. & RF-GNC-01 \\
+        UC-CONT-01 & El sistema entrará en Safe Mode ante pérdida de enlace. & RNF-SAF-01 \\
+        UC-CONT-02 & El rover entrará en bajo consumo si la batería es $<$ 15\%. & RF-ENE-02 \\
         \bottomrule
     \end{tabularx}
 \end{table}

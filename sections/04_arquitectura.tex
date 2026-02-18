@@ -1,35 +1,40 @@
 \section{Arquitectura del Sistema (Objetivo Específico 2)}
 
-\subsection{Arquitectura General}
-El sistema se basa en una arquitectura de sistemas embebidos distribuida que conecta sensores, procesadores y actuadores a través de un bus de comunicaciones central (CAN/Ethernet).
+\subsection{Arquitectura Física y Descomposición de Subsistemas}
+El Rover Olympus se conceptualiza como un sistema modular dividido en cuatro subsistemas principales, cada uno responsable de cumplir un conjunto específico de requerimientos del SRS.
 
-\subsection{Arquitectura de Hardware}
 \begin{enumerate}
-    \item \textbf{Unidad de Procesamiento Central:} Un SBC (Single Board Computer) como Raspberry Pi 5 o NVIDIA Jetson para procesamiento pesado.
-    \item \textbf{Microcontroladores de Bajo Nivel:} STM32 o ESP32 para control de motores y lectura de sensores de tiempo real.
-    \item \textbf{Sensores:} LiDAR, Cámaras Estéreo, IMU, y sensores de temperatura y carga.
-    \item \textbf{Sistema de Potencia:} Baterías de LiFePO4, reguladores de voltaje y BMS (Battery Management System).
+    \item \textbf{Subsistema de Propulsión y Estructura (STR):} Chasis robusto y motores con alto par motor para superar pendientes de 15$^\circ$ (RF-MOV-01).
+    \item \textbf{Subsistema de Energía (PWR):} Gestión de baterías LiFePO4, monitorización de SoC (RF-ENE-01) y circuitos de protección.
+    \item \textbf{Subsistema de Mando y Datos (C\&DH):} Computadora central (Raspberry Pi 5 / Jetson) ejecutando ROS 2 para la coordinación de tareas (RI-SW-01).
+    \item \textbf{Subsistema de Percepción y GNC (NAV):} Sensores LiDAR y cámaras estéreo encargados de la evasión de obstáculos y localización (RF-GNC-01).
 \end{enumerate}
 
-\subsection{Arquitectura de Software}
-La arquitectura de software utiliza \textbf{ROS 2 (Humble/Iron)} sobre Ubuntu 22.04 LTS/Real-time.
-\begin{enumerate}
-    \item \textbf{Capa de Percepción:} Procesamiento de nubes de puntos y visión artificial.
-    \item \textbf{Capa de Planificación:} Algoritmos de ruta (A*, Nav2) y gestión de misiones.
-    \item \textbf{Capa de Control:} Controladores PID para motores y gestión de telemetría.
-    \item \textbf{Capa de Gestión del Sistema:} Monitor de salud y gestión de estados de energía.
-\end{enumerate}
+\subsection{Arquitectura de Comunicaciones e Interfaces Internas}
+Para garantizar la interoperabilidad y el tiempo real, el sistema utiliza una jerarquía de buses de comunicación según la criticidad del dato, implementando protocolos de grado espacial para asegurar la integridad de la misión:
 
-\subsection{Asignación de Requerimientos a Subsistemas}
 \begin{table}[H]
     \centering
-    \begin{tabularx}{\textwidth}{l X l}
-        \toprule
-        \textbf{ID Req.} & \textbf{Descripción Breve} & \textbf{Subsistema Responsable} \\
-        \midrule
-        RF-MOV-01 & Superar pendientes de 15$^\circ$. & Tren de rodaje / Chasis \\
-        RF-NAV-01 & Detección de obstáculos. & Módulo de Navegación (Software) \\
-        RF-ENE-01 & Monitorización de SoC. & Módulo de Potencia (Hardware) \\
-        \bottomrule
+    \begin{tabularx}{\textwidth}{|l|l|X|}
+        \hline
+        \rowcolor{AgencyBlue!10} \textbf{Interfaz} & \textbf{Protocolo} & \textbf{Propósito} \\ \hline
+        \textbf{Bus de Control} & CAN Bus / CSP & Comunicación entre el C\&DH y motores usando el \textit{CubeSat Space Protocol} (CSP) para una arquitectura orientada a servicios. \\ \hline
+        \textbf{Bus de Percepción} & Ethernet / USB 3.0 & Transferencia de nubes de puntos (LiDAR) y flujo de video (Cámaras). \\ \hline
+        \textbf{Bus de Sensores} & I2C / SPI & Lectura de datos de IMU, sensores de corriente y temperatura. \\ \hline
+        \textbf{Enlace Externo} & RF / CCSDS / CSP & Telemetría y comandos remotos bajo estándares espaciales (CCSDS/CSP) para máxima fiabilidad y compatibilidad con estaciones terrestres. \\ \hline
     \end{tabularx}
+    \caption{Resumen de interfaces de comunicación internas y externas del sistema.}
 \end{table}
+
+\subsection{Arquitectura de Software y Orquestación (ROS 2)}
+El software del Rover Olympus se basa en una arquitectura distribuida sobre \textbf{ROS 2 (Humble/Iron)}. Cada subsistema se representa como un conjunto de nodos independientes que intercambian datos mediante un modelo publicador/suscriptor.
+
+\begin{enumerate}
+    \item \textbf{Capa de Abstracción de Hardware (HAL):} Traduce las lecturas de los sensores (CSP/I2C) a mensajes estándar de ROS (Láser, IMU, Odometría).
+    \item \textbf{Capa de Percepción y Navegación:}
+        \begin{itemize}
+            \item \textbf{SLAM-Toolbox:} Generación de mapas y localización concurrente.
+            \item \textbf{Nav2:} Planificación de rutas globales y locales con evasión dinámica de obstáculos (RF-GNC-01).
+        \end{itemize}
+    \item \textbf{Capa de Gestión de Misión (Estado):} Una máquina de estados finitos (FSM) que orquesta el cambio entre modos nominales y de contingencia (Safe Mode, Return to Home).
+\end{enumerate}

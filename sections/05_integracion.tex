@@ -1,18 +1,36 @@
 \section{Integración del Prototipo (Objetivo Específico 3)}
 
-\subsection{Estrategia de Integración}
-Se seguirá un enfoque de \textbf{integración incremental} y por capas, minimizando riesgos en etapas tempranas.
+\subsection{Niveles de Integración y Ensamblaje}
+La integración del Rover Olympus se rige por un enfoque de "V-Model", donde cada nivel de ensamblaje debe ser verificado antes de pasar al siguiente.
+
+\begin{enumerate}
+    \item \textbf{Nivel 1 (Componentes):} Verificación individual de actuadores, sensores y módulos de potencia.
+    \item \textbf{Nivel 2 (Subsistemas):} Integración del bus de comunicaciones CSP/CAN y validación de la telemetría base entre el microcontrolador y el C\&DH.
+    \item \textbf{Nivel 3 (Sistema Completo):} Montaje final de la electrónica sobre el chasis y carga del firmware/software de navegación.
+\end{enumerate}
+
+\subsection{Entorno de Integración de Software (SITL)}
+Para reducir riesgos de colisión en el prototipo físico, se utiliza un entorno de simulación \textbf{Software-in-the-Loop (SITL)} que permite validar la lógica de control sin riesgo para el hardware:
 
 \begin{itemize}
-    \item \textbf{Fase 1: Integración de Software (In-Silico):} Pruebas en simuladores (Gazebo/Isaac Sim) para validar algoritmos de navegación.
-    \item \textbf{Fase 2: Integración de Hardware Base:} Ensamblaje del chasis, motores y sistema de potencia básica.
-    \item \textbf{Fase 3: Integración de Electrónica de Control:} Conexión de microcontroladores y sensores de bajo nivel.
-    \item \textbf{Fase 4: Integración de Sistema Completo:} Unión de las capas de software de alto nivel con el hardware físico.
+    \item \textbf{Simulador:} Gazebo / Isaac Sim con modelos físicos que emulan la baja gravedad y la fricción del regolito.
+    \item \textbf{Gemelo Digital:} Modelo URDF (Unified Robot Description Format) que refleja con precisión las dimensiones, centros de masa y límites de articulación definidos en la arquitectura física.
+    \item \textbf{Validación Pre-Hardware:} Los algoritmos de Nav2 y SLAM-Toolbox deben superar escenarios de autonomía en el simulador (identificación de obstáculos y planificación de rutas) antes de su implementación en el hardware físico.
 \end{itemize}
 
-\subsection{Configuración del Prototipo}
-\begin{enumerate}
-    \item \textbf{Versión 1.0 (MVP):} Prototipo con movilidad básica controlada remotamente.
-    \item \textbf{Versión 2.0 (Autónomo):} Integración de LiDAR y navegación autónoma en entorno controlado.
-    \item \textbf{Versión 3.0 (Final):} Sistema integrado con gestión energética y sensores científicos para ensayos en entorno análogo.
-\end{enumerate}
+\subsection{Protocolo de Integración de Hardware}
+Para asegurar la integridad del rover durante el ensamblaje final, se sigue un protocolo estricto de energización y verificación por etapas:
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|l|}
+        \hline
+        \rowcolor{AgencyBlue!10} \textbf{Etapa} & \textbf{Actividad Crítica} & \textbf{Requerimiento Validado} \\ \hline
+        \textbf{Mecánica} & Ensamble de chasis y transmisión. & RF-MOV-01 \\ \hline
+        \textbf{Potencia} & Verificación de voltajes y BMS sin carga. & RF-ENE-01 \\ \hline
+        \textbf{Cómputo} & Boot de Linux (Ubuntu 22.04 LTS) y ROS 2. & RI-SW-01 \\ \hline
+        \textbf{Navegación} & Calibración de LiDAR e IMU sobre el rover. & RF-GNC-03 \\ \hline
+        \textbf{Comunicación} & Telemetría bidireccional mediante CSP. & RI-USR-01 \\ \hline
+    \end{tabularx}
+    \caption{Secuencia de integración y validación progresiva.}
+\end{table}
