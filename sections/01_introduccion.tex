@@ -1,25 +1,62 @@
 \section{Introducción}
 
 \subsection{Propósito}
-Este documento define los requerimientos técnicos del rover Olympus para una misión lunar de exploración, así como los criterios de validación del sistema integrado. Este documento está dirigido al equipo de ingeniería, asesores de misión y partes interesadas en el desarrollo del rover.
+Este documento define los requerimientos técnicos del rover Olympus para una misión lunar de exploración, así como los criterios de validación del sistema integrado. Su objetivo es servir como línea base técnica para el desarrollo del software de vuelo y la integración de hardware en el SETEC Lab, garantizando la trazabilidad entre los objetivos de la misión y el diseño técnico.
 
 \subsection{Alcance}
 El sistema Olympus es un rover autónomo diseñado para:
 \begin{itemize}
-    \item Exploración de superficie lunar.
-    \item Navegación autónoma en terrenos no estructurados.
-    \item Recolección y transmisión de datos científicos.
-    \item Operación en entornos análogos terrestres para validación.
+    \item Exploración de superficie lunar y navegación en terrenos no estructurados.
+    \item Recolección y transmisión de datos científicos mediante sensores de percepción.
+    \item Operación en entornos análogos terrestres (volcánicos/desérticos) para validación de algoritmos de navegación.
+\end{itemize}
+\textbf{Fuera de Alcance:} Certificación para lanzamiento espacial (vibración/térmico de vacío), endurecimiento por radiación de componentes electrónicos comerciales (COTS) y diseño de la etapa de descenso (lander).
+
+\subsection{Clases y Características de Usuarios}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|l|}
+        \hline
+        \rowcolor{AgencyBlue!10} \textbf{Usuario} & \textbf{Responsabilidad} & \textbf{Nivel Técnico} \\ \hline
+        \textbf{Operador de Misión} & Control remoto, monitoreo de telemetría y envío de comandos GNC. & Alto \\ \hline
+        \textbf{Científico} & Análisis de nubes de puntos (LiDAR), imágenes y datos de sensores. & Medio \\ \hline
+        \textbf{Mantenedor} & Calibración de sensores, actualización de software (OTA) y mantenimiento de hardware. & Alto \\ \hline
+    \end{tabularx}
+\end{table}
+
+\subsection{Entorno de Operación}
+El sistema operará en dos contextos distintos para su validación:
+\begin{enumerate}
+    \item \textbf{Entorno Análogo (Validación Física):} Terrenos con regolito simulado, pendientes de hasta 15$^\circ$, luz solar directa y temperaturas de -20$^\circ$C a +50$^\circ$C. Gravedad de 1g.
+    \item \textbf{Entorno Lunar (Teórico/Misión):} Gravedad de 1/6 g, vacío, radiación ionizante y temperaturas extremas (-170$^\circ$C a +120$^\circ$C). El diseño actual se enfoca en la fidelidad funcional en el entorno análogo.
+\end{enumerate}
+
+\subsection{Restricciones de Diseño e Implementación}
+\begin{itemize}
+    \item \textbf{Hardware:} Uso de arquitectura ARM64 (Raspberry Pi 5 / NVIDIA Jetson) con limitaciones de memoria (8GB RAM).
+    \item \textbf{Software:} Middleware ROS 2 Humble ejecutándose sobre Ubuntu 22.04 LTS.
+    \item \textbf{Comunicaciones:} Protocolo CSP (CubeSat Space Protocol) como transporte mandatorio para telemetría y comandos.
+    \item \textbf{Estándares:} Cumplimiento con ISO/IEC/IEEE 29148 y NASA Systems Engineering Handbook.
 \end{itemize}
 
-\subsection{Perspectiva del Producto}
-El Rover Olympus es un sistema independiente que interactúa con una Estación de Control Terrestre (GCS) y, potencialmente, con otros activos lunares (gateways o landers). El sistema debe ser capaz de operar en condiciones de baja iluminación y topografía irregular, manteniendo siempre la integridad de sus subsistemas críticos.
+\subsection{Convenciones del Documento}
+Este documento sigue las convenciones de lenguaje de requerimientos estándar:
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \rowcolor{AgencyBlue!10} \textbf{Término} & \textbf{Descripción} \\ \hline
+        \textbf{DEBERÁ (SHALL)} & Indica un requerimiento \textbf{obligatorio}. Su cumplimiento es indispensable. \\ \hline
+        \textbf{DEBERÍA (SHOULD)} & Indica una recomendación o un objetivo deseable. \\ \hline
+        \textbf{PODRÁ (MAY)} & Indica una característica opcional o permiso. \\ \hline
+        \textbf{TBD} & (To Be Determined) Información pendiente de definición técnica. \\ \hline
+    \end{tabularx}
+\end{table}
 
 \subsection{Suposiciones y Dependencias}
 \begin{itemize}
     \item \textbf{Disponibilidad de Red:} Se asume un enlace de comunicación estable con la GCS para el inicio de misiones.
-    \item \textbf{Entorno Análogo:} La validación física inicial se realizará en entornos volcánicos/arenosos que simulen el regolito lunar.
-    \item \textbf{Hardware:} La arquitectura depende de la disponibilidad de procesadores con soporte para ROS 2.
+    \item \textbf{Sensores:} La precisión de la navegación depende de la disponibilidad de datos LiDAR y Odometría visual.
 \end{itemize}
 
 \subsection{Definiciones y Acrónimos}
@@ -30,11 +67,9 @@ El Rover Olympus es un sistema independiente que interactúa con una Estación d
         \textbf{Acrónimo} & \textbf{Definición} \\
         \midrule
         GNC & Guidance, Navigation \& Control (Guía, Navegación y Control). \\
-        RTOS & Real-Time Operating System (Sistema Operativo en Tiempo Real). \\
-        TRL & Technology Readiness Level (Nivel de Madurez Tecnológica). \\
-        ISRU & In-Situ Resource Utilization (Utilización de Recursos in situ). \\
-        ROS 2 & Robot Operating System 2 (Middleware de robótica). \\
-        MTBF & Mean Time Between Failures (Tiempo medio entre fallos). \\
+        CSP & CubeSat Space Protocol (Protocolo de comunicación de grado espacial). \\
+        ROS 2 & Robot Operating System 2 (Middleware de robótica distribuido). \\
+        GCS & Ground Control Station (Estación de Control Terrestre). \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -42,6 +77,5 @@ El Rover Olympus es un sistema independiente que interactúa con una Estación d
 \subsection{Referencias}
 \begin{itemize}
     \item ISO/IEC/IEEE 29148:2018 - Systems and software engineering — Life cycle processes — Requirements engineering.
-    \item NASA Systems Engineering Handbook.
-    \item ECSS Standards (European Cooperation for Space Standardization).
+    \item NASA/SP-2016-6105 - NASA Systems Engineering Handbook.
 \end{itemize}

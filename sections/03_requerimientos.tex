@@ -1,55 +1,73 @@
 \section{Especificación de Requerimientos del Sistema}
 
-Este capítulo detalla los requerimientos formales del sistema Olympus. Siguiendo los estándares de ingeniería de sistemas, cada requerimiento utiliza el verbo auxiliar \textbf{``deberá''} para denotar obligatoriedad.
+Este capítulo detalla los requerimientos formales del sistema Olympus. Siguiendo los estándares de ingeniería de sistemas (ISO/IEC/IEEE 29148), cada requerimiento utiliza el verbo auxiliar \textbf{``deberá''} para denotar obligatoriedad.
 
 \subsection{Requerimientos de Capacidad (Funcionales)}
 
 \subsubsection{Navegación y Control (GNC)}
 \begin{itemize}[label=---]
-    \item \textbf{RF-GNC-01:} El sistema \textbf{deberá} calcular rutas de navegación autónoma evitando obstáculos mayores a 10 cm de altura.
-    \item \textbf{RF-GNC-02:} El rover \textbf{deberá} ser capaz de realizar una parada de emergencia de forma autónoma ante la pérdida de datos del sensor LiDAR.
-    \item \textbf{RF-GNC-03:} El sistema \textbf{deberá} mantener una precisión de localización con un error máximo de $\pm$ 50 cm en un área de 10x10 metros.
+    \item \textbf{RF-GNC-01:} El sistema \textbf{deberá} calcular rutas de navegación autónoma evitando obstáculos mayores a 10 cm de altura. \\
+    \textit{[Prioridad: Crítica | Fuente: Misión | V\&V: Prueba (T)]}
+    \item \textbf{RF-GNC-02:} El rover \textbf{deberá} ser capaz de realizar una parada de emergencia de forma autónoma ante la pérdida de datos del sensor LiDAR. \\
+    \textit{[Prioridad: Crítica | Fuente: Seguridad | V\&V: Demostración (D)]}
+    \item \textbf{RF-GNC-03:} El sistema \textbf{deberá} mantener una precisión de localización con un error máximo de $\pm$ 50 cm en un área de 10x10 metros. \\
+    \textit{[Prioridad: Alta | Fuente: Misión | V\&V: Análisis (A)]}
 \end{itemize}
 
 \subsubsection{Movilidad}
 \begin{itemize}[label=---]
-    \item \textbf{RF-MOV-01:} El tren de rodaje \textbf{deberá} permitir el avance en pendientes de hasta 15$^\circ$ sobre regolito simulado.
-    \item \textbf{RF-MOV-02:} El rover \textbf{deberá} alcanzar una velocidad máxima nominal de 10 cm/s en terreno llano.
+    \item \textbf{RF-MOV-01:} El tren de rodaje \textbf{deberá} permitir el avance en pendientes de hasta 15$^\circ$ sobre regolito simulado. \\
+    \textit{[Prioridad: Crítica | Fuente: Diseño | V\&V: Prueba (T)]}
+    \item \textbf{RF-MOV-02:} El rover \textbf{deberá} alcanzar una velocidad máxima nominal de 10 cm/s en terreno llano. \\
+    \textit{[Prioridad: Media | Fuente: Operaciones | V\&V: Prueba (T)]}
 \end{itemize}
 
 \subsubsection{Gestión de Energía}
 \begin{itemize}[label=---]
-    \item \textbf{RF-ENE-01:} El subsistema de potencia \textbf{deberá} monitorizar el voltaje y la corriente de las baterías con una frecuencia mínima de 1 Hz.
-    \item \textbf{RF-ENE-02:} El sistema \textbf{deberá} iniciar un protocolo de ``Modo Seguro'' cuando el estado de carga (SoC) sea inferior al 15\%.
+    \item \textbf{RF-ENE-01:} El subsistema de potencia \textbf{deberá} monitorizar el voltaje y la corriente de las baterías con una frecuencia mínima de 1 Hz. \\
+    \textit{[Prioridad: Alta | Fuente: Diseño | V\&V: Inspección (I)]}
+    \item \textbf{RF-ENE-02:} El sistema \textbf{deberá} iniciar un protocolo de ``Modo Seguro'' cuando el estado de carga (SoC) sea inferior al 15\%. \\
+    \textit{[Prioridad: Crítica | Fuente: Seguridad | V\&V: Demostración (D)]}
 \end{itemize}
 
-\subsection{Requerimientos Físicos y Ambientales}
+\subsection{Requerimientos de Seguridad y FDIR (Fault Detection, Isolation, and Recovery)}
 \begin{itemize}[label=---]
-    \item \textbf{RE-ENV-01:} El sistema \textbf{deberá} operar nominalmente en un rango de temperatura de -20$^\circ$C a +50$^\circ$C (condiciones análogas).
-    \item \textbf{RE-PHY-01:} La masa total del rover no \textbf{deberá} exceder los 15 kg, incluyendo la carga útil científica.
+    \item \textbf{RF-FDI-01:} El sistema \textbf{deberá} monitorizar el latido (\textit{heartbeat}) de todos los nodos ROS 2 críticos y reiniciar aquellos que fallen tras 3 intentos. \\
+    \textit{[Prioridad: Crítica | Fuente: Seguridad | V\&V: Demostración (D)]}
+    \item \textbf{RF-FDI-02:} El rover \textbf{deberá} entrar en estado de reposo (Safe Mode) si se pierde el enlace de mando por más de 10 segundos. \\
+    \textit{[Prioridad: Crítica | Fuente: Seguridad | V\&V: Prueba (T)]}
 \end{itemize}
 
-\subsection{Atributos de Calidad (No Funcionales)}
+\subsection{Interfaces de Sistemas}
 
-\subsubsection{Confiabilidad y Seguridad (RAMS)}
+\subsubsection{Interfaces de Hardware}
 \begin{itemize}[label=---]
-    \item \textbf{RNF-REL-01:} El sistema \textbf{deberá} tener un tiempo medio entre fallos críticos (MTBCF) de al menos 100 horas de operación continua.
-    \item \textbf{RNF-SAF-01:} El rover \textbf{deberá} entrar en estado de reposo (Safe Mode) si se pierde el enlace de mando por más de 10 segundos.
-\end{itemize}
-
-\subsubsection{Mantenibilidad}
-\begin{itemize}[label=---]
-    \item \textbf{RNF-MTN-01:} El software del rover \textbf{deberá} permitir actualizaciones remotas (OTA) a través de la interfaz de comunicaciones.
-\end{itemize}
-
-\subsection{Interfaces Externas}
-
-\subsubsection{Interfaces de Usuario (HMI)}
-\begin{itemize}[label=---]
-    \item \textbf{RI-USR-01:} La estación de control \textbf{deberá} mostrar una telemetría visual en tiempo real que incluya posición, velocidad y estado de batería.
+    \item \textbf{RI-HW-01:} La unidad central \textbf{deberá} conectarse con el LiDAR a través de una interfaz USB 3.0 o Ethernet. \\
+    \textit{[Prioridad: Alta | Fuente: Diseño | V\&V: Inspección (I)]}
+    \item \textbf{RI-HW-02:} El bus de motores \textbf{deberá} utilizar la interfaz física CAN con una velocidad mínima de 500 kbps. \\
+    \textit{[Prioridad: Crítica | Fuente: Diseño | V\&V: Prueba (T)]}
 \end{itemize}
 
 \subsubsection{Interfaces de Software}
 \begin{itemize}[label=---]
-    \item \textbf{RI-SW-01:} El sistema \textbf{deberá} utilizar el middleware ROS 2 (Humble o superior) para la comunicación entre nodos internos.
+    \item \textbf{RI-SW-01:} El sistema \textbf{deberá} utilizar el middleware ROS 2 (Humble) para la comunicación entre nodos internos. \\
+    \textit{[Prioridad: Crítica | Fuente: Diseño | V\&V: Inspección (I)]}
+    \item \textbf{RI-SW-02:} Los mensajes de telemetría \textbf{deberán} encapsularse en datagramas CSP (CubeSat Space Protocol) para su transmisión inalámbrica. \\
+    \textit{[Prioridad: Crítica | Fuente: Diseño | V\&V: Demostración (D)]}
+\end{itemize}
+
+\subsection{Atributos de Calidad (No Funcionales)}
+
+\subsubsection{Confiabilidad y Rendimiento}
+\begin{itemize}[label=---]
+    \item \textbf{RNF-PER-01:} La latencia de la telemetría enviada mediante CSP desde el rover a la GCS no \textbf{deberá} exceder los 500 ms. \\
+    \textit{[Prioridad: Media | Fuente: Operaciones | V\&V: Prueba (T)]}
+    \item \textbf{RNF-PER-02:} El bucle de control Nav2 \textbf{deberá} ejecutarse a una frecuencia mínima de 10 Hz. \\
+    \textit{[Prioridad: Alta | Fuente: Diseño | V\&V: Análisis (A)]}
+\end{itemize}
+
+\subsubsection{Ciberseguridad}
+\begin{itemize}[label=---]
+    \item \textbf{RNF-SEC-01:} El enlace de comunicaciones \textbf{deberá} implementar un cifrado AES-128 para prevenir la interceptación de datos. \\
+    \textit{[Prioridad: Alta | Fuente: Seguridad | V\&V: Inspección (I)]}
 \end{itemize}

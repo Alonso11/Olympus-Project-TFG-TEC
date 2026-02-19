@@ -1,0 +1,2730 @@
+Software Requirements Specification (SRS)
+AI-Driven Job Matching Platform for Palestine
+
+Document Control
+Document Information
+Title
+
+Software Requirements Specification for AIDriven Job Matching Platform
+May 19th, 2025
+Draft
+1.0
+Ministry of Labor (MoL), Palestinian
+Employment Fund (PEF) and Enabel.
+SRS_AI_JMP_V1.0_ May_2025
+
+Date
+Status
+Version
+Prepared for
+Reference
+
+Disclaimer:
+This document is provided for informational purposes as part of a public call for proposals. While it may be
+shared publicly, it remains the intellectual property of Belgian agency for international cooperation (Enabel)
+and the Palestinian Ministry of Labour (MoL). Unauthorized modification, distribution or misrepresentation
+is prohibited.
+
+1
+
+Table of Contents
+1.
+
+2.
+
+3.
+
+Introduction .................................................................................................................................................................................................................................. 6
+1.1.
+
+Purpose ........................................................................................................................................................................................................................... 6
+
+1.2.
+
+Document Conventions............................................................................................................................................................................................. 6
+
+1.3.
+
+Intended Audience...................................................................................................................................................................................................... 6
+
+1.4.
+
+Project Scope................................................................................................................................................................................................................. 7
+
+1.5.
+
+References...................................................................................................................................................................................................................... 8
+
+Overall Description .................................................................................................................................................................................................................... 8
+2.1.
+
+Product Perspective ................................................................................................................................................................................................... 8
+
+2.2.
+
+Product Functions ....................................................................................................................................................................................................... 8
+
+2.3.
+
+User Classes, Characteristics, and Nees .............................................................................................................................................................. 9
+
+2.4.
+
+Operating Environment ......................................................................................................................................................................................... 10
+
+2.5.
+
+Design and Implementation Constraints ........................................................................................................................................................ 11
+
+2.6.
+
+User Documentation ............................................................................................................................................................................................... 11
+
+2.7.
+
+Assumptions and Dependencies ........................................................................................................................................................................ 12
+
+System Features and Functional Requirements .......................................................................................................................................................... 13
+3.1.
+
+User Management and Authentication ............................................................................................................................................................ 13
+
+3.1.1.
+
+Job Seeker Registration and Profile Management................................................................................................................................ 13
+
+3.1.2.
+
+Employer Registration and Profile Management ................................................................................................................................. 14
+
+3.1.3.
+
+Third-Party Job Portals Registration and Integration (i.e. jobs.ps)............................................................................................... 14
+
+3.1.4.
+
+Administrator User Management ............................................................................................................................................................... 15
+
+3.1.5.
+3.2.
+
+Authentication and Authorization.............................................................................................................................................................. 16
+Job Posting and Management .............................................................................................................................................................................. 16
+
+3.2.1.
+
+Job Creation and Publishing.......................................................................................................................................................................... 16
+
+3.2.2.
+
+Job Search and Filtering ................................................................................................................................................................................. 17
+
+3.2.3.
+
+Job Interaction Process ................................................................................................................................................................................... 17
+
+3.2.4.
+
+Job Status Tracking........................................................................................................................................................................................... 18
+
+3.3.
+
+AI-Driven Matching System.................................................................................................................................................................................. 18
+
+3.3.1.
+
+A Vector-Based (Skills-Based and Behavior) Matching Algorithms.............................................................................................. 18
+
+3.3.2.
+
+Job Recommendation Engine ....................................................................................................................................................................... 19
+
+3.3.3.
+
+Candidate Recommendation for Employers........................................................................................................................................... 19
+
+3.4.
+
+Integration with External Systems .................................................................................................................................................................... 19
+
+3.4.1.
+
+External Job Site Integration ........................................................................................................................................................................ 19
+
+3.4.2.
+
+Government Database Integration ............................................................................................................................................................. 20
+
+3.4.3.
+
+API Framework .................................................................................................................................................................................................. 20
+
+3.5.
+
+Reporting and Analytics ........................................................................................................................................................................................ 20
+
+3.5.1.
+
+User Activity Monitoring ................................................................................................................................................................................ 20
+
+3.5.2.
+
+Employment Statistics .................................................................................................................................................................................... 21
+
+3.5.3.
+
+System Performance Metrics........................................................................................................................................................................ 21
+
+3.5.4.
+
+Custom Report Generation............................................................................................................................................................................ 21
+
+3.6.
+
+Notification System ................................................................................................................................................................................................. 22
+
+3.6.1.
+
+Email Notifications ........................................................................................................................................................................................... 22
+
+3.6.2.
+
+In-App Notifications ......................................................................................................................................................................................... 22
+
+3.6.3.
+
+SMS Notifications .............................................................................................................................................................................................. 22
+
+2
+
+3.7.
+
+4.
+
+5.
+
+Content Management.............................................................................................................................................................................................. 23
+
+3.7.1.
+
+News and Updates ............................................................................................................................................................................................ 23
+
+3.7.2.
+
+FAQ and Help Center ....................................................................................................................................................................................... 23
+
+External Interface Requirements ...................................................................................................................................................................................... 24
+4.1.
+
+User Interfaces .......................................................................................................................................................................................................... 24
+
+4.2.
+
+Hardware Interfaces ............................................................................................................................................................................................... 25
+
+4.3.
+
+Software Interfaces ................................................................................................................................................................................................. 25
+
+4.4.
+
+Communications Interfaces ................................................................................................................................................................................. 26
+
+Non-Functional Requirements ........................................................................................................................................................................................... 27
+5.1.
+
+Performance Requirements ................................................................................................................................................................................. 27
+
+5.1.1.
+
+Response Time ................................................................................................................................................................................................... 27
+
+5.1.2.
+
+Throughput.......................................................................................................................................................................................................... 27
+
+5.1.3.
+
+Resource Utilization ......................................................................................................................................................................................... 27
+
+5.1.4.
+
+Scalability ............................................................................................................................................................................................................. 28
+
+5.2.
+
+Security Requirements........................................................................................................................................................................................... 28
+
+5.2.1.
+
+Authentication and Authorization.............................................................................................................................................................. 28
+
+5.2.2.
+
+Data Protection .................................................................................................................................................................................................. 28
+
+5.2.3.
+
+Privacy and Compliance ................................................................................................................................................................................. 29
+
+5.2.4.
+
+Security Monitoring and Incident Response .......................................................................................................................................... 29
+
+5.3.
+
+Reliability and Availability ................................................................................................................................................................................... 29
+
+5.3.1.
+
+Availability........................................................................................................................................................................................................... 29
+
+5.3.2.
+
+Fault Tolerance .................................................................................................................................................................................................. 30
+
+5.3.3.
+
+Disaster Recovery ............................................................................................................................................................................................. 30
+
+5.3.4.
+
+Error Handling ................................................................................................................................................................................................... 30
+
+5.4.
+
+Usability and Accessibility .................................................................................................................................................................................... 31
+
+5.4.1.
+
+User Interface ..................................................................................................................................................................................................... 31
+
+5.4.2.
+
+Accessibility......................................................................................................................................................................................................... 31
+
+5.4.3.
+
+Multilingual Support ........................................................................................................................................................................................ 31
+
+5.4.4.
+
+User Experience ................................................................................................................................................................................................. 32
+
+5.5.
+
+Maintainability and Portability........................................................................................................................................................................... 32
+
+5.5.1.
+
+Maintainability ................................................................................................................................................................................................... 32
+
+5.5.2.
+
+Portability ............................................................................................................................................................................................................ 32
+
+5.5.3.
+
+Compatibility ...................................................................................................................................................................................................... 33
+
+5.6.
+
+Legal and Compliance Requirements ............................................................................................................................................................... 33
+
+5.6.1.
+
+Regulatory Compliance................................................................................................................................................................................... 33
+
+5.6.2.
+
+Intellectual Property ........................................................................................................................................................................................ 33
+
+5.6.3.
+
+Service Level Agreements.............................................................................................................................................................................. 33
+
+5.7.
+
+Operational Requirements ................................................................................................................................................................................... 34
+
+5.7.1.
+
+Monitoring and Logging ................................................................................................................................................................................. 34
+
+5.7.2.
+
+Backup and Recovery ...................................................................................................................................................................................... 34
+
+5.7.3.
+
+System Administration ................................................................................................................................................................................... 34
+
+5.7.4.
+
+Documentation................................................................................................................................................................................................... 34
+
+5.8.
+5.8.1.
+
+Cultural and Political Requirements................................................................................................................................................................. 35
+Cultural Considerations .................................................................................................................................................................................. 35
+
+3
+
+5.8.2.
+6.
+
+Political Considerations .................................................................................................................................................................................. 35
+
+Other Requirements ............................................................................................................................................................................................................... 36
+6.1.
+
+Data Migration........................................................................................................................................................................................................... 36
+
+6.2.
+
+Internationalization Requirements................................................................................................................................................................... 36
+
+6.3.
+
+Training Requirements .......................................................................................................................................................................................... 36
+
+6.4.
+
+Appendix A: Analysis Models .............................................................................................................................................................................. 38
+
+6.5.
+
+Appendix B: Issues List .......................................................................................................................................................................................... 50
+
+4
+
+Glossary
+Term
+AI
+API
+GDPR
+LMIS
+MoL
+Enabel
+NLP
+PEF
+RBAC
+RTO
+RPO
+SLA
+SRS
+ToR
+WCAG
+YEP
+
+Definition
+Artificial Intelligence
+Application Programming Interface
+General Data Protection Regulation
+Labor Market Information System
+Ministry of Labor
+Belgian agency for international cooperation
+Natural Language Processing
+Palestinian Employment Fund
+Role-Based Access Control
+Recovery Time Objective
+Recovery Point Objective
+Service Level Agreement
+System Requirements Specification
+Terms of Reference
+Web Content Accessibility Guidelines
+Youth Economic Empowerment in Palestine
+
+5
+
+1. Introduction
+1.1. Purpose
+This Software Requirements Specification (SRS) document provides a comprehensive description
+of the AI-Driven Job Matching Platform to be developed for the Ministry of Labor (MoL) and
+Palestinian Employment Fund (PEF) in Palestine. The document details the functional and nonfunctional requirements for the platform, which aims to enhance labor market efficiency by
+providing real-time data integration, standardizing job postings, and facilitating employment for
+job seekers.
+This SRS will serve as the foundation for the subsequent system design and development phases,
+ensuring that all stakeholders have a clear understanding of what the system will do and how it
+will operate. It will also form the basis for the Terms of Reference (ToR) for the Phase Two
+procurement process for system implementation.
+
+1.2. Document Conventions
+This document follows these conventions:
+Term
+SHALL
+SHOULD
+MAY
+TBD
+Note
+
+Description
+Refers to a mandatory requirement that must be fulfilled during Phase 1
+of platform development. The vendor/developer is required to cover this
+feature in the current implementation phase.
+Indicates a requirement that will take place in phase 2 and the developer
+should take it into consideration for future scalability.
+Refers to a requirement anticipated for Phase 3 or subsequent phases. The
+developer is encouraged to consider this requirement generally, keeping
+future scalability in mind.
+To Be Determined, indicates information that is not yet available but will
+be provided in future versions
+Provides additional information or clarification
+
+Requirements are categorized as follows:
+Requirement
+Number
+FR-XX
+NFR-XX
+IR-XX
+DR-XX
+SR-XX
+
+Description
+Functional Requirements
+Non-Functional Requirements
+Interface Requirements
+Data Requirements
+Security Requirements
+
+1.3. Intended Audience
+This document is intended for the following stakeholders:
+Stakeholder
+Ministry of Labor (MoL)
+
+Role
+Officials who will review and approve the requirements
+and solution owner.
+
+6
+
+Palestinian Employment Fund
+(PEF)
+Enabel and its consultants
+Development team
+Technical evaluators
+System administrators
+Integration partners
+
+Officials who will review and approve the requirements
+Donor, overseeing the project and approves requirements
+Who will design and implement the system
+Who will assess vendor proposals
+Who will maintain and support the system (mainly are the
+system administrators from the MoL)
+Including job sites and other external systems
+
+1.4. Project Scope
+The AI-Driven Job Matching Platform is part of the "Youth Economic Empowerment in Palestine
+(YEP)" program, which aims to enhance Palestinian young people's employability and economic
+empowerment.
+The platform will serve as the core component of the future Labor Market Information System
+(LMIS), integrating multiple job sources and government databases to optimize job matching,
+provide analytics, and support decision-making.
+In Scope
+The platform will include the following key components:
+
+
+
+
+
+
+
+
+
+User Management System: Registration and profile management for job seekers,
+employers, external job sites, and administrators
+Job Posting Management System: Creation, publishing, and search for job opportunities
+AI-Driven Matching Engine: Skill-based matching algorithms using natural language
+processing, and recommender systems
+Integration Framework: APIs and adapters for connecting with external job sites and
+government databases
+Reporting and Analytics: Dashboards and reports for monitoring system performance
+and labor market trends Including (jobs posted, and users registered etc.)
+Security Framework: Authentication, authorization, and data protection mechanisms
+Multilingual Support: Full functionality in both Arabic and English
+Limited onboarding and testing sessions with internal stakeholders.
+
+Out of Scope
+The following items are explicitly excluded from this phase of the project:
+1) Implementation of the full Labor Market Information System (LMIS)
+2) Hardware procurement for hosting the solution
+3) Integration with systems beyond those specified in this document
+4) Training of end-users (this will be addressed in Phase Two)
+5) Long-term support and maintenance (to be addressed in separate agreements)
+6) Mobile application development
+
+7
+
+1.5. References
+This SRS is based on the following documents and sources:
+1) Terms of Reference "Development of System Requirements Specification (SRS) for a Job
+Matching Platform" (Reference #: PSE21002-10053)
+2) National Employment Strategic Plan (2021-2025)
+3) Youth Economic Empowerment in Palestine (YEP) program documentation
+4) Existing analysis, assessments, and AS-IS case studies provided by MoL ,PEF and Enabel
+team
+5) Research on best practices in AI-driven job matching platforms
+6) Meetings with stakeholders as identified by the consultancy ToR
+
+2. Overall Description
+2.1. Product Perspective
+The AI-Driven Job Matching Platform is a new system being developed to address the challenges
+of labor market efficiency in Palestine. It will operate as a standalone web-based system initially
+but is designed to become the core component of a more comprehensive Labor Market
+Information System (LMIS) in the future.
+The platform will interface with:
+
+
+
+
+
+Existing MoL and PEF databases and systems
+External job sites selected by MoL and PEF
+Government databases for verification and data enrichment
+Educational institutions for skills and qualification validation
+
+The following context diagram illustrates the system's position within its environment and its
+interactions with external entities:
+
+3rd-Party
+Job Sites
+
+MoL and
+PEF
+databases
+
+Government
+databases
+
+AI Driven
+Job
+Matching
+Platform
+
+Educational
+institutions
+
+2.2. Product Functions
+The AI-Driven Job Matching Platform will provide the following major functions:
+1) User Registration and Profile Management
+8
+
+
+
+
+
+
+
+Job seeker registration and profile creation
+Employer registration and company profile management
+User account enabling, disabling, deletion, and recovery
+External job site integration
+Administrator and site management accounts
+
+2) Job Posting and Management
+
+
+
+
+
+Job creation and publishing
+Job classification and categorization
+Job search and filtering
+Job status management (enable, disable functions)
+
+3) AI-Driven Matching
+
+
+
+
+
+A vector-based matching (skill-based, education, and behavior etc.) between job seekers
+and job postings
+Resume/CV parsing and analysis
+Job recommendation for job seekers
+Candidate recommendation for employers
+
+4) External System Integration
+
+
+
+Real-time job data synchronization with external job sites (when available)
+API-based data exchange with governmental databases
+
+5) Reporting and Analytics
+
+
+
+
+
+User activity monitoring and reporting
+Employment statistics and trends
+System performance metrics
+Custom report generation
+
+6) System Administration
+
+
+
+
+
+
+User management and access control
+System configuration and customization
+Data management and backup
+Security monitoring and audit
+System performance management and control
+
+2.3. User Classes, Characteristics, and Nees
+The platform will serve the following user classes:
+1) Job Seekers
+
+
+
+
+Youth between 15-29 years, including vulnerable youth people with disabilities and
+young women
+Varying levels of education and technical skills
+May have limited access to technology or internet connectivity
+9
+
+
+
+Primary needs: Finding suitable job opportunities, and building professional profiles
+
+2) Employers
+
+
+
+
+
+Private sector enterprises of various sizes
+Different industry sectors and geographical locations
+Varying levels of technical sophistication
+Primary needs: Posting job opportunities, finding qualified candidates, managing
+recruitment process
+
+3) External Job Sites
+
+
+
+
+Existing job portals and recruitment platforms
+Varying technical capabilities and data structures
+Primary needs: Data exchange, expanded reach, standardized job posting format
+
+4) System Administrators
+
+
+
+
+MoL and PEF staff responsible for platform management
+Technical personnel with system administration skills
+Primary needs: System monitoring, user management, data management, reporting
+
+5) Government Officials
+
+
+
+
+Decision-makers at MoL, PEF, and other government entities
+Policy makers and labor market analysts
+Primary needs: Labor market insights, employment statistics, system performance
+metrics
+
+2.4. Operating Environment
+The platform will operate in the following environment:
+1) Technical Environment
+
+
+
+
+
+A web-based application accessible via standard browsers
+Fully responsive web design for access via smartphones and tablets
+Should be potentially for native mobile applications in future phases
+Hosting options to be determined (on-premises, cloud, or hybrid)
+
+2) Hardware Environment
+
+
+
+
+
+Server infrastructure capable of supporting AI processing requirements
+Adequate storage for user data, job listings, and analytics
+Network infrastructure with sufficient bandwidth, high-availability, load balancing, auto
+scaling and reliability
+Disaster recovery capabilities
+
+10
+
+3) Software Environment
+
+
+
+
+
+Modern web technologies and frameworks
+Database management system with high performance and scalability
+AI and machine learning frameworks for matching algorithms
+Security software for data protection and user authentication
+
+4) User Environment
+
+
+
+
+
+
+Various devices including desktop computers, laptops, tablets, and smartphones
+Different operating systems and browser versions
+Varying internet connection speeds and reliability
+Multilingual user interface (Arabic and English)
+Accessible by different groups of users such as people with disability
+
+2.5. Design and Implementation Constraints
+The following constraints will impact the design and implementation of the platform:
+1) Technical Constraints
+
+
+
+
+
+
+Must be able to integrate with existing MoL and PEF systems and databases
+Must support integration with other external job sites
+Must be accessible via standard web browsers without special plugins or settings
+Must function effectively in areas with limited internet connectivity
+Must be user-friendly especially with people with disability
+
+2) Regulatory Constraints
+
+
+
+
+Must comply with Palestinian data privacy and protection regulations
+Must adhere to international standards for data security (e.g., GDPR principles)
+Must support legal requirements for employment and recruitment
+
+3) Business Constraints
+
+
+
+
+Must be implemented in phases, with basic functionality prioritized
+Must be scalable to accommodate future expansion
+Must be maintainable by MoL technical staff with appropriate training
+
+4) User Constraints
+
+
+
+
+Must accommodate users with varying levels of technical proficiency
+Must support accessibility standards for users with disabilities
+Must provide multilingual support (Arabic and English)
+
+2.6. User Documentation
+The following user documentation will be developed as part of the system:
+1) Online Help System
+
+
+Context-sensitive help for all system functions
+11
+
+
+
+Frequently Asked Questions (FAQs)
+
+2) User Manuals
+
+
+
+
+
+Job Seeker User Guide
+Employer User Guide
+Administrator User Guide
+External Job Site Integration Guide
+
+3) Training Materials
+
+
+
+
+Training Content
+Quick reference guides
+System demonstration materials (videos, slides with screenshots and instructions.)
+
+2.7. Assumptions and Dependencies
+Assumptions
+1) MoL and PEF will provide timely access to existing systems and databases for
+integration
+2) External job sites will cooperate in the integration process
+3) Adequate infrastructure will be available for system deployment
+4) Stakeholders will participate actively in the requirements validation process
+5) The system will be implemented in phases, with basic functionality prioritized
+Dependencies
+1) Availability of accurate and up-to-date data from MoL and PEF
+2) Cooperation from external job sites for integration
+3) Availability of technical resources for system implementation
+4) Approval of necessary policies and procedures for system operation
+5) Successful procurement process for Phase Two implementation
+
+12
+
+3. System Features and Functional Requirements
+This section details the functional requirements of the AI-Driven Job Matching Platform,
+organized by major system features. Each requirement is identified with a unique ID (FR-XX) for
+traceability and reference.
+
+3.1. User Management and Authentication
+3.1.1. Job Seeker Registration and Profile Management
+ID
+FR-01.
+FR-02.
+FR-03.
+
+Requirement
+The system SHALL provide a self-registration process for job seekers.
+The system SHALL support account activation by user mobile number
+The system SHALL collect the following information from job seekers
+
+through a multi-level onboarding process (via mobile/email):
+ Level 1: First and last name, email, mobile number, password,
+gender
+ Level 2: Education, work experience, skills, training, certificates,
+recent salary (optional), current address, permanent
+address/residence
+ Level 3 (optional): Social media links (e.g., LinkedIn, IEEE, X),
+personal statement, bio
+FR-04.
+FR-05.
+FR-06.
+
+The system SHALL support resume/CV upload in common formats (PDF,
+DOCX, TXT).
+The system SHALL offer the CV to AI engine to automatically extract
+information from uploaded resumes/CVs using AI parsing technology and add
+the extracted information to the profile.
+The system SHALL allow job seekers to build their profiles using a staged,
+
+stepwise form with popup prompts for the following sections:
+ Education: Degree, institution
+ Experience: Company, role, duration
+ Skills: Primary/secondary; soft/hard
+ Preferences: Job type, desired salary, preferred location
+FR-07.
+FR-08.
+
+FR-09.
+FR-10.
+FR-11.
+
+The system SHALL allow job seekers to edit and update their profiles at any
+time.
+The system SHALL provide a recommendation to encourage job seekers to
+complete their profiles and to explore opportunities aligned with their
+broader skills, interests, and experiences beyond formal education and
+training.
+The system SHALL allow job seekers to set job preferences including job type,
+industry, location, salary expectations, and work arrangements.
+The system SHALL provide privacy controls that allow job seekers to set
+visibility preferences for their profile (public or private), and request account
+deactivation or deletion.
+The system SHALL generate a shareable public profile URL/QR Code for
+
+each job seeker, if activated by the user.
+FR-12.
+
+The system SHALL allow the job seeker to upload supplementary documents
+(i.e. certificate )
+
+13
+
+3.1.2. Employer Registration and Profile Management
+ID
+FR-13.
+
+FR-14.
+FR-15.
+
+FR-16.
+FR-17.
+
+FR-18.
+FR-19.
+FR-20.
+FR-21.
+
+Requirement
+The system SHALL provide a stepwise registration process for employers:
+ Level 1: Company name, email, mobile number, company ID, and
+registration number (if registered)
+ Level 2: Website, industry, company size, address, company
+description, and attachments for supplementary documents
+The system SHALL require account activation through a one-time password
+(OTP) sent to the registered mobile number.
+The system SHALL provide an employer verification process that includes
+automatic verification using official information such as the employer’s
+registration number, VAT number, and registered mobile number as recorded
+in government databases.
+If automatic verification fails, the Ministry of Labor (MoL) SHALL be able to
+manually verify the employer’s account based on submitted registration
+details and/or direct contact.
+The system SHALL display a 脥
+��� Verified Employer badge next to the names
+of verified companies to enhance trust for job seekers and provide added
+value to employers who complete the verification process.
+The system SHALL provide a company profile page that showcases the
+employer's information, job openings, and company background.
+The system SHALL allow employers to upload company logo, and images to
+enhance their profile. In addition to documents such as company
+registration and manage uploaded documents
+The system SHALL provide a dashboard for employers to manage job
+postings, view matched job seekers, create shortlists of interested or qualified
+candidates, and track key metrics.
+The system SHALL allow the employer to upload supplementary documents
+(i.e. company registration certificate)
+
+3.1.3. Third-Party Job Portals Registration and Integration (i.e. jobs.ps)
+ID
+FR-22.
+FR-23.
+FR-24.
+FR-25.
+FR-26.
+FR-27.
+FR-28.
+
+Requirement
+The system SHALL provide a registration and onboarding process for external
+job sites.
+The system SHOULD issue a unique API key or token to each partner for
+secure access, with support for optional IP whitelisting, usage limits, and
+token expiration management to ensure controlled and secure integration.
+The system SHOULD support job posting via a secure RESTful Push API,
+allowing external platforms to submit job opportunities directly to the job
+matching system.
+The system SHALL allow external job sites to configure data mapping
+between their system and the platform, provide the sites with the standard
+schema to successfully integrate with the platform
+The system SHOULD provide a testing environment for external job sites to
+validate their integration.
+The system SHOULD implement comprehensive error handling and response
+logging by providing clear API response codes with descriptive messages for
+success, failure, duplicates, and validation errors.
+The system SHOULD grant external platforms access to view submission logs
+for monitoring and troubleshooting purposes.
+
+14
+
+FR-29.
+FR-30.
+FR-31.
+
+FR-32.
+
+FR-33.
+FR-34.
+
+The system SHOULD return a unique job ID as a confirmation response after a
+job is successfully pushed via the API, enabling accurate record-keeping and
+integration synchronization for external systems.
+The system SHALL automatically tag each job post with the name of the
+source platform (e.g., “Source: samplejobsite.ps”) and include a backlink to the
+original job advertisement.
+The system SHOULD support job synchronization of updates via the API,
+enabling external job sites to modify job details—such as deadline extensions,
+description edits, or early closure/deletion/deactivation—using the assigned
+job ID.
+The system SHOULD provide an optional sync dashboard—a lightweight web
+interface or endpoint—that allows partners to review the status of jobs
+posted via the API, including indicators for synced, failed, pending, and
+archived records.
+The system SHOULD also offer periodic or real-time access to integration
+usage statistics—such as the number of jobs submitted, matched, and
+viewed—for transparency, performance tracking, and reporting purposes.
+The system SHOULD provide access to the up-to-date API schema (e.g.,
+
+via Swagger) and detailed field validation rules to ensure proper
+formatting and structure of job postings submitted through the API.
+FR-35.
+FR-36.
+
+The system SHOULD provide an option for source platforms to configure
+whether their attribution (e.g., source platform name) appears publicly on job
+postings or is only visible within the admin panel and system logs.
+The system SHOULD maintain an audit trail at the job level, recording
+
+which external job site created or modified each posting, and display
+this information within the MoL admin dashboard for traceability and
+accountability.
+3.1.4. Administrator User Management
+ID
+FR-37.
+FR-38.
+FR-39.
+FR-40.
+FR-41.
+FR-42.
+FR-43.
+
+Requirement
+The system SHALL provide a comprehensive user management interface for
+administrators.
+The system SHALL allow authorized administrators to add and manage core
+entities on the platform, including job seekers, employers, and job offerings
+(opportunities).
+The system SHALL provide user management capabilities for administrators,
+including the ability to view, approve, ban, or deactivate user accounts, reset
+account credentials, and monitor account statuses.
+The system SHALL provide tools for administrators to assist users with
+account recovery and technical issues, view pending employer registrations
+and approve them based on submitted profile information.
+The system SHALL maintain an audit log of all administrative actions for
+security and accountability.
+
+The system SHALL allow authorized administrators to define and
+update system settings if needed.
+The system SHALL allow authorized administrators to view and
+manage static reference files, including skills, jobs, trainings, and other
+related datasets.
+
+15
+
+FR-44.
+
+The system SHALL allow authorized administrators to manage system
+taxonomies such as the skills list, occupations catalog, training
+programs, and other platform constants or reference values.
+
+FR-45.
+
+The system SHALL allow administrators to oversee job offerings by viewing
+active and inactive postings, changes in posts, and to suspend or remove job
+offerings that are deemed inappropriate or violate platform policies.
+The system SHALL provide comprehensive statistics and reporting features,
+allowing administrators to download reports on job postings by sector,
+region, or industry; user registrations; top searches from both job seekers and
+employers; user interactions with job offers; and overall system metrics.
+FR-48.
+
+FR-46.
+
+FR-47.
+
+3.1.5. Authentication and Authorization
+ID
+FR-49.
+FR-50.
+FR-51.
+FR-52.
+FR-53.
+
+Requirement
+The system SHALL implement secure authentication mechanisms including
+username/password, email verification, and multi-factor authentication
+options.
+The system SHALL enforce strong password policies with configurable
+parameters.
+The system SHALL implement role-based access control to restrict access to
+features and data based on user roles.
+The system SHALL provide session management with configurable timeout
+settings.
+The system SHALL maintain detailed access logs for security monitoring and
+auditing.
+
+3.2. Job Posting and Management
+3.2.1. Job Creation and Publishing
+ID
+FR-54.
+FR-55.
+
+Requirement
+The system SHALL provide a structured job posting form for employers to
+create job listings.
+The system SHALL provide a structured job posting form that allows
+employers to add new job opportunities with the following fields:
+
+
+
+
+
+
+
+
+
+
+Job title, summary, and required skills (with support for file upload or
+copy/paste input)
+Contract type (e.g., full-time, part-time, training, project-based)
+Required education level
+Application deadline with an optional auto-close feature
+Work format selection (Physical with employment location, Online, or
+Hybrid)
+Gender, number of employees, etc
+Required languages and proficiency levels
+Link to the job if available.
+More detailed features on the job post to be provided.
+
+16
+
+FR-56.
+
+FR-57.
+FR-58.
+
+The system SHALL support standardized job categories, skills, and
+qualifications to facilitate accurate matching. For this requirement, the system
+SHALL ensure that all input data complies with the Schema.org JobPosting
+standard for semantic compatibility and structured data integrity.
+The system SHALL allow employers to manage their job postings by editing
+job details, extending application deadlines, and set job posting visibility
+(public, private, or targeted) posts when necessary.
+The system SHALL support job posting expiration and renewal processes.
+
+3.2.2. Job Search and Filtering
+ID
+FR-59.
+FR-60.
+FR-61.
+FR-62.
+
+Requirement
+The system SHALL provide a comprehensive search interface for job seekers
+to find relevant opportunities.
+The search interface SHALL support both basic (search by single keyword)
+and advanced search modes based on employer-defined attributes.
+The system SHALL provide semantic search capabilities that understand the
+intent behind search queries.
+The system SHALL provide a search engine with advanced filtering
+capabilities, allowing job seekers to search for jobs using the following
+criteria:
+
+
+
+
+
+
+
+
+
+Keywords (text)
+Location
+Salary range
+Employment type
+Date posted
+Application deadline
+Job-specific requirements (e.g., skills, education, training, years of
+experience)
+Company sector/industry (e.g., IT, Health, NGO, Construction)
+
+FR-63.
+
+The system SHALL display search results with relevance/skills-matching
+ranking and sorting options. In addition, when user login the system SHALL
+display recommended jobs based on results generated by AI matching engine.
+
+FR-64.
+
+The system SHALL also include a favorites feature (e.g., heart button
+) for
+users to save jobs of interest.
+The system SHALL support saved searches with notification options for new
+matching jobs.
+
+FR-65.
+
+3.2.3. Job Interaction Process
+ID
+FR-66.
+
+Requirement
+The system SHALL allow job seekers to bookmark and save jobs by adding
+them to an “Interested List ”, and to save custom search filters for future
+use.
+
+17
+
+3.2.4. Job Status Tracking
+ID
+FR-67.
+FR-68.
+FR-69.
+
+Requirement
+The system SHALL provide employers with tools to manage the status of job
+postings.
+The system SHALL support the following job posting statuses: draft, active,
+paused, expired, and archived.
+The system SHALL maintain a history of status changes for audit and
+reporting purposes.
+
+3.3. AI-Driven Matching System
+3.3.1. A Vector-Based (Skills-Based and Behavior) Matching Algorithms
+ID
+FR-70.
+
+Requirement
+The system SHALL implement AI-driven matching algorithms to connect
+job seekers with relevant job opportunities.
+
+FR-71.
+
+The system SHALL use a scoring algorithm to calculate a match
+score between job seekers and job postings minimally based on the
+following criteria:
+ Skill overlap
+ Education match
+ Training match
+ Location match
+ Experience range
+ Salary expectation range
+
+FR-72.
+
+The system SHALL generate shortlists of top-matching candidates (e.g.,
+top 100) for each job posting to assist employers in the selection process.
+The system SHALL use natural language processing (NLP) to understand
+the semantic meaning of job descriptions and resumes beyond keyword
+matching.
+The system SHALL perform keyword and semantic analysis on posted
+job descriptions to identify key attributes such as required skills,
+experience levels, and job categories.
+The system SHALL allow administrators to define and adjust a minimum
+match threshold (e.g., 60%) that determines which job matches are
+displayed to users.
+The system SHALL rank/order job postings for each job seeker based on
+their individual match percentage, displaying the most relevant
+opportunities first.
+The system SHALL support two-way matching, where job seekers
+receive ranked job opportunities based on match percentage, and
+employers receive reverse matches with ranked lists of suitable job
+seekers for their postings.
+The system SHALL allow configuration of matching parameters to adjust
+the importance of different factors.
+The system SHALL implement AI-powered resume parsing to extract
+structured information from uploaded documents.
+The system SHALL extract the following information from resumes:
+personal details, contact information, education history, work
+experience, skills, certifications, and achievements.
+
+FR-73.
+FR-74.
+FR-75.
+FR-76.
+FR-77.
+
+FR-78.
+FR-79.
+FR-80.
+
+18
+
+FR-81.
+FR-82.
+FR-83.
+FR-84.
+
+The system SHALL support multiple languages in resume parsing, with
+primary focus on Arabic and English.
+The system SHALL identify and standardize skills mentioned in resumes
+to facilitate matching.
+The system SHALL provide confidence scores for extracted information
+and highlight areas that may need manual verification.
+The system SHALL allow job seekers to review and correct parsed
+information.
+
+3.3.2. Job Recommendation Engine
+ID
+FR-85.
+FR-86.
+FR-87.
+FR-88.
+FR-89.
+
+Requirement
+The system SHALL provide personalized job recommendations for job
+seekers based on their profile, preferences, and platform activity.
+The system SHALL recommend suitable job seekers to employers based on
+job requirements and matching criteria.
+The system SHALL use collaborative filtering to recommend jobs based on
+similar user behaviors and preferences.
+The system SHALL incorporate content-based filtering to recommend jobs
+similar to those the user has shown interest in.
+The system SHALL consider location, salary expectations, and work
+arrangement preferences in recommendations.
+
+3.3.3. Candidate Recommendation for Employers
+ID
+FR-90.
+FR-91.
+FR-92.
+FR-93.
+FR-94.
+FR-95.
+FR-96.
+
+Requirement
+The system SHALL provide employers with candidate recommendations for
+their job postings.
+The system SHALL rank candidates based on match quality, highlighting the
+strengths and potential gaps of each candidate.
+The system SHALL allow employers to set minimum qualification thresholds
+for automatic candidate filtering.
+The system SHALL allow employers to search the candidate database using
+advanced filtering options.
+The system SHALL respect candidate privacy settings when making
+recommendations to employers.
+The system SHALL provide insights on candidate availability, salary
+expectations, and potential fit.
+The system SHALL allow employers to save promising candidates to talent
+pools for future opportunities (add to shortlist).
+
+3.4. Integration with External Systems
+3.4.1. External Job Site Integration
+ID
+FR-97.
+FR-98.
+FR-99.
+
+Requirement
+The system SHALL support integration with external job sites based on
+recommendations by MoL and PEF.
+The system SHOULD provide APIs for real-time job data synchronization with
+external job sites.
+The system SHOULD implement data mapping and transformation to
+standardize job postings from different sources.
+19
+
+FR-100.
+FR-101.
+FR-102.
+FR-103.
+
+The system SHOULD support both pull (importing jobs from external sites)
+and push (exporting jobs to external sites) integration models.
+The system SHOULD maintain synchronization logs and provide error
+handling for failed integrations.
+The system SHOULD support scheduled and on-demand synchronization
+options.
+The system SHOULD provide a dashboard to monitor integration status and
+data flow with external job sites.
+
+3.4.2. Government Database Integration
+ID
+FR-104.
+FR-105.
+FR-106.
+FR-107.
+FR-108.
+FR-109.
+
+Requirement
+The system SHOULD integrate with relevant government databases for data
+verification and enrichment.
+The system SHOULD support integration with the MoL and PEF existing
+databases and systems.
+The system SHOULD support verification of educational credentials through
+integration with educational institution databases.
+The system SHOULD provide options for identity verification through
+government ID systems.
+The system SHOULD maintain audit trails of all data exchanges with
+government systems.
+The system SHOULD respect data privacy regulations when accessing and
+using government data.
+
+3.4.3. API Framework
+ID
+FR-110.
+FR-111.
+FR-112.
+FR-113.
+FR-114.
+
+Requirement
+The system SHOULD provide a comprehensive API framework for integration
+with external systems.
+The system SHOULD implement RESTful APIs with JSON data format as the
+primary integration method.
+The system SHOULD provide detailed API documentation with examples and
+testing tools.
+The system SHOULD implement OAuth 2.0 for API authentication and
+authorization.
+The system SHOULD support API versioning to ensure backward
+compatibility.
+
+3.5. Reporting and Analytics
+3.5.1. User Activity Monitoring
+ID
+FR-115.
+FR-116.
+FR-117.
+FR-118.
+
+Requirement
+The system SHALL track and record user activities for analysis and reporting.
+The system SHALL monitor job seeker activities including profile views, job
+searches, applications, and interactions.
+The system SHALL TRACK employer activities including job postings,
+candidate searches.
+The system SHALL implement data retention policies for activity logs in
+compliance with regulations.
+20
+
+FR-119.
+
+MOL Life dashboard should include current logins, number of current logins
+and last sessions, with links to these users profiles
+
+3.5.2. Employment Statistics
+ID
+FR-120.
+FR-121.
+FR-122.
+FR-123.
+FR-124.
+FR-125.
+FR-126.
+FR-127.
+
+Requirement
+The system SHOULD generate employment statistics and labor market
+insights from platform data.
+The system SHOULD track key metrics including job posting trends,
+application rates, hiring rates, and time-to-fill.
+The system SHOULD provide industry-specific analytics on job market
+demand and supply.
+The system SHOULD analyze skill demand trends to identify emerging
+requirements and skill gaps.
+The system SHOULD generate geographic distribution reports for jobs and
+candidates.
+The system SHOULD provide salary range analytics by industry, position, and
+location.
+The system SHOULD track employment outcomes and career progression
+where data is available.
+The system SHOULD generate periodic labor market reports for government
+stakeholders.
+
+3.5.3. System Performance Metrics
+ID
+FR-128.
+FR-129.
+FR-130.
+FR-131.
+FR-132.
+FR-133.
+FR-134.
+
+Requirement
+The system SHOULD monitor and report on system performance metrics.
+The system SHOULD track matching algorithm performance including
+accuracy, precision, recall, and user satisfaction.
+The system SHOULD monitor system usage patterns including peak times,
+popular features, and user engagement.
+The system SHOULD track technical performance metrics including response
+times, resource utilization, and error rates.
+The system SHOULD provide dashboards for administrators to monitor
+system health and performance.
+The system SHOULD generate alerts for performance issues or anomalies.
+The system SHOULD maintain historical performance data for trend analysis
+and capacity planning.
+
+3.5.4. Custom Report Generation
+ID
+FR-135.
+FR-136.
+FR-137.
+FR-138.
+
+Requirement
+The system SHOULD provide a flexible reporting framework for generating
+custom reports through seamless integration with existing and available
+reporting tools such as Microsoft Power BI.
+The system SHOULD allow administrators to define report templates with
+configurable parameters.
+The system SHOULD support various report formats including tabular data,
+charts, and visualizations.
+The system SHOULD allow scheduling of recurring reports with automated
+distribution.
+21
+
+FR-139.
+FR-140.
+FR-141.
+FR-142.
+
+The system SHOULD support export of reports in common formats (PDF,
+Excel, CSV).
+The system SHOULD provide a report builder interface for users with
+appropriate permissions.
+The system SHOULD maintain a library of saved reports for quick access.
+The system SHOULD implement access controls to ensure users can only
+view reports appropriate to their role.
+
+3.6. Notification System
+3.6.1. Email Notifications
+ID
+FR-143.
+FR-144.
+FR-145.
+FR-146.
+FR-147.
+FR-148.
+
+Requirement
+The system SHALL send email notifications for important events and updates.
+The system SHALL support customizable email templates with dynamic
+content.
+The system SHALL allow users to configure their email notification
+preferences.
+The system SHALL support both immediate and digest email notifications.
+The system SHALL log all emails notifications.
+The system SHALL comply with anti-spam regulations and best practices.
+
+3.6.2. In-App Notifications
+ID
+FR-149.
+FR-150.
+FR-151.
+FR-152.
+FR-153.
+FR-154.
+FR-155.
+
+Requirement
+The system SHALL provide an in-app notification center for users.
+The system SHALL display real-time notifications for important events and
+updates.
+The system SHALL provide weekly job recommendations to job seekers
+based on their search history and profile information.
+The system SHALL maintain a notification history for users to review past
+notifications.
+The system SHALL allow users to configure their in-app notification
+preferences.
+The system SHALL support different notification types with appropriate
+visual indicators.
+The system SHALL provide notification management tools for users to mark
+as read, delete, or take action on notifications.
+
+3.6.3. SMS Notifications
+ID
+FR-156.
+
+FR-157.
+FR-158.
+
+Requirement
+The system SHALL provide SMS notifications for critical updates and timesensitive information (byt the integration with SMS service providers
+(gateway)). Such as welcoming SMS with a code for user registration,
+employer registration, and SMS for resetting the password.
+The system SHALL allow users to opt-in to SMS notifications and provide their
+mobile number.
+The system SHALL limit SMS notifications to essential communications to
+avoid overwhelming users.
+22
+
+FR-159.
+FR-160.
+
+The system SHALL track SMS delivery status for monitoring and
+troubleshooting. + loging as sms messages
+The system SHALL comply with telecommunications regulations regarding
+SMS messaging.
+
+3.7. Content Management
+3.7.1. News and Updates
+ID
+FR-161.
+FR-162.
+FR-163.
+FR-164.
+FR-165.
+FR-166.
+
+Requirement
+The system SHALL provide a content management system (CMS) for
+publishing news and updates.
+The system SHALL allow administrators to create, edit, and publish articles
+and announcements.
+The system SHALL support rich text formatting, images, and embedded
+media in content.
+The system SHALL provide content categorization and tagging for
+organization.
+The system SHALL display relevant news and updates on user dashboards
+based on their profile.
+The system SHALL maintain an archive of past news and updates with search
+functionality.
+
+3.7.2. FAQ and Help Center
+ID
+FR-167.
+FR-168.
+FR-169.
+FR-170.
+FR-171.
+FR-172.
+FR-173.
+FR-174.
+
+Requirement
+The system SHALL provide a comprehensive FAQ and help center. In
+addition, list of laws, regulations and contract types regulations.
+The system SHALL organize help content by topic and user role for easy
+navigation.
+The system SHALL implement a search function for help content.
+The system SHALL provide context-sensitive help throughout the platform.
+The system SHALL allow administrators to update help content as the system
+evolves.
+The system SHALL collect user feedback on help content effectiveness.
+The system SHALL provide guided tours and tutorials for new users.
+The system SHALL support multimedia help content including videos and
+interactive guides.
+
+23
+
+4. External Interface Requirements
+4.1. User Interfaces
+The system shall provide user interfaces for the following user types:
+1) Job Seeker
+
+
+
+
+
+Registration and profile management interface
+Job search and application interface
+Dashboard for tracking applications and recommendations
+Notification and messaging interface
+
+2) Employers
+
+
+
+
+
+Registration and company profile management interface
+Job posting and management interface
+Candidate search and evaluation interface
+Recruitment workflow management interface
+
+3) External Job Sites
+
+
+
+
+Integration configuration interface
+Data mapping and synchronization interface
+Monitoring and reporting interface
+
+4) Administrators
+
+
+
+
+User\roles\permissions management interface
+System configuration interface
+Content management interface
+Reporting and analytics interface
+
+5) Guest User
+
+
+
+
+The system SHALL allow unregistered (guest) users to browse available job listings using
+basic filters such as location, sector, and date posted.
+The system SHALL prompt guest users to register or log in when they attempt to apply for a
+job, save listings, or subscribe to notifications.
+The system SHALL ensure that privacy policies and cookie consent banners are clear, guestfriendly, and fully compliant with GDPR and applicable local data protection laws, providing
+transparency in data collection and usage.
+
+All user interfaces shall adhere to the following requirements:
+
+
+
+
+
+The system SHALL have a user-friendly UX/UI dynamic interface that showcases the latest
+job postings, featured opportunities, and relevant sector-based news or career advice, all
+presented in a visually engaging and user-friendly layout
+Responsive design for desktop and mobile devices
+Multilingual support (Arabic and English) and different AI functions and techniques for both
+Arab and English to be utilized
+24
+
+
+
+
+
+
+
+
+
+Implement Web Content Accessibility Guidelines (WCAG 2.1 or later) to ensure accessibility
+and inclusivity for users with disabilities, including support for screen readers, appropriate
+color contrast, and keyboard navigation.
+Consistent navigation and design patterns
+Display dynamic homepage content, including the latest job postings, featured
+opportunities, and relevant sector-based news or career advice, presented in an engaging
+and easy-to-navigate layout.
+Context-sensitive help and guidance
+All public pages must be SEO-optimized
+
+4.2. Hardware Interfaces
+The system shall interface with the following hardware components:
+1) Server Infrastructure
+
+
+
+
+
+Application servers
+Database servers
+Storage systems
+Backup systems
+
+2) Network Infrastructure
+
+
+
+
+Load balancers
+Firewalls
+Network monitoring devices
+
+3) Client Devices
+
+
+
+
+
+Desktop computers
+Laptops
+Tablets
+Smartphones
+
+The system shall be designed to minimize hardware dependencies and support a wide range of
+client devices and configurations.
+
+4.3. Software Interfaces
+The system shall interface with the following software systems:
+1) External Job Sites
+
+
+
+
+API integration with at least five (5) external job sites
+Data exchange protocols and formats
+Authentication and security mechanisms
+
+2) Government Databases
+
+
+Integration with MoL and PEF existing systems
+25
+
+
+
+
+Integration with educational institution databases
+Integration with identity verification systems
+
+3) Email and SMS Gateways
+
+
+
+Integration with email service providers
+Integration with SMS gateways
+
+4) Analytics and Reporting Tools
+
+
+
+Integration with data visualization tools
+Export capabilities for external analysis
+
+All software interfaces shall be documented with detailed specifications, including data formats,
+protocols, and security requirements.
+
+4.4. Communications Interfaces
+The system shall support the following communication interfaces:
+1) Network Protocols
+
+
+
+
+
+HTTP/HTTPS for web access
+WebSockets for real-time notifications
+SMTP for email communications
+SMS protocols for mobile notifications
+
+2) API Communications
+
+
+
+
+RESTful/SOAP API for external integrations
+JSON data format for data exchange
+OAuth 2.0 for authentication
+
+3) Data Exchange Formats
+
+
+
+
+JSON for API data exchange
+XML for legacy system integration where required
+CSV for data import/export
+
+All communications shall be secured using appropriate encryption and authentication
+mechanisms.
+
+26
+
+5. Non-Functional Requirements
+This section specifies the non-functional requirements for the AI-Driven Job Matching Platform.
+These requirements define the quality attributes and constraints that the system must satisfy to
+meet stakeholder expectations.
+
+5.1. Performance Requirements
+5.1.1. Response Time
+ID
+NFR-01.
+NFR-02.
+NFR-03.
+NFR-04.
+NFR-05.
+
+Requirement
+The system SHALL provide page load times of less than 3 seconds for
+standard operations under normal load conditions.
+The system SHALL provide search results within 2 seconds for standard
+search queries.
+The system SHALL complete AI matching operations within 5 seconds for
+individual job-candidate matches.
+The system SHALL process batch operations (e.g., bulk candidate matching)
+within a timeframe proportional to the batch size, not exceeding 2 minutes
+for standard operations.
+The system SHALL maintain response time degradation of no more than
+50% during peak load periods.
+
+5.1.2. Throughput
+ID
+NFR-06.
+NFR-07.
+NFR-08.
+NFR-09.
+NFR-10.
+
+Requirement
+The system SHALL support at least 1,000 concurrent users during normal
+operations.
+The system SHALL support at least 5,000 concurrent users during peak
+periods.
+The system SHALL process at least 100 job applications per minute during
+peak periods.
+The system SHALL support at least 500 new job postings per day.
+The system SHALL support at least 1,000 new user registrations per day.
+
+5.1.3. Resource Utilization
+ID
+NFR-11.
+NFR-12.
+NFR-13.
+NFR-14.
+NFR-15.
+
+Requirement
+The system SHALL operate within the allocated server resources, utilizing no
+more than 80% of CPU capacity during normal operations.
+The system SHALL utilize no more than 80% of available memory during
+normal operations.
+The system SHALL require no more than 5TB of storage for the first year of
+operation, with a growth plan for subsequent years.
+The system SHALL optimize database queries to minimize I/O operations and
+response times.
+The system SHALL implement caching mechanisms to reduce resource
+utilization for frequently accessed data.
+
+27
+
+5.1.4. Scalability
+ID
+NFR-16.
+NFR-17.
+NFR-18.
+NFR-19.
+NFR-20.
+NFR-21.
+
+Requirement
+The system SHALL be designed to scale horizontally by adding more server
+instances to handle increased load.
+The system SHALL be designed to scale vertically by utilizing additional
+resources on existing servers.
+The system SHALL support a minimum of 100,000 registered job seekers
+without performance degradation.
+The system SHALL support a minimum of 10,000 registered employers
+without performance degradation.
+The system SHALL support a minimum of 50,000 active job postings without
+performance degradation.
+The system SHALL be designed to accommodate a 100% annual growth in
+user base and transaction volume for at least the first three years of
+operation.
+
+5.2. Security Requirements
+5.2.1. Authentication and Authorization
+ID
+NFR-22.
+NFR-23.
+NFR-24.
+NFR-25.
+NFR-26.
+NFR-27.
+NFR-28.
+
+Requirement
+The system SHALL implement multi-factor authentication for administrative
+accounts and as an option for all users.
+The system SHALL enforce strong password policies, including minimum
+length, complexity, and regular password changes.
+The system SHALL implement role-based access control (RBAC) to restrict
+access to features and data based on user roles.
+The system SHALL maintain detailed access logs for all authentication and
+authorization events.
+The system SHALL automatically lock accounts after a specified number of
+failed login attempts.
+The system SHALL implement secure session management with appropriate
+timeout settings.
+The system SHALL support OAuth 2.0 and OpenID Connect for third-party
+authentication where applicable.
+
+5.2.2. Data Protection
+ID
+NFR-29.
+NFR-30.
+NFR-31.
+NFR-32.
+NFR-33.
+NFR-34.
+
+Requirement
+The system SHALL encrypt all sensitive data at rest using industry-standard
+encryption algorithms (AES-256 or equivalent).
+The system SHALL encrypt all data in transit using TLS 1.3 or higher.
+The system SHALL implement data masking for sensitive information
+displayed in the user interface.
+The system SHALL implement secure key management practices for
+encryption keys.
+The system SHALL provide mechanisms for secure data deletion when
+required.
+The system SHALL implement database-level encryption for sensitive tables
+and columns.
+
+28
+
+NFR-35.
+
+The system SHALL maintain separate environments for development,
+testing, and production with appropriate data isolation.
+
+5.2.3. Privacy and Compliance
+ID
+NFR-36.
+NFR-37.
+NFR-38.
+NFR-39.
+NFR-40.
+NFR-41.
+NFR-42.
+
+Requirement
+The system SHALL comply with Palestinian data protection regulations and
+incorporate GDPR principles as best practice.
+The system SHALL provide mechanisms for users to view, export, and delete
+their personal data in accordance with data protection regulations.
+The system SHALL maintain audit trails of all data access and modifications
+for compliance purposes.
+The system SHALL implement data minimization principles, collecting only
+necessary information for system functionality.
+The system SHALL provide clear privacy notices and obtain appropriate
+consent for data collection and processing.
+The system SHALL implement data retention policies in compliance with
+legal requirements.
+The system SHALL support data protection impact assessments (DPIA) for
+high-risk processing activities.
+
+5.2.4. Security Monitoring and Incident Response
+ID
+NFR-43.
+NFR-44.
+NFR-45.
+NFR-46.
+NFR-47.
+NFR-48.
+NFR-49.
+
+Requirement
+The system SHALL implement comprehensive logging of security-relevant
+events.
+The system SHALL provide real-time monitoring and alerting for security
+incidents.
+The system SHALL implement intrusion detection and prevention
+mechanisms.
+The system SHALL conduct regular security scans and vulnerability
+assessments.
+The system SHALL have a documented incident response plan for security
+breaches.
+The system SHALL implement rate limiting and other protections against
+denial-of-service attacks.
+The system SHALL provide mechanisms for security patch management and
+updates.
+
+5.3. Reliability and Availability
+5.3.1. Availability
+ID
+NFR-50.
+NFR-51.
+NFR-52.
+NFR-53.
+
+Requirement
+The system SHALL maintain 99.5% availability during standard operating
+hours (8:00 AM to 8:00 PM Palestine time, Sunday through Thursday).
+The system SHALL maintain 99.0% availability during non-standard hours.
+The system SHALL schedule maintenance windows during periods of lowest
+expected usage.
+The system SHALL provide advance notice of scheduled maintenance to all
+users.
+29
+
+NFR-54.
+
+The system SHALL implement high availability architecture to minimize
+single points of failure.
+
+5.3.2. Fault Tolerance
+ID
+NFR-55.
+NFR-56.
+NFR-57.
+NFR-58.
+NFR-59.
+
+Requirement
+The system SHALL continue to function with degraded performance in the
+event of component failures.
+The system SHALL implement database replication to prevent data loss in
+case of database failures.
+The system SHALL implement load balancing across multiple servers to
+distribute traffic and prevent overload.
+The system SHALL automatically recover from common failure scenarios
+without manual intervention.
+The system SHALL implement circuit breaker patterns for external service
+dependencies to prevent cascading failures.
+
+5.3.3. Disaster Recovery
+ID
+NFR-60.
+NFR-61.
+NFR-62.
+NFR-63.
+NFR-64.
+NFR-65.
+
+Requirement
+The system SHALL maintain regular backups of all data, with full backups at
+least weekly and incremental backups daily.
+The system SHALL store backups in geographically separate locations from
+the primary system.
+The system SHALL define and document Recovery Time Objective (RTO) of 4
+hours for critical functions and 24 hours for non-critical functions.
+The system SHALL define and document Recovery Point Objective (RPO) of 1
+hour, meaning no more than 1 hour of data loss in a disaster scenario.
+The system SHALL have a documented and tested disaster recovery plan.
+The system SHALL conduct disaster recovery drills at least twice per year.
+
+5.3.4. Error Handling
+ID
+NFR-66.
+NFR-67.
+NFR-68.
+NFR-69.
+NFR-70.
+
+Requirement
+The system SHALL provide meaningful error messages to users without
+exposing sensitive system information.
+The system SHALL log detailed error information for troubleshooting and
+monitoring.
+The system SHALL handle input validation errors gracefully, providing clear
+feedback to users.
+The system SHALL implement appropriate retry mechanisms for transient
+errors.
+The system SHALL maintain system stability when encountering unexpected
+inputs or conditions.
+
+30
+
+5.4. Usability and Accessibility
+5.4.1. User Interface
+ID
+NFR-71.
+NFR-72.
+NFR-73.
+NFR-74.
+NFR-75.
+NFR-76.
+NFR-77.
+
+Requirement
+The system SHALL provide a consistent and intuitive user interface across
+all functions.
+The system SHALL implement responsive design to support various screen
+sizes and devices.
+The system SHALL provide clear navigation and information architecture.
+The system SHALL use consistent terminology and design patterns
+throughout the interface.
+The system SHALL provide appropriate feedback for user actions.
+The system SHALL minimize the number of steps required to complete
+common tasks.
+The system SHALL provide context-sensitive help and guidance.
+
+5.4.2. Accessibility
+ID
+NFR-78.
+NFR-79.
+NFR-80.
+NFR-81.
+NFR-82.
+NFR-83.
+NFR-84.
+
+Requirement
+The system SHALL comply with Web Content Accessibility Guidelines
+(WCAG) 2.1 Level AA standards.
+The system SHALL support screen readers and other assistive technologies.
+The system SHALL provide keyboard navigation for all functions.
+The system SHALL ensure sufficient color contrast for text and interactive
+elements.
+The system SHALL provide text alternatives for non-text content.
+The system SHALL ensure that form elements have associated labels.
+The system SHALL provide mechanisms to pause, stop, or hide moving
+content.
+
+5.4.3. Multilingual Support
+ID
+NFR-85.
+NFR-86.
+NFR-87.
+NFR-88.
+NFR-89.
+NFR-90.
+NFR-91.
+
+Requirement
+The system SHALL provide full functionality in both Arabic and English
+languages.
+The system SHALL allow users to switch between languages at any point in
+the application.
+The system SHALL support right-to-left (RTL) text direction for Arabic
+content.
+The system SHALL ensure that date, time, and number formats are
+appropriate for the selected language and locale.
+The system SHALL provide a consistent translation quality across all
+interface elements.
+The system SHALL support multilingual content for job postings and user
+profiles.
+The system SHALL implement language detection to suggest the appropriate
+language based on user settings and location.
+
+31
+
+5.4.4. User Experience
+ID
+NFR-92.
+NFR-93.
+NFR-94.
+NFR-95.
+NFR-96.
+NFR-97.
+NFR-98.
+
+Requirement
+The system SHALL provide a personalized user experience based on user
+preferences and behavior.
+The system SHALL implement progressive disclosure of complex features to
+avoid overwhelming users.
+The system SHALL provide clear onboarding processes for new users.
+The system SHALL collect and incorporate user feedback for continuous
+improvement.
+The system SHALL support different user skill levels, from novice to expert.
+The system SHALL minimize user cognitive load by presenting information
+in manageable chunks.
+The system SHALL provide appropriate defaults to reduce the need for user
+configuration.
+
+5.5. Maintainability and Portability
+5.5.1. Maintainability
+ID
+NFR-99.
+NFR-100.
+NFR-101.
+NFR-102.
+NFR-103.
+NFR-104.
+NFR-105.
+
+Requirement
+The system SHALL be designed with a modular architecture to facilitate
+maintenance and updates.
+The system SHALL follow consistent coding standards and best practices.
+The system SHALL include comprehensive technical documentation for all
+components.
+The system SHALL implement logging and monitoring to facilitate
+troubleshooting.
+The system SHALL support configuration changes without requiring code
+modifications.
+The system SHALL implement automated testing with a minimum of 80%
+code coverage.
+The system SHALL support version control for all system artifacts.
+
+5.5.2. Portability
+ID
+NFR-106.
+NFR-107.
+NFR-108.
+NFR-109.
+NFR-110.
+NFR-111.
+
+Requirement
+The system SHALL be designed to operate in different hosting environments
+(on-premises, cloud, or hybrid).
+The system SHALL use containerization technologies to ensure consistent
+deployment across environments.
+The system SHALL minimize dependencies on specific hardware or
+operating system features.
+The system SHALL support database portability through abstraction layers.
+The system SHALL provide documented deployment procedures for
+different environments.
+The system SHALL support automated deployment and configuration.
+
+32
+
+5.5.3. Compatibility
+ID
+NFR-112.
+NFR-113.
+NFR-114.
+NFR-115.
+NFR-116.
+NFR-117.
+
+Requirement
+The system SHALL be compatible with the latest versions of major web
+browsers (Chrome, Firefox, Safari, Edge).
+The system SHALL be compatible with the previous two major versions of
+supported browsers.
+The system SHALL be compatible with mobile browsers on iOS and Android
+platforms.
+The system SHALL be compatible with standard email clients for notification
+delivery.
+The system SHALL support standard file formats for data import and export
+(CSV, JSON, XML).
+The system SHALL implement standard protocols for integration with
+external systems.
+
+5.6. Legal and Compliance Requirements
+5.6.1. Regulatory Compliance
+ID
+NFR-118.
+NFR-119.
+NFR-120.
+NFR-121.
+NFR-122.
+
+Requirement
+The system SHALL comply with all applicable Palestinian labor laws and
+regulations.
+The system SHALL incorporate GDPR principles as best practice for data
+protection.
+The system SHALL comply with accessibility regulations and standards.
+The system SHALL maintain appropriate records for regulatory compliance
+and auditing.
+The system SHALL implement mechanisms to stay current with changing
+regulatory requirements.
+
+5.6.2. Intellectual Property
+ID
+NFR-123.
+NFR-124.
+NFR-125.
+NFR-126.
+
+Requirement
+The system SHALL respect intellectual property rights in all content and
+functionality.
+The system SHALL properly license all third-party components and libraries.
+The system SHALL provide appropriate attribution for third-party content.
+The system SHALL implement mechanisms to prevent copyright
+infringement by users.
+
+5.6.3. Service Level Agreements
+ID
+NFR-127.
+NFR-128.
+NFR-129.
+NFR-130.
+
+Requirement
+The system SHALL define and document service level agreements (SLAs) for
+system availability.
+The system SHALL define and document SLAs for incident response and
+resolution times.
+The system SHALL define and document SLAs for support services.
+The system SHALL implement monitoring and reporting mechanisms to
+track SLA compliance.
+33
+
+NFR-131.
+
+The system SHALL define escalation procedures for SLA violations.
+
+5.7. Operational Requirements
+5.7.1. Monitoring and Logging
+ID
+NFR-132.
+NFR-133.
+NFR-134.
+NFR-135.
+NFR-136.
+NFR-137.
+
+Requirement
+The system SHALL implement comprehensive logging for all system
+components.
+The system SHALL provide real-time monitoring of system health and
+performance.
+The system SHALL generate alerts for critical system events and
+performance thresholds.
+The system SHALL maintain log retention policies in compliance with legal
+requirements.
+The system SHALL provide dashboards for monitoring system status and
+performance metrics.
+The system SHALL implement log aggregation and analysis tools.
+
+5.7.2. Backup and Recovery
+ID
+NFR-138.
+NFR-139.
+NFR-140.
+NFR-141.
+NFR-142.
+
+Requirement
+The system SHALL perform automated backups according to defined
+schedules.
+The system SHALL verify backup integrity through automated testing.
+The system SHALL provide mechanisms for point-in-time recovery.
+The system SHALL document and test restoration procedures.
+The system SHALL maintain backup history and audit trails.
+
+5.7.3. System Administration
+ID
+NFR-143.
+NFR-144.
+NFR-145.
+NFR-146.
+NFR-147.
+NFR-148.
+
+Requirement
+The system SHALL provide administrative interfaces for system
+configuration and management.
+The system SHALL support role-based access for administrative functions.
+The system SHALL provide tools for user management and support.
+The system SHALL implement change management procedures for system
+modifications.
+The system SHALL provide mechanisms for content moderation and
+management.
+The system SHALL support system health checks and diagnostics.
+
+5.7.4. Documentation
+ID
+NFR-149.
+NFR-150.
+
+Requirement
+The system SHALL provide comprehensive user documentation for all user
+roles.
+The system SHALL provide technical documentation for system
+administrators and developers.
+34
+
+NFR-151.
+NFR-152.
+NFR-153.
+NFR-154.
+
+The system SHALL maintain up-to-date system architecture and design
+documentation.
+The system SHALL provide API documentation for integration partners.
+The system SHALL document all configuration parameters and their effects.
+The system SHALL provide troubleshooting guides and known issue
+documentation.
+
+5.8. Cultural and Political Requirements
+5.8.1. Cultural Considerations
+ID
+NFR-155.
+NFR-156.
+NFR-157.
+NFR-158.
+
+Requirement
+The system SHALL respect cultural norms and sensitivities in the Palestinian
+context.
+The system SHALL use appropriate terminology and language for the local
+context.
+The system SHALL support local date and time formats, including Hijri
+calendar references where appropriate.
+The system SHALL consider gender sensitivities in user interfaces and
+communications.
+
+5.8.2. Political Considerations
+ID
+NFR-159.
+NFR-160.
+NFR-161.
+NFR-162.
+
+Requirement
+The system SHALL use politically neutral terminology in system interfaces
+and documentation.
+The system SHALL respect the political sensitivities of the region in
+geographic references and maps.
+The system SHALL implement appropriate content moderation policies for
+politically sensitive content.
+The system SHALL ensure equitable access for users across all Palestinian
+territories, including Gaza and the West Bank (including East Jerusalem).
+
+35
+
+6. Other Requirements
+6.1. Data Migration
+The system shall support the migration of existing data from MoL and PEF systems into the new
+platform. This includes:
+1) Data Mapping and Transformation
+
+
+
+
+Mapping of existing data structures to new system schema
+Transformation of data to meet new system requirements
+Validation of migrated data for accuracy and completeness
+
+2) Migration Process
+
+
+
+
+Phased migration approach to minimize disruption
+Testing procedures for migrated data
+Rollback procedures in case of migration issues
+
+3) Data Cleansing
+
+
+
+
+Identification and resolution of data quality issues
+Deduplication of records
+Standardization of data formats
+
+6.2. Internationalization Requirements
+The system shall support internationalization beyond basic multilingual support, including:
+1) Localization Framework
+
+
+
+
+Support for adding additional languages in the future
+Separation of UI text from code for easy translation
+Localization of images and media where appropriate
+
+2) Cultural Adaptations
+
+
+
+
+Support for different date, time, and number formats
+Adaptation of content for cultural appropriateness
+Consideration of cultural differences in UI design
+
+3) Regional Settings
+
+
+
+
+Support for regional variations in language (e.g., different Arabic dialects)
+Region-specific content and features
+Compliance with regional regulations
+
+6.3. Training Requirements
+The system shall include provisions for training different user groups:
+1) Administrator Training
+
+
+System configuration and management
+36
+
+
+
+
+
+User administration
+Security management
+Troubleshooting and support
+
+2) End-User Training
+
+
+
+
+
+Job seeker training materials
+Employer training materials
+External job site integration training
+Self-service training resources
+
+3) Training Delivery
+
+
+
+
+
+Online training modules
+In-person training sessions
+Train-the-trainer programs
+Ongoing training for system updates
+
+37
+
+6.4. Appendix A: Analysis Models
+This appendix will include the following analysis models:
+1) Context Diagram
+
+
+System boundaries and external entities (Level 0)
+
+38
+
+
+
+Data flows between the system and external entities (Level 1)
+
+39
+
+2) AI Engine Component Diagram
+
+40
+
+3) Process Flow Diagrams
+
+
+Job posting and application process
+
+41
+
+
+
+User registration and profile management
+ Job seeker registration and profile management
+
+42
+
+
+
+Employer registration and profile management
+
+43
+
+
+
+Integration with external systems
+
+44
+
+4) Entity Relationship Diagram
+
+45
+
+5) Use Case Diagrams
+
+
+Key system use-cases:
+ Employers use case diagram
+
+46
+
+
+
+Job seekers use case diagram
+
+47
+
+
+
+MoL Administration Management use case diagram
+
+48
+
+
+
+Job portals use case diagram
+
+49
+
+6.5. Appendix B: Issues List
+This appendix will track open issues and questions that need to be resolved during the
+development process:
+1) Integration Specifications
+
+
+
+Detailed specifications for the five external job sites to be integrated
+API documentation and access credentials
+
+2) Hosting Decision
+
+
+
+Final decision on hosting approach (on-premises, cloud, or hybrid)
+Infrastructure requirements and specifications
+
+3) Data Migration Details
+
+
+
+Detailed inventory of data to be migrated
+Data quality assessment and cleansing approach
+
+4) AI Algorithm Selection
+
+
+
+Specific algorithms to be used for matching
+Training data requirements and sources
+
+[Note: This list will be updated throughout the project lifecycle]
+
+50
+
+

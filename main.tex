@@ -5,18 +5,32 @@
 \usepackage[T1]{fontenc}
 \usepackage[spanish]{babel}
 \usepackage{geometry}
-\geometry{margin=2.5cm}
+\geometry{margin=2.5cm, headheight=14pt}
 \usepackage{graphicx}
 \usepackage{fancyhdr}
 \usepackage{tabularx}
 \usepackage{booktabs}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{titlesec}
 \usepackage{enumitem}
+\usepackage{tocloft}
+
+% --- ToC Spacing Adjustment ---
+\renewcommand{\cftaftertoctitle}{\vspace{-1em}}
+\setlength{\cftbeforesecskip}{2pt}
+\setlength{\cftbeforesubsecskip}{1pt}
 \usepackage{float}
 \usepackage{longtable}
 \usepackage{caption}
 \usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, shadows, babel}
+
+% --- TikZ Styles for Diagrams ---
+\tikzset{
+    block/.style={rectangle, draw, fill=AgencyBlue!10, text width=8em, text centered, rounded corners, minimum height=3em, copy shadow},
+    line/.style={draw, -{Latex[length=2mm]}, thick}
+}
 
 % --- Custom Colors ---
 \definecolor{AgencyBlue}{RGB}{0, 51, 102}
@@ -40,29 +54,43 @@
 
 % --- Document Info ---
 \title{
-    \vspace{0.1cm}
+
     \begin{center}
-        \includegraphics[height=4cm]{figures/TEC.png} \\[0.5cm]
-        \includegraphics[height=5cm]{figures/setecLAb.jpg}
+        \includegraphics[height=2.5cm]{figures/TEC.png} \hspace{4cm}
+        \includegraphics[height=2.8cm]{figures/setecLAb.jpg}
     \end{center}
     \vspace{1cm}
     \textbf{\Huge Especificación de Requerimientos del Sistema (SRS)}\\
-    \vspace{2cm}
-    \Large Rover Autónomo de Exploración Lunar Olympus\\
-    \vspace{1cm}
-    \large Alineado con ISO/IEC/IEEE 29148:2018
+    \vspace{1.5cm}
+    \Large Rover Autónomo de Exploración Lunar \\
 }
 
-\date{\today}
+\date{}
 
 \begin{document}
 
 \maketitle
 \thispagestyle{empty}
+
+\vspace{1cm}
+\section*{Información del Documento}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \rowcolor{AgencyBlue!20} \textbf{Título} & \textbf{Software Requirements Specification for Rover Olympus} \\ \hline
+        \textbf{Fecha} & \today \\ \hline
+        \textbf{Estado} & Draft / En Revisión \\ \hline
+        \textbf{Versión} & 2.2 \\ \hline
+        \textbf{Preparado para} & SETEC Lab - Space Systems Laboratory \\ \hline
+        \textbf{Referencia} & SRS-OLYMPUS-2026-V2.2 \\ \hline
+    \end{tabularx}
+\end{table}
+
 \newpage
 
 % --- Revision History ---
-\section*{Control de Versiones}
+\section*{Control de Revisiones}
 \begin{table}[H]
     \centering
     \begin{tabularx}{\textwidth}{|l|l|X|l|}
@@ -70,11 +98,16 @@
         \rowcolor{AgencyBlue!20} \textbf{Fecha} & \textbf{Versión} & \textbf{Descripción} & \textbf{Autor} \\ \hline
         10/02/2026 & 1.0 & Creación inicial del documento. & SETEC Lab \\ \hline
         17/02/2026 & 2.0 & Reestructuración bajo híbrido ISO 29148 y NASA SE. & Gemini CLI \\ \hline
+        17/02/2026 & 2.1 & Unificación de formato según estándares Annex-A. & Gemini CLI \\ \hline
+        18/02/2026 & 2.2 & Mejora a grado profesional (Requerimientos, Arquitectura, V\&V y Riesgos). & Gemini CLI \\ \hline
     \end{tabularx}
 \end{table}
 \newpage
-
+\begingroup
+\enlargethispage{2cm} % Give it a little more room
+\small
 \tableofcontents
+\endgroup
 \newpage
 
 % --- Sections ---

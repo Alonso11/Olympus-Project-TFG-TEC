@@ -1,40 +1,157 @@
-\section{Arquitectura del Sistema (Objetivo Específico 2)}
+\section{Arquitectura del Sistema}
 
-\subsection{Arquitectura Física y Descomposición de Subsistemas}
-El Rover Olympus se conceptualiza como un sistema modular dividido en cuatro subsistemas principales, cada uno responsable de cumplir un conjunto específico de requerimientos del SRS.
+\subsection{Arquitectura Funcional y Flujo de Datos}
+El Rover Olympus se basa en un modelo de control de bucle cerrado dividido en bloques funcionales que abstraen el hardware de la lógica de misión:
 
-\begin{enumerate}
-    \item \textbf{Subsistema de Propulsión y Estructura (STR):} Chasis robusto y motores con alto par motor para superar pendientes de 15$^\circ$ (RF-MOV-01).
-    \item \textbf{Subsistema de Energía (PWR):} Gestión de baterías LiFePO4, monitorización de SoC (RF-ENE-01) y circuitos de protección.
-    \item \textbf{Subsistema de Mando y Datos (C\&DH):} Computadora central (Raspberry Pi 5 / Jetson) ejecutando ROS 2 para la coordinación de tareas (RI-SW-01).
-    \item \textbf{Subsistema de Percepción y GNC (NAV):} Sensores LiDAR y cámaras estéreo encargados de la evasión de obstáculos y localización (RF-GNC-01).
-\end{enumerate}
+\begin{itemize}
+    \item \textbf{Bloque de Percepción:} Transforma datos crudos (LiDAR, IMU, Encoders) en un modelo del entorno (mapas de ocupación) y un estado de navegación (pose).
+    \item \textbf{Bloque de Decisión y Gestión de Misión:} Implementa una Máquina de Estados Finitos (FSM) que orquesta los modos de operación (Exploración, Seguro, Retorno) según los comandos de la GCS y el estado del sistema.
+    \item \textbf{Bloque de Control y Actuación:} Genera comandos de velocidad (Twist) y los traduce a señales de bajo nivel para los controladores de motores mediante el protocolo CSP.
+\end{itemize}
 
-\subsection{Arquitectura de Comunicaciones e Interfaces Internas}
-Para garantizar la interoperabilidad y el tiempo real, el sistema utiliza una jerarquía de buses de comunicación según la criticidad del dato, implementando protocolos de grado espacial para asegurar la integridad de la misión:
+\begin{figure}[H]
+    \centering
+    \shorthandoff{>}\shorthandoff{<}
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}[node distance = 3.2cm, auto]
+        % Bloques
+        \node [block, fill=gray!20] (sensor) {Sensores (LiDAR/IMU)};
+        \node [block, right=of sensor] (percept) {Capa de Percepción (SLAM)};
+        \node [block, right=of percept] (nav) {Planificador (Nav2/FSM)};
+        \node [block, right=of nav] (control) {Control de Motores (CSP)};
+        \node [block, fill=gray!20, right=of control] (motors) {Motores DC};
+
+        % Líneas de flujo
+        \path [line] (sensor) -- node {\footnotesize Datos} (percept);
+        \path [line] (percept) -- node {\footnotesize Mapa/Pose} (nav);
+        \path [line] (nav) -- node {\footnotesize Velocidad} (control);
+        \path [line] (control) -- node {\footnotesize CSP Msg} (motors);
+
+        % Retroalimentación (Feedback)
+        \draw [line] (motors.south) -- ++(0,-1) -| node [pos=0.2, above] {\footnotesize Odometría (Encoders)} (percept.south);
+    \end{tikzpicture}
+    }
+    \shorthandon{>}\shorthandon{<}
+    \caption{Diagrama funcional del sistema de control del Rover Olympus.}
+    \label{fig:diagrama_funcional}
+\end{figure}
+
+\subsection{Descomposición de Subsistemas y Presupuestos (Budgets)}
+Para garantizar el cumplimiento de los requerimientos físicos (RE-PHY-01) y de energía (RF-ENE-01), se establece la siguiente asignación de recursos:
 
 \begin{table}[H]
     \centering
-    \begin{tabularx}{\textwidth}{|l|l|X|}
+    \begin{tabularx}{\textwidth}{|l|X|c|c|}
         \hline
-        \rowcolor{AgencyBlue!10} \textbf{Interfaz} & \textbf{Protocolo} & \textbf{Propósito} \\ \hline
-        \textbf{Bus de Control} & CAN Bus / CSP & Comunicación entre el C\&DH y motores usando el \textit{CubeSat Space Protocol} (CSP) para una arquitectura orientada a servicios. \\ \hline
-        \textbf{Bus de Percepción} & Ethernet / USB 3.0 & Transferencia de nubes de puntos (LiDAR) y flujo de video (Cámaras). \\ \hline
-        \textbf{Bus de Sensores} & I2C / SPI & Lectura de datos de IMU, sensores de corriente y temperatura. \\ \hline
-        \textbf{Enlace Externo} & RF / CCSDS / CSP & Telemetría y comandos remotos bajo estándares espaciales (CCSDS/CSP) para máxima fiabilidad y compatibilidad con estaciones terrestres. \\ \hline
+        \rowcolor{AgencyBlue!20} \textbf{Subsistema} & \textbf{Componentes Clave} & \textbf{Masa (kg)} & \textbf{Consumo (W)} \\ \hline
+        \textbf{STR (Estructura)} & Chasis, Ruedas, Suspensión & 6.0 & 0.0 \\ \hline
+        \textbf{PWR (Energía)} & Baterías LiFePO4, BMS, Reguladores & 2.5 & 1.5 \\ \hline
+        \textbf{C\&DH (Mando)} & Raspberry Pi 5, Switch Ethernet & 1.0 & 15.0 \\ \hline
+        \textbf{NAV (GNC)} & LiDAR LD19, IMU, Motores (4x) & 3.0 & 25.0 \\ \hline
+        \textbf{COM (Comms)} & Radio RF, Antenas, Nodo CSP & 0.5 & 5.0 \\ \hline
+        \rowcolor{gray!10} \textbf{Total} & --- & \textbf{13.0 / 15.0} & \textbf{46.5 / 60.0} \\ \hline
     \end{tabularx}
-    \caption{Resumen de interfaces de comunicación internas y externas del sistema.}
+    \caption{Presupuesto de masa y potencia nominal por subsistema.}
 \end{table}
 
-\subsection{Arquitectura de Software y Orquestación (ROS 2)}
-El software del Rover Olympus se basa en una arquitectura distribuida sobre \textbf{ROS 2 (Humble/Iron)}. Cada subsistema se representa como un conjunto de nodos independientes que intercambian datos mediante un modelo publicador/suscriptor.
+\begin{figure}[H]
+    \centering
+    \shorthandoff{>}\shorthandoff{<}
+    \resizebox{0.8\textwidth}{!}{
+    \begin{tikzpicture}[node distance = 1.2cm, auto]
+        % Columna Central
+        \node [block, fill=green!10] (pwr) {PWR Subsystem\\(BMS/Battery)};
+        \node [block, below=of pwr, fill=AgencyBlue!25, text width=10em] (sbc) {Processing Unit (OBC)\\(Raspberry Pi 5)};
+        \node [block, below=1.5cm of sbc, fill=AgencyBlue!15, text width=10em] (mcu) {Control Unit (MCU)\\(STM32 / Teensy)};
+        
+        % Periféricos
+        \node [block, left=of sbc, fill=blue!5] (lidar) {LiDAR\\(USB 3.0)};
+        \node [block, right=of sbc, fill=red!10] (com) {COMMS\\(Radio/CSP)};
+        \node [block, left=of mcu, fill=blue!5] (imu) {IMU / Encoders\\(I2C/Int.)};
+        \node [block, right=of mcu, fill=orange!10] (mot) {Mobility\\(Drivers/CAN)};
 
-\begin{enumerate}
-    \item \textbf{Capa de Abstracción de Hardware (HAL):} Traduce las lecturas de los sensores (CSP/I2C) a mensajes estándar de ROS (Láser, IMU, Odometría).
-    \item \textbf{Capa de Percepción y Navegación:}
+        % Conexiones Potencia
+        \draw [line] (pwr) -- (sbc);
+        \draw [line] (pwr.west) -- ++(-0.5,0) |- (mcu.west);
+
+        % Conexiones Datos
+        \draw [line] (sbc) -- node [right] {\footnotesize UART / Eth.} (mcu);
+        \draw [line] (sbc) -- (lidar);
+        \draw [line] (sbc) -- (com);
+        \draw [line] (mcu) -- (imu);
+        \draw [line] (mcu) -- (mot);
+        
+        % Etiqueta entorno
+        \draw [dashed, gray] ($(lidar.north west)+(-0.3,0.8)$ ) rectangle ($(mot.south east)+(0.3,-0.3)$);
+    \end{tikzpicture}
+    }
+    \shorthandon{>}\shorthandon{<}
+    \caption{Arquitectura física con separación de unidades de procesamiento (OBC) y control (MCU).}
+    \label{fig:diagrama_bloques_fisico}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \shorthandoff{>}\shorthandoff{<}
+    \resizebox{0.8\textwidth}{!}{
+    \begin{tikzpicture}[node distance = 2.5cm, auto]
+        \node [block, fill=green!20] (bat) {Batería LiFePO4\\(24V Nominal)};
+        \node [block, right=of bat, fill=yellow!10] (bms) {BMS / Protección\\(Fusible 15A)};
+        \node [block, right=of bms, fill=gray!10] (reg) {Reguladores\\DC-DC};
+        
+        \node [block, above right=of reg, fill=blue!5] (low) {Lógica (5V)\\RPi 5 / MCU};
+        \node [block, below right=of reg, fill=orange!5] (high) {Motores (24V)\\Drivers CAN};
+        
+        \draw [line] (bat) -- (bms);
+        \draw [line] (bms) -- (reg);
+        \draw [line] (reg) |- node [pos=0.7, left] {\footnotesize Step-Down} (low);
+        \draw [line] (reg) |- node [pos=0.7, left] {\footnotesize Direct/Filtered} (high);
+    \end{tikzpicture}
+    }
+    \shorthandon{>}\shorthandon{<}
+    \caption{Diagrama de flujo de energía y distribución de potencia.}
+    \label{fig:flujo_energia}
+\end{figure}
+
+\subsection{Arquitectura de Comunicaciones: Stack de Protocolos}
+El sistema utiliza una arquitectura orientada a servicios basada en el \textit{CubeSat Space Protocol} (CSP), permitiendo una comunicación transparente entre subsistemas heterogéneos:
+
+\begin{itemize}
+    \item \textbf{Capa de Aplicación:} Tópicos ROS 2 y Servicios de Gestión de Archivos.
+    \item \textbf{Capa de Transporte:} CSP (Protocolo de red espacial con direccionamiento de nodos y puertos).
+    \item \textbf{Capa de Enlace:} 
         \begin{itemize}
-            \item \textbf{SLAM-Toolbox:} Generación de mapas y localización concurrente.
-            \item \textbf{Nav2:} Planificación de rutas globales y locales con evasión dinámica de obstáculos (RF-GNC-01).
+            \item \textbf{Interna:} CAN Bus (Motores) e I2C (Sensores).
+            \item \textbf{Externa (Tierra):} Enlace de radiofrecuencia (RF) con encapsulación CSP.
         \end{itemize}
-    \item \textbf{Capa de Gestión de Misión (Estado):} Una máquina de estados finitos (FSM) que orquesta el cambio entre modos nominales y de contingencia (Safe Mode, Return to Home).
+\end{itemize}
+
+\subsection{Arquitectura de Software (ROS 2)}
+La implementación de software se divide en capas de abstracción para asegurar la mantenibilidad (RNF-MTN-01):
+\begin{enumerate}
+    \item \textbf{Hardware Abstraction Layer (HAL):} Nodos ROS que interactúan con el hardware mediante \textit{drivers} específicos (libcsp, rclcpp).
+    \item \textbf{Capa Middleware:} Sistema de transporte basado en DDS (Data Distribution Service) configurado para entornos de baja latencia.
+    \item \textbf{Capa de Aplicación:} Algoritmos de SLAM, Nav2 y el orquestador de misión.
 \end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \shorthandoff{>}\shorthandoff{<}
+    \resizebox{0.8\textwidth}{!}{
+    \begin{tikzpicture}[node distance = 2.5cm, auto]
+        \node [block, fill=blue!10] (init) {Inicialización\\(PBIT)};
+        \node [block, below=of init] (standby) {Standby / Telemetría};
+        \node [block, right=of standby, fill=green!10] (nav) {Navegación\\Nominal};
+        \node [block, below=of standby, fill=red!20] (safe) {SAFE MODE\\(Contingencia)};
+
+        \draw [line] (init) -- (standby);
+        \draw [line, <->] (standby) -- node {\footnotesize Mission Start} (nav);
+        \draw [line] (nav) |- node [pos=0.7, right] {\footnotesize Error Crítico} (safe);
+        \draw [line] (standby) -- node [left] {\footnotesize Falla HW} (safe);
+        \draw [line] (safe.west) -- ++(-1.5,0) |- node [pos=0.2, left] {\footnotesize Hard Reset} (init.west);
+    \end{tikzpicture}
+    }
+    \shorthandon{>}\shorthandon{<}
+    \caption{Diagrama de estados finito (FSM) para la lógica de misión y contingencia.}
+    \label{fig:diagrama_estados}
+\end{figure}

@@ -1,26 +1,52 @@
 \section{Análisis de Casos de Uso (Objetivo Específico 1)}
 
 \subsection{Escenarios Operacionales del Sistema}
-Para asegurar la cobertura funcional del Rover Olympus, se definen los escenarios operativos divididos en tres categorías críticas: Misión, Contingencia y Soporte.
+Para asegurar la cobertura funcional del Rover Olympus, se definen los escenarios operativos divididos en tres categorías críticas que cubren el ciclo de vida de la misión.
 
-\subsubsection{Operaciones de Misión (Flujo Nominal)}
-\begin{enumerate}[label=\textbf{UC-NOM-\arabic*}]
-    \item \textbf{Inicialización y Auto-diagnóstico (PBIT):} Verificación del estado de salud de sensores y actuadores al encendido.
-    \item \textbf{Navegación Autónoma a Waypoint:} Cálculo y ejecución de trayectorias evitando obstáculos detectados por LiDAR/Cámaras.
-    \item \textbf{Recolección de Datos Científicos:} Activación de carga útil y almacenamiento de datos en puntos de interés.
-    \item \textbf{Transmisión de Telemetría:} Envío de estados del sistema y datos científicos a la estación base.
-\end{enumerate}
+\subsubsection{Escenarios de Misión (Flujo Nominal)}
+Estos escenarios describen las operaciones estándar necesarias para cumplir los objetivos científicos.
 
-\subsubsection{Gestión de Contingencias (Flujo de Fallos)}
-\begin{enumerate}[label=\textbf{UC-CONT-\arabic*}]
-    \item \textbf{Recuperación por Pérdida de Enlace:} Ejecución de protocolo de seguridad ante la interrupción de comunicaciones.
-    \item \textbf{Respuesta a Baja Energía:} Transición a modo de bajo consumo y priorización de recarga.
-\end{enumerate}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|l|X|}
+        \hline
+        \rowcolor{AgencyBlue!10} \textbf{ID} & \textbf{Escenario} & \textbf{Objetivo de Misión} \\ \hline
+        \textbf{UC-NOM-01} & Inicialización (PBIT) & Validar la integridad del hardware antes de iniciar operaciones. \\ \hline
+        \textbf{UC-NOM-02} & Navegación Autónoma & Alcanzar puntos de interés científico evitando obstáculos detectados. \\ \hline
+        \textbf{UC-NOM-03} & Recolección de Datos & Ejecutar protocolos de muestreo y almacenamiento de telemetría. \\ \hline
+        \textbf{UC-NOM-04} & Transmisión de Datos & Asegurar el flujo de datos científicos hacia la Estación Terrestre (GCS). \\ \hline
+    \end{tabularx}
+    \caption{Escenarios operacionales nominales.}
+\end{table}
 
-\subsubsection{Mantenimiento y Soporte}
-\begin{enumerate}[label=\textbf{UC-SUP-\arabic*}]
-    \item \textbf{Actualización de Software (OTA):} Recepción e instalación de parches críticos en el sistema de archivos del rover.
-\end{enumerate}
+\subsubsection{Escenarios de Contingencia (Flujo de Fallos)}
+Escenarios diseñados para garantizar la supervivencia del rover ante anomalías ambientales o técnicas.
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|l|X|}
+        \hline
+        \rowcolor{AgencyBlue!10} \textbf{ID} & \textbf{Escenario de Riesgo} & \textbf{Acción de Mitigación} \\ \hline
+        \textbf{UC-CONT-01} & Pérdida de Enlace & Entrada automática en "Safe Mode" y baliza de recuperación. \\ \hline
+        \textbf{UC-CONT-02} & Estado de Baja Energía & Hibernación de subsistemas no críticos y orientación de carga. \\ \hline
+        \textbf{UC-CONT-03} & Atascamiento Crítico & Detección de deslizamiento y ejecución de maniobras de escape. \\ \hline
+    \end{tabularx}
+    \caption{Escenarios de gestión de contingencias.}
+\end{table}
+
+\subsubsection{Escenarios de Soporte y Mantenimiento}
+Actividades necesarias para la longevidad y actualización del sistema en el tiempo.
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|l|X|}
+        \hline
+        \rowcolor{AgencyBlue!10} \textbf{ID} & \textbf{Actividad} & \textbf{Propósito} \\ \hline
+        \textbf{UC-SUP-01} & Actualización OTA & Parchear vulnerabilidades o mejorar algoritmos de navegación. \\ \hline
+        \textbf{UC-SUP-02} & Calibración de IMU/Lidar & Corregir derivas de sensores tras desplazamientos prolongados. \\ \hline
+    \end{tabularx}
+    \caption{Escenarios de mantenimiento y soporte técnico.}
+\end{table}
 
 \subsection{Descripción Detallada de Casos de Uso Críticos}
 

@@ -1,43 +1,71 @@
-\section{Validación y Verificación (Objetivo Específico 4)}
+\section{Validación y Verificación}
 
 \subsection{Estrategia de Verificación y Validación (V\&V)}
-La validación se define mediante una matriz que asigna a cada requerimiento un método de comprobación específico, siguiendo la norma ISO/IEC/IEEE 29148.
+La verificación asegura que el sistema se construyó correctamente (cumple el SRS), mientras que la validación asegura que se construyó el sistema correcto (cumple los objetivos de la misión). Se emplean cuatro métodos estándar:
 
 \begin{itemize}
-    \item \textbf{Análisis (A):} Uso de cálculos matemáticos o simulaciones para confirmar el cumplimiento.
+    \item \textbf{Análisis (A):} Uso de modelos, simulaciones o cálculos para verificar el cumplimiento.
     \item \textbf{Inspección (I):} Verificación visual de componentes, planos o código fuente.
-    \item \textbf{Demostración (D):} Operación del sistema para validar una función cualitativa sin necesidad de instrumentación compleja.
-    \item \textbf{Prueba (T):} Medición cuantitativa del cumplimiento bajo condiciones controladas y con instrumentación.
+    \item \textbf{Demostración (D):} Operación funcional sin necesidad de instrumentación precisa para validar un comportamiento.
+    \item \textbf{Prueba (T):} Medición cuantitativa bajo condiciones controladas con instrumentación.
 \end{itemize}
 
-\begin{table}[H]
-    \centering
-    \begin{tabularx}{\textwidth}{|l|X|c|}
-        \hline
-        \rowcolor{AgencyBlue!10} \textbf{ID Req.} & \textbf{Requerimiento} & \textbf{Método} \\ \hline
-        RF-GNC-01 & Navegación Autónoma y Evasión. & T / D \\ \hline
-        RF-MOV-01 & Capacidad de pendiente (15$^\circ$). & T \\ \hline
-        RE-PHY-01 & Masa total $\le$ 15 kg. & I / T \\ \hline
-        RNF-SAF-01 & Modo seguro por desconexión. & D \\ \hline
-        RI-SW-01 & Uso de ROS 2 Humble. & I \\ \hline
-    \end{tabularx}
-    \caption{Asignación de métodos de verificación por requerimiento.}
-\end{table}
+\subsection{Matriz Maestra de Verificación del Sistema (SVM)}
+Esta matriz garantiza que cada requerimiento definido en la Sección 3 posea un método de cierre técnico y un procedimiento asociado.
 
-\subsection{Plan de Pruebas en Entornos Análogos}
-Las pruebas físicas se realizarán en un entorno que simule la topografía lunar (regolito, pendientes y obstáculos).
+\begin{longtable}{|l|p{3cm}|c|l|p{5cm}|}
+    \hline
+    \rowcolor{AgencyBlue!20} \textbf{ID Req.} & \textbf{Categoría} & \textbf{Met.} & \textbf{ID Test} & \textbf{Criterio de Aceptación} \\ \hline
+    \endfirsthead
+    \hline
+    \rowcolor{AgencyBlue!20} \textbf{ID Req.} & \textbf{Categoría} & \textbf{Met.} & \textbf{ID Test} & \textbf{Criterio de Aceptación} \\ \hline
+    \endhead
+    RF-GNC-01 & Funcional & T & TP-02 & Evasión de obstáculos > 10 cm con 90\% de éxito. \\ \hline
+    RF-GNC-02 & Funcional & D & TP-03 & Parada inmediata ante pérdida de LiDAR. \\ \hline
+    RF-GNC-03 & Funcional & A & TP-05 & Error de posición $\le$ 50 cm mediante análisis de logs Nav2. \\ \hline
+    RF-MOV-01 & Funcional & T & TP-01 & Tracción en rampa de 15$^\circ$ sin deslizamiento crítico. \\ \hline
+    RF-ENE-02 & Funcional & D & TP-03 & Activación de Safe Mode al SoC < 15\%. \\ \hline
+    RF-FDI-02 & Seguridad & T & TP-03 & Detención por pérdida de enlace en < 10 s. \\ \hline
+    RI-HW-02 & Interfaz & T & TP-04 & Comunicación CAN estable a 500 kbps. \\ \hline
+    RI-SW-02 & Interfaz & D & TP-04 & Encapsulación correcta de paquetes CSP en RF. \\ \hline
+    RNF-PER-01 & Rendimiento & T & TP-04 & Latencia de telemetría $\le$ 500 ms. \\ \hline
+    RNF-SEC-01 & Seguridad & I & --- & Verificación de implementación AES-128 en código. \\ \hline
+\end{longtable}
 
-\begin{enumerate}[label=\textbf{TP-\arabic*}]
-    \item \textbf{Prueba de Tracción y Pendiente:} El rover debe subir una rampa de 15$^\circ$ cubierta de material granular. Se mide el deslizamiento (slip) y el par motor.
-    \item \textbf{Prueba de Autonomía de Navegación:} El rover debe navegar de un punto A a un punto B (5 metros) con al menos 3 obstáculos imprevistos en la trayectoria.
-    \item \textbf{Prueba de Desconexión de Emergencia:} Se apaga el transmisor de la GCS de forma abrupta para validar que el rover se detiene en menos de 10 segundos (RNF-SAF-01).
-    \item \textbf{Prueba de Telemetría de Largo Alcance:} Verificación de la integridad de los paquetes CSP a una distancia de 50 metros en línea de vista.
-\end{enumerate}
+\subsection{Procedimientos de Prueba (Test Procedures)}
+
+\subsubsection{TP-01: Prueba de Movilidad y Pendiente (STR/NAV)}
+\begin{itemize}
+    \item \textbf{Preparación:} Rover en rampa de 15$^\circ$ con regolito simulado. Batería > 50\%.
+    \item \textbf{Ejecución:} Comando de avance lineal de 2 metros.
+    \textit{Resultado Esperado:} El rover alcanza la cima sin intervención y sin sobrecalentamiento de motores.
+\end{itemize}
+
+\subsubsection{TP-02: Evasión Dinámica de Obstáculos (NAV/CDH)}
+\begin{itemize}
+    \item \textbf{Preparación:} Entorno con obstáculos de 12 cm de altura no mapeados.
+    \item \textbf{Ejecución:} Envío de un \textit{goal} de navegación a 5 metros de distancia.
+    \textit{Resultado Esperado:} El sistema genera una ruta local que rodea el obstáculo manteniendo una distancia de seguridad.
+\end{itemize}
+
+\subsubsection{TP-03: Validación de Modos de Fallo y FDIR (CDH/PWR)}
+\begin{itemize}
+    \item \textbf{Preparación:} Rover en modo nominal. Simulación de desconexión de antena o baja batería.
+    \item \textbf{Ejecución:} Interrupción del latido de la GCS o forzado de lectura de voltaje bajo.
+    \textit{Resultado Esperado:} El rover detiene motores y publica estado ``SAFE\_MODE'' en < 10 s.
+\end{itemize}
+
+\subsubsection{TP-04: Caracterización del Enlace CSP/RF (COM/CDH)}
+\begin{itemize}
+    \item \textbf{Preparación:} GCS a 30 metros del rover. Monitor de red activo.
+    \item \textbf{Ejecución:} Envío de ráfaga de 100 paquetes de telemetría.
+    \textit{Resultado Esperado:} Latencia media $\le$ 500 ms y tasa de pérdida de paquetes < 1\%.
+\end{itemize}
 
 \subsection{Criterios de Aceptación Final}
-El sistema se considerará validado si:
-\begin{itemize}
-    \item El 100\% de los requerimientos críticos (Alta prioridad) son verificados satisfactoriamente.
-    \item El error de localización acumulado es inferior al 10\% de la distancia total recorrida.
-    \item No se presentan fallos críticos de integridad de datos en el bus CSP durante 1 hora de operación continua.
-\end{itemize}
+El sistema Olympus se considerará apto para la misión si:
+\begin{enumerate}
+    \item Se han verificado satisfactoriamente todos los requerimientos marcados como \textbf{Críticos}.
+    \item No existen fallos de segmentación o reinicios no controlados en ROS 2 durante 1 hora de operación.
+    \item La integridad física de la estructura se mantiene tras completar el ciclo de TPs.
+\end{enumerate}
