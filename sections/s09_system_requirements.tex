@@ -115,8 +115,13 @@ Ante la pérdida de enlace directo, el sistema \textbf{DEBERÁ} realizar una con
     \ReqAccept{Demonstration (Simulación de fallo)}
 \end{reqblock}
 
-\textbf{RF-006: Integridad de Telemetría (CSP)} \\
-El sistema DEBERÁ asegurar integridad vía CSP. Ver COMM-REQ-001.
+\begin{reqblock}{RF-006}{Integridad de Telemetría}
+    \ReqShall{El sistema DEBERÁ asegurar la integridad y consistencia de los datos de telemetría y comando (TM/CMD) durante todo el ciclo de misión. Ver COMM-REQ-001.}
+    \item[\textbf{Prioridad:}] CRÍTICO
+    \ReqTrace{ConOps UC-01; §7.3.6}
+    \item[\textbf{Racional:}] Evitar la corrupción de comandos críticos de navegación y garantizar la veracidad de la telemetría recibida en la GCS.
+    \ReqAccept{Analysis (Logs de CRC/CSP)}
+\end{reqblock}
 
 \subsection{Secondary Use Cases Requirements (UC-02 to UC-05)}
 Conforme a la identificación de vacíos en la auditoría técnica, se establecen los requerimientos funcionales maestros para los casos de uso secundarios que garantizan la resiliencia y seguridad del sistema.
