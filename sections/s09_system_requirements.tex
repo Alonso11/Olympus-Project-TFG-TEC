@@ -91,14 +91,29 @@ Ante la pérdida de enlace directo, el sistema \textbf{DEBERÁ} realizar una con
     \ReqAccept{Analysis / Test (Confianza $\ge$ 95\%)}
 \end{reqblock}
 
-\textbf{RF-003: Evitación Reactiva de Obstáculos} \\
-El sistema DEBERÁ evitar obstáculos $\ge$ 20 cm. Ver GNC-REQ-002 y TRAC-REQ-002.
+\begin{reqblock}{RF-003}{Evitación Reactiva de Obstáculos}
+    \ReqShall{El sistema DEBERÁ detectar y evitar obstáculos físicos con una altura $\ge$ 20 cm durante la navegación autónoma. Ver GNC-REQ-002.}
+    \item[\textbf{Prioridad:}] CRÍTICO
+    \ReqTrace{ConOps UC-01; §7.3.3}
+    \item[\textbf{Racional:}] Prevenir daños estructurales y estancamiento en terrenos con irregularidades significativas.
+    \ReqAccept{Test / Demonstration (Pruebas de campo)}
+\end{reqblock}
 
-\textbf{RF-004: Compensación de Slip} \\
-El sistema DEBERÁ compensar dinámicamente el deslizamiento. Ver GNC-REQ-003.
+\begin{reqblock}{RF-004}{Compensación de Slip}
+    \ReqShall{El sistema DEBERÁ estimar y compensar dinámicamente el deslizamiento (slip) en pendientes volcánicas. Ver GNC-REQ-003.}
+    \item[\textbf{Prioridad:}] ALTO
+    \ReqTrace{ConOps UC-01; §7.3.4}
+    \item[\textbf{Racional:}] Garantizar la fidelidad de la odometría y evitar la deriva del rover en superficies no consolidadas.
+    \ReqAccept{Analysis (Comparación vs Ground Truth)}
+\end{reqblock}
 
-\textbf{RF-005: Fault Stop Resiliente} \\
-El sistema DEBERÁ ejecutar parada segura ante slip $>$ 20\%. Ver PROP-REQ-002.
+\begin{reqblock}{RF-005}{Fault Stop Resiliente}
+    \ReqShall{El sistema DEBERÁ ejecutar una transición inmediata a estado seguro (Stop) ante la detección de slip $>$ 25\% o fallos de navegación. Ver PROP-REQ-002.}
+    \item[\textbf{Prioridad:}] CRÍTICO
+    \ReqTrace{ConOps UC-01; §7.3.5}
+    \item[\textbf{Racional:}] Proteger la integridad del rover ante condiciones de tracción inmanejables.
+    \ReqAccept{Demonstration (Simulación de fallo)}
+\end{reqblock}
 
 \textbf{RF-006: Integridad de Telemetría (CSP)} \\
 El sistema DEBERÁ asegurar integridad vía CSP. Ver COMM-REQ-001.
