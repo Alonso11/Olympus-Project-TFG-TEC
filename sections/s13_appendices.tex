@@ -32,6 +32,25 @@ PHY-REQ-001 & Dimensiones 480x340x320 mm & STR-REQ-001 & Inspection \\
 \caption{Matriz de Trazabilidad Maestra del Rover Olympus.}
 \end{table}
 
+\subsection{TBD Register (Plan de Resolución)}
+Conforme a ISO/IEC/IEEE 29148, este registro identifica los parámetros técnicos aún no cuantificados, asigna un responsable y establece un criterio para su resolución antes de la revisión final de V\&V.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{| l | X | l | l | l |}
+\hline
+\textbf{TBD-ID} & \textbf{Descripción del Parámetro} & \textbf{Requisito/Elemento} & \textbf{Responsable} & \textbf{Criterio de Resolución} \\ \hline
+TBD-OP-01 & Umbrales de severidad para contingencias (\texttt{severity\_allows\_retreat}) & §7.3.8 (SM), s09a & Líder GNC & Análisis de simulación en entorno volcánico. \\ \hline
+TBD-OP-02 & Política de reintentos de enlace (\texttt{retry\_allowed}) & §7.3.8 (SM), s09a & Líder COMM & Caracterización de latencia UHF en campo. \\ \hline
+TBD-ENV-01 & Nivel de protección antipartículas (IP4X o superior) & STR-REQ-002, SyRS-100 & Líder STR & Pruebas de infiltración con regolito simulado. \\ \hline
+TBD-PER-01 & Baseline de referencia para mejora EKF (sin EKF) & SyRS-013, §11.1 & Líder GNC & Definición de ground-truth en sitio análogo. \\ \hline
+TBD-DATA-01 & Umbral de almacenamiento crítico (\texttt{storage\_near\_full}) & CDH-REQ-002, §11.1 & Líder C\&DH & Capacidad efectiva de microSD vs bitrate TM. \\ \hline
+TBD-LOG-01 & Formato y versión de datasets de misión & §9.5.14 (INF-REQ) & Líder C\&DH & Estandarización conforme a ELANav API. \\ \hline
+\end{tabularx}
+\caption{Registro maestro de parámetros pendientes (TBD) y plan de resolución.}
+\end{table}
+
 \subsection{Glossary}
 
 Este glosario consolida términos y abreviaturas utilizados en el SyRS/SRS final. Para evitar redundancias, se considera complementario a la Sección 3 (Terms, Definitions, Acronyms), que contiene las definiciones operativas principales. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  

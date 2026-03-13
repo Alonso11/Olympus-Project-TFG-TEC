@@ -58,4 +58,10 @@ El documento incluye:
 La sección 11 contiene la ``definición maestra'' de los requisitos RF/RNF/CON; otras secciones solo referencian IDs cuando sea necesario para contexto o trazabilidad. \cite{nasa_se_handbook, segoldmine_ppi}
 
 \subsection{Conformance and Tailoring Statement}
-Este SyRS adota la estructura de un SRS/SyRS conforme a ISO/IEC/IEEE 29148:2018 y se alinea con prácticas NASA de ingeniería de sistemas para proyectos de exploración robótica, aplicando ``tailoring'' apropiado al contexto académico (plataforma COTS, validación en sitio análogo, foco UC‑01). \cite{ieee_29148, nasa_se_handbook} 
+Este SyRS adopta la estructura de un SRS/SyRS conforme a ISO/IEC/IEEE 29148:2018 y se alinea con prácticas NASA de ingeniería de sistemas para proyectos de exploración robótica. Se aplica un proceso de \textit{tailoring} (adaptación) justificado por el contexto académico y los objetivos de validación de ELANav: \cite{ieee_29148, nasa_se_handbook} 
+
+\begin{itemize}
+    \item \textbf{Fusión SyRS/SRS:} Se consolidan los requisitos de sistema (SyRS) y software (SRS) en un único baseline técnico para garantizar la trazabilidad directa y agilidad en una plataforma de validación rápida.
+    \item \textbf{Priorización de UC-01:} Se focaliza el desarrollo detallado de requisitos en el caso de uso núcleo (Exploración), estableciendo un baseline verificable para la misión primaria, mientras que UC-02 a UC-05 se mantienen en nivel conceptual.
+    \item \textbf{Gestión centralizada de TBDs:} Se utiliza un registro de parámetros pendientes (Anexo B) con un plan de resolución operativa, permitiendo la evolución del documento conforme se caracterizan los componentes COTS en campo.
+\end{itemize} 
