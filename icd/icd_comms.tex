@@ -1,0 +1,174 @@
+% Elaborado por Fabian Gomez
+% Version 1.0
+
+% =========================================================
+% ICD de COMMS (Rover Olympus)
+% =========================================================
+\section*{ICD de COMMS (Interfaz Rover–GCS y Relay)}
+\addcontentsline{toc}{section}{ICD de COMMS (Interfaz Rover–GCS y Relay)}
+\label{sec:icd_comms}
+
+\subsection*{Alcance}
+Este ICD define las interfaces \textbf{externas} y \textbf{lógicas} del subsistema COMMS del Rover Olympus
+para el intercambio TM/CMD con la Estación Terrena (GCS) y, cuando aplique, a través de un \emph{nodo
+retransmisor} (Relay) bajo un esquema \emph{store-and-forward}. Se cubren dos medios:
+\begin{enumerate}
+  \item \textbf{Wi-Fi 2.4\,GHz + UDP/IP + CSP} (canal de conveniencia/alta tasa en campo cercano).
+  \item \textbf{UHF 430–440\,MHz + AX.25/KISS + CSP, GFSK 9600\,bps} (canal robusto de misión).
+\end{enumerate}
+La arquitectura y requisitos vienen establecidos en el SyRS (§9.1.1/§9.4.1, RF‑006, COMM‑REQ‑001/002)
+y en la extensión COMMS UHF (COMM‑REQ‑003/004/005). El diseño práctico de UHF sigue la propuesta
+del TFG ELANav Comms (KISS/AX.25, GFSK 9600, CSP/RDP y retransmisor).% (fuente en \S\ref{sec:refs})
+% Referencias: SyRS (main.pdf) §9.1.1/§9.4.1 y TFG ELANav Comms
+
+\subsection*{Entidades y roles}
+\begin{itemize}
+  \item \textbf{Rover (C\&DH/COMMS):} origina/consume TM/CMD; expone dos interfaces de red: \emph{if\_udp} (Wi-Fi) e \emph{if\_kiss} (UHF).
+  \item \textbf{GCS (Estación Terrena):} genera CMD y recibe TM; puede usar UDP/IP o radio UHF (vía TNC/Radio).
+  \item \textbf{Relay (Retransmisor CSP):} recibe, almacena temporalmente y reenvía paquetes (store-and-forward) cuando no hay LoS directa.
+\end{itemize}
+
+\subsection*{Interfaces físicas}
+\paragraph{IF-COMMS-UDP (Rover$\leftrightarrow$GCS, Wi-Fi).}
+\begin{itemize}
+  \item Medio: 2.4\,GHz (IEEE\,802.11 b/g/n), canal/site \textbf{TBD}.
+  \item Transporte: \textbf{UDP/IP}.
+  \item Encapsulamiento de misión: \textbf{CSP}.
+  \item Dirección IP Rover: \textbf{TBD} (DHCP o estática); Dirección IP GCS: \textbf{TBD}.
+  \item Puertos UDP (CSP): \textbf{TBD} \emph{(RECOMENDADO:} rango 7000–10000 para evitar colisiones locales\emph{)}.
+\end{itemize}
+(\emph{Ref. SyRS §9.1.1/§9.4.1; COMM-REQ-001/002})%
+
+\paragraph{IF-COMMS-KISS (Rover$\leftrightarrow$TNC, UHF).}
+\begin{itemize}
+  \item Enlace serie: USB CDC ACM $\rightarrow$ \emph{/dev/ttyACMx} (o UART nativa), \textbf{baudios TBD}
+        \emph{(RECOMENDADO: 115200\,bps)}, 8N1.
+  \item Protocolo: \textbf{KISS} para tramas \textbf{AX.25} (NRZI/CRC-16) moduladas \textbf{GFSK 9600\,bps}.
+  \item TNC: \emph{NinoTNC 9600A} (modo 0000 = 9600\,GFSK AX.25). Nivel PTT/Audio según cableado del radio.
+  \item Radio UHF (laboratorio): \emph{Kenwood TM-D710GA / TS-2000}; puerto de datos, PTT, entrada/salida audio.
+  \item Antenas: \emph{Eggbeater} (omni, rover/relay) / \emph{Yagi} (direccional, estación). Coax y conectores \textbf{TBD}.
+\end{itemize}
+(\emph{Ref. TFG: KISS/AX.25, GFSK 9600, NinoTNC 9600A, Kenwood, Eggbeater/Yagi})%
+
+\subsection*{Interfaces lógicas y direccionamiento}
+\paragraph{Pila de protocolos (ambos medios).}
+\begin{center}
+  \small \verb|Aplicación| $\rightarrow$ \textbf{CSP (RDP o no fiable)} $\rightarrow$
+  \verb|UDP/IP| \emph{(Wi-Fi)} \textbf{o} \verb|KISS/AX.25| \emph{(UHF)} $\rightarrow$ \verb|RF|
+\end{center}
+(\emph{Ref. SyRS §9.4.1; TFG CSP sobre UDP o KISS/AX.25})%
+
+\paragraph{IDs lógicos CSP.}
+\begin{itemize}
+  \item \textbf{Configurables} en despliegue. \emph{Ejemplo (TFG)}: \texttt{GCS=10}, \texttt{Rover=20}, \texttt{Relay=30}.
+        Usar como \emph{valores de campaña}, documentados en el \emph{run card} del ensayo.
+\end{itemize}
+(\emph{Ref. TFG: ejemplo de direcciones CSP})%
+
+\subsection*{Selección y conmutación de ruta}
+La aplicación en C\&DH mantiene \textbf{dos interfaces CSP} activas: \emph{if\_udp} (Wi-Fi) y \emph{if\_kiss} (UHF).
+La \textbf{política de ruta} se implementa en la tabla de enrutamiento CSP y la gestión de reintentos de \textbf{RDP}:
+\begin{enumerate}
+  \item \textbf{Ruta directa preferida}: Rover$\leftrightarrow$GCS (Wi-Fi o UHF directo).
+  \item \textbf{Conmutación a Relay}: si se \emph{agotan reintentos/timeout RDP}, se enruta Rover$\rightarrow$Relay$\rightarrow$GCS.
+  \item \textbf{Retorno a directo}: al detectar \texttt{link\_restored}, se vuelve a la ruta directa.
+\end{enumerate}
+Parámetros \textbf{TBD} (\emph{RECOMENDADO} para caracterización inicial, según TFG): \emph{timeout\_RDP=500\,ms}, \emph{retries=3}.%
+(\emph{Ref. TFG: lógica y ejemplo de reintentos; SyRS §7.3.8 eventos \texttt{link\_lost/link\_restored}}).%
+
+\subsection*{Temporización y ventanas}
+\paragraph{Wi-Fi (UDP/IP).}
+Inyección de latencia \textbf{0–5\,s} (CON-002) \emph{solo} en el camino UDP/IP para emular retardo operacional.
+(\emph{Ref. SyRS CON-002, §9.1.1})%
+
+\paragraph{UHF (AX.25/KISS).}
+Latencias y throughput dependen de ventana de aire y \textbf{RDP}. El TFG mostró que \textbf{RDP} garantiza
+entrega (100\% en ensayos con 10/10 tramas) a costa de mayor tiempo total que el modo no fiable.%
+(\emph{Ref. TFG, comparativa RDP vs no fiable})%
+
+\subsection*{Diccionario de mensajes (TM/CMD)}
+\paragraph{Tipos TM/CMD (mínimos).}
+\begin{itemize}
+  \item \textbf{CMD de modo}: \verb|start/pause/homing/safe|; \textbf{CMD de configuración}: parámetros UC-01.
+  \item \textbf{TM de estado (mínimo)}: \verb|mode|, \verb|timestamp|, \verb|link_status|, \verb|EPS.V|, \verb|EPS.I|.
+\end{itemize}
+La TM mínima se deriva de SyRS-030; extender con métricas UC-01 (slip, waypoint, etc.).%
+(\emph{Ref. SyRS-030})%
+
+\paragraph{Estructura lógica (CSP).}
+\begin{itemize}
+  \item \textbf{Encabezado CSP}: campos estándar (pri, src, dst, sport, dport, flags, etc.).
+  \item \textbf{Payload}: TLV o binario compacto según tópico; \textbf{CRC/Checksum} según CSP.
+\end{itemize}
+(\emph{Ref. SyRS §9.4.1; uso de CSP como encapsulamiento})%
+
+\paragraph{Encapsulamiento UHF.}
+\begin{itemize}
+  \item \textbf{KISS/AX.25}: trama AX.25 con \textbf{CRC-16}; KISS delimita por puerto serie (FEND/FESC).
+  \item \textbf{GFSK 9600}: modulación en el TNC; PTT y audio según esquema del radio.
+\end{itemize}
+(\emph{Ref. TFG: AX.25/KISS, GFSK 9600})%
+
+\subsection*{Gestión de enlace y errores}
+\paragraph{Detección de pérdida/recuperación.}
+\begin{itemize}
+  \item \texttt{link\_lost}: disparada por fallos de ACK RDP o heartbeats (Wi-Fi); transición a \emph{GestiónEnlace}.
+  \item \texttt{link\_restored}: retorno a ruta directa y reanudación de TM periódica.
+\end{itemize}
+(\emph{Ref. SyRS §7.3.8 diccionario de eventos y estados})%
+
+\paragraph{Política de reintentos (RDP).}
+Parámetros \textbf{TBD} por campaña (timeout, max\_retries). \emph{RECOMENDADO} inicial: 500\,ms / 3 reintentos
+como en el TFG de referencia para provocar conmutación a Relay en pérdida de LoS.%
+(\emph{Ref. TFG})%
+
+\subsection*{Asignación de puertos/recursos (propuesta inicial)}
+\paragraph{Wi-Fi / UDP.}
+\begin{itemize}
+  \item \texttt{CSP\_UDP\_PORT\_GCS}: \textbf{TBD} (\emph{RECOMENDADO: 8760}).
+  \item \texttt{CSP\_UDP\_PORT\_ROVER}: \textbf{TBD} (\emph{RECOMENDADO: 8761}).
+  \item \texttt{IP\_ROVER / IP\_GCS}: \textbf{TBD} (DHCP o estática). 
+\end{itemize}
+
+\paragraph{KISS / TNC.}
+\begin{itemize}
+  \item \texttt{/dev/ttyACMx} o \texttt{/dev/ttyUSBx}, \textbf{baudios TBD} (\emph{RECOMENDADO: 115200}).
+  \item \texttt{KISS\_PORT\_ID}: \textbf{TBD} (si se multiplexan puertos KISS).
+\end{itemize}
+
+\subsection*{Mapeo N2 y PBS/ASM}
+Correspondencia con la matriz N2 y PBS/ASM:
+\begin{itemize}
+  \item \textbf{ASM-063} (TNC NinoTNC 9600A): [DATA] USB/UART (KISS), [CTRL] PTT, [PWR] 5\,V.
+  \item \textbf{ASM-064} (Radio TM-D710GA/TS-2000): [AUDIO/DATA] TNC$\leftrightarrow$Radio, [RF] Antena, [PWR] 12\,V.
+  \item \textbf{ASM-065} (Antenas UHF): [RF] Radio$\leftrightarrow$Antena, [MEC] montaje en STR.
+\end{itemize}
+(\emph{Ref. extensión PBS/ASM/N2 del SyRS})%
+
+\subsection*{Verificación de la interfaz (ICD checks)}
+\begin{enumerate}
+  \item \textbf{UDP/IP + CSP (Wi-Fi)}: captura pcap en GCS/rover con decodificación CSP; latencia inyectada 0–5\,s (CON-002).
+  \item \textbf{KISS/AX.25 + CSP (UHF)}: consola serie KISS + logs del TNC; verificación de CRC-16 AX.25 y decodificación CSP.
+  \item \textbf{Rutas CSP}: prueba directa y vía Relay (store-and-forward) con evidencias de recepción/reenvío/ACK.
+  \item \textbf{RDP}: demostración de entrega $\geq 95\%$ con parámetros de campaña y registros de ACK/retry.
+\end{enumerate}
+(\emph{Ref. V\&V-COMMS-01/02 del SyRS})%
+
+\subsection*{Parámetros a cerrar (TBD) y valores recomendados}
+\begin{itemize}
+  \item \textbf{Puertos UDP CSP} (GCS/ROVER): \textbf{TBD} (\emph{rec.: 8760/8761}).
+  \item \textbf{Direcciones IP} (GCS/ROVER): \textbf{TBD}.
+  \item \textbf{Baudios KISS}: \textbf{TBD} (\emph{rec.: 115200}).
+  \item \textbf{timeout\_RDP / max\_retries}: \textbf{TBD} (\emph{rec.: 500\,ms / 3}).
+  \item \textbf{IDs CSP} (nodo/puertos de servicio): \textbf{TBD} (\emph{ejemplo TFG: 10/20/30}).
+  \item \textbf{Cableado RF/PTT/audio}: conectores/coax exactos \textbf{TBD} según radio/antena definitivos.
+\end{itemize}
+
+\subsection*{Notas}
+El canal Wi-Fi se destina a pruebas y operación cercana; el canal UHF prioriza TM/CMD de misión cuando
+el relieve penaliza la LoS. La selección dual-homing (UDP vs KISS) se decide por disponibilidad de enlace
+y política RDP.%
+
+\subsection*{Cumplimiento con SyRS}
+Este ICD satisface las secciones §9.1.1/§9.4.1 y los requisitos RF-006, COMM-REQ-001/002/003/004/005;
+vincula N2/PBS/ASM y los casos de V\&V (V\&V-COMMS-01/02).%
