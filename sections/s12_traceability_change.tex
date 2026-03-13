@@ -5,7 +5,7 @@
 
 Esta sección define cómo se mantiene la trazabilidad de los requisitos del SyRS/SRS del Rover Olympus (RF/RNF/CON) a través de los artefactos del proyecto (ConOps, Casos de Uso, arquitectura MBSE/SysML, PBS/ASM, N2 y V\&V), y cómo se gestionan cambios para preservar un baseline coherente del SRS final. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
 
-Dado que los documentos main/main1/main3 son iteraciones previas del mismo borrador, el objetivo de esta sección es establecer una disciplina de ``baseline único'': (i) Una definición maestra por requisito en la Sección 11. (ii) Referencias cruzadas por ID en ConOps/Interfaces/V\&V/Arquitectura. (iii) Un proceso de control de cambios proporcional al proyecto académico que evite divergencias entre copias del documento y del modelo. \cite{nasa_cm, segoldmine_ppi}
+Dado que los documentos main/main1/main3 son iteraciones previas del mismo borrador, el objetivo de esta sección es establecer una disciplina de ``baseline único'': (i) Una definición maestra por requisito en la Sección~\ref{sec:requirements}. (ii) Referencias cruzadas por ID en ConOps/Interfaces/V\&V/Arquitectura. (iii) Un proceso de control de cambios proporcional al proyecto académico que evite divergencias entre copias del documento y del modelo. \cite{nasa_cm, segoldmine_ppi}
 
 La gestión de configuración/cambios es una práctica de ingeniería de sistemas aplicada a lo largo del ciclo de vida para controlar cambios a características funcionales y físicas del producto, asegurar consistencia entre el producto y su documentación/modelos, y mantener visibilidad del estado real de la configuración.
 
@@ -21,7 +21,7 @@ Estrategia de trazabilidad (digital thread académico del proyecto): La trazabil
   \item Requisitos $\rightarrow$ Plan V\&V (métodos T/A/D/I) $\rightarrow$ Evidencia (resultados)
 \end{enumerate}
 
-\textbf{Regla operativa de baseline:} La Sección 11 contiene la definición maestra de RF/RNF/CON; ConOps, Interfaces, Arquitectura y V\&V solo referencian por ID para evitar múltiples definiciones inconsistentes entre secciones. \cite{nasa_cm, segoldmine_ppi}
+\textbf{Regla operativa de baseline:} La Sección~\ref{sec:requirements} contiene la definición maestra de RF/RNF/CON; ConOps, Interfaces, Arquitectura y V\&V solo referencian por ID para evitar múltiples definiciones inconsistentes entre secciones. \cite{nasa_cm, segoldmine_ppi}
 
 \textbf{Enfoque MBSE para trazabilidad:} Se recomienda mantener enlaces trazables entre objetos de requisitos y elementos del modelo SysML (bloques, actividades, estados, interfaces), de modo que el modelo funcione como ``fuente autoritativa'' y habilite revisiones cruzadas (requisitos $\leftrightarrow$ arquitectura $\leftrightarrow$ V\&V).
 
