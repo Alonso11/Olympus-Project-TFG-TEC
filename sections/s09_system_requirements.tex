@@ -155,6 +155,30 @@ Conforme a la identificación de vacíos en la auditoría técnica, se establece
 \sysreq{RNF-002}{Resiliencia de Recuperación}{ALTO}{ConOps}{Éxito $\ge$ 90\% en rescates.}
 \sysreq{RNF-003}{Precisión de Navegación}{ALTO}{ConOps}{Error $<$ 5\% dist. total.}
 
+\begin{reqblock}{RNF-004}{Límite Térmico Estructural}
+    \ReqShall{El sistema DEBERÁ operar en un entorno cuya temperatura ambiente no exceda los 45 °C, garantizando que el chasis no supere los 60 °C.}
+    \item[\textbf{Prioridad:}] ALTO
+    \ReqTrace{Análisis Térmico §8.2}
+    \item[\textbf{Racional:}] Prevenir la deformación estructural del material termoplástico (PLA MAX) en condiciones de calor extremo.
+    \ReqAccept{Analysis / Test (Cámara térmica)}
+\end{reqblock}
+
+\begin{reqblock}{RNF-005}{Compatibilidad Electromagnética (EMC)}
+    \ReqShall{El sistema DEBERÁ minimizar la interferencia electromagnética entre los actuadores de potencia y los sensores de navegación mediante blindaje y cableado trenzado.}
+    \item[\textbf{Prioridad:}] MEDIO
+    \ReqTrace{Mejores prácticas NASA SE}
+    \item[\textbf{Racional:}] Evitar ruidos en la IMU y GPS causados por los picos de corriente de los motores DC.
+    \ReqAccept{Inspection / Test}
+\end{reqblock}
+
+\begin{reqblock}{RNF-006}{Estabilidad de Regulación Energética}
+    \ReqShall{El sistema DEBERÁ mantener las líneas de voltaje crítico (5V y 12V) con una estabilidad de $\pm$ 5\% bajo carga máxima.}
+    \item[\textbf{Prioridad:}] CRÍTICO
+    \ReqTrace{EPS-REQ-001}
+    \item[\textbf{Racional:}] Garantizar que el computador de a bordo (OBC) no sufra reinicios por caídas de tensión (brown-outs) durante el arranque de motores.
+    \ReqAccept{Analysis (Logs de EPS)}
+\end{reqblock}
+
 \subsubsection{Physical Characteristics (ISO 29148 9.5.11)}
 \begin{itemize}
     \item \textbf{PHY-REQ-001 (Dimensiones):} El rover DEBERÁ tener unas dimensiones nominales de envolvente de 480 x 340 x 320 mm ($\pm$ 10\%).
