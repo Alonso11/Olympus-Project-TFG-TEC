@@ -1,0 +1,54 @@
+\section{Requirements Organization and Notation}
+
+Esta sección define cómo se redactan, identifican, documentan y agrupan los requisitos del SyRS/SRS del Rover Olympus para asegurar: (i) claridad y ausencia de ambigüedad, (ii) verificabilidad mediante V\&V (T/A/D/I), y (iii) trazabilidad entre ConOps/Casos de Uso (UC‑01…UC‑05), arquitectura MBSE/SysML (7 subsistemas, PBS/ASM, N2) y evidencias de pruebas. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+La Sección 11 contiene la “definición maestra” de los requisitos RF/RNF/CON; otras secciones solo referencian IDs cuando sea necesario para contexto o trazabilidad. \cite{nasa_cm, segoldmine_ppi} 
+
+\subsection{Requirement Writing Rules}
+
+Reglas de redacción adoptadas para este SyRS/SRS:
+
+\begin{enumerate}
+    \item \textbf{Modalidad obligatoria:} Todo requisito se redacta usando ``DEBERÁ'' (SHALL) para expresar obligación verificable. \cite{omg_sysml_mbse}  
+    \item \textbf{Verificabilidad:} Todo requisito DEBERÁ ser verificable por al menos un método T/A/D/I, y cuando aplique, incluir un criterio cuantitativo o condición observacional que permita determinar cumplimiento/no cumplimiento. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{No ambigüedad:} Se prohíben requisitos ambiguos o no medibles (p. ej., ``rápido'', ``robusto'', ``óptimo'') sin una métrica o criterio de aceptación asociado. \cite{omg_sysml_mbse}  
+    \item \textbf{Singularidad y atomicidad:} Cada requisito DEBERÁ expresar una sola necesidad (un ``solo verbo de obligación''), evitando requisitos compuestos que dificulten verificación y trazabilidad. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Consistencia y no contradicción:} Un requisito no debe contradecir otros requisitos o restricciones; ante conflictos entre borradores, se consolida una redacción única coherente manteniendo el ID y la métrica original. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Criterios de ``buen requisito'' (calidad de requisito):} Los requisitos deben ser necesarios, correctos, completos (a nivel del SyRS), consistentes, factibles, no ambiguos, y verificables; además deben usar terminología consistente con el glosario del documento. \cite{nasa_msfc_hdbk_3173}  
+    \begin{itemize}
+        \item \textit{Justificación:} se añade este criterio siguiendo buenas prácticas de ISO/IEC/IEEE 29148 y NASA SE porque los borradores mencionan ``no ambigüedad'' pero no explicitaban el checklist de calidad de requisito usado para depurar y unificar el SRS final. \cite{nasa_msfc_hdbk_3173} 
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Requirement Attributes}
+
+Para asegurar trazabilidad, gestión y verificabilidad, cada requisito (RF/RNF/CON) mantiene un conjunto mínimo de atributos (documentados explícitamente en el texto o en la matriz V\&V del proyecto):
+
+\textbf{Atributos mínimos adoptados:}
+\begin{itemize}
+    \item \textbf{ID:} Identificador único (RF‑xxx, RNF‑xxx, CON‑xxx) que no cambia entre revisiones. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Texto del requisito:} Declaración con ``DEBERÁ/SHALL'' y terminología consistente. \cite{omg_sysml_mbse}  
+    \item \textbf{Prioridad:} Criticidad (p. ej., CRÍTICO/ALTO/BAJO) según impacto en UC‑01 y campaña de validación. \cite{omg_sysml_mbse, nasa_cm}  
+    \item \textbf{Fuente:} Origen del requisito (ConOps, ELANav, restricciones del experimento) para justificar su necesidad. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{Método de verificación:} T/A/D/I asociado y criterio de aceptación (métrica) cuando aplique, enlazado a la matriz de cumplimiento V\&V. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+\end{itemize}
+
+\subsection{Requirement Grouping Strategy}
+
+\begin{enumerate}
+    \item \textbf{Agrupación primaria por tipo de requisito:}
+    \begin{itemize}
+        \item \textbf{Requisitos funcionales (RF):} describen capacidades del sistema para ejecutar UC‑01 y casos relacionados (percepción, autonomía, comunicación, seguridad/FDIR). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+        \item \textbf{Requisitos de interfaz:} describen restricciones y comportamientos de interacción (rover–GCS, buses internos, protocolos). \cite{omg_sysml_mbse, segoldmine_ppi}  
+        \item \textbf{Requisitos de desempeño (RNF orientados a performance):} describen métricas cuantitativas (latencia, precisión, etc.). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+        \item \textbf{Requisitos no funcionales (RNF de calidad):} confiabilidad/resiliencia/recuperación u otros atributos de calidad aplicables. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+        \item \textbf{Restricciones (CON):} limitaciones de diseño/implementación y simplificaciones experimentales (p. ej., CON‑001, CON‑002). \cite{nasa_cm, segoldmine_ppi}  
+    \end{itemize}
+
+    \item \textbf{Agrupación secundaria por dominio/función del sistema:}
+    \begin{itemize}
+        \item \textbf{Dentro de funcionales:} movilidad/locomoción, navegación/autonomía, percepción/sensado, comunicaciones, seguridad y gestión de fallas. \cite{omg_sysml_mbse, nasa_cm}  
+        \item \textbf{Dentro de interfaces:} externas (GCS/enlace) y internas (buses, N2/PBS). \cite{omg_sysml_mbse, segoldmine_ppi}  
+    \end{itemize}
+
+    \item \textbf{Enfoque UC‑01 como eje transversal:} Cada grupo debe mantener trazabilidad explícita hacia UC‑01 (y donde aplique, UC‑02/UC‑04/UC‑05) para que la matriz de V\&V y el plan de pruebas puedan organizarse por escenarios operacionales. \cite{nasa_cm, segoldmine_ppi}  
+\end{enumerate}

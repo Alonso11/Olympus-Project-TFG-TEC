@@ -1,0 +1,711 @@
+% =========================================================
+% TEAM TET — Catálogo de ejemplos de prueba / verificación
+% Un caso por requisito SyRS y SRS (ejemplos)
+% =========================================================
+
+\subsection{Ejemplos de procedimientos de verificación por requisito}
+
+% ---------- Macros de formato ----------
+\newcommand{\TCID}[1]{\textbf{VT-ID:} #1}
+\newcommand{\TCMethod}[1]{\textbf{Método(s):} #1}
+\newcommand{\TCObj}[1]{\textbf{Objetivo:} #1}
+\newcommand{\TCPre}[1]{\textbf{Precondiciones:} #1}
+\newcommand{\TCSetup}[1]{\textbf{Setup/Instrumentación:} #1}
+\newcommand{\TCData}[1]{\textbf{Datos a registrar:} #1}
+\newcommand{\TCAccept}[1]{\textbf{Criterio de aceptación:} #1}
+\newcommand{\TCTrace}[1]{\textbf{Trazabilidad:} #1}
+\newenvironment{tcblock}{%
+  \begin{itemize}
+    \setlength{\itemsep}{0.25em}
+    \setlength{\parskip}{0em}
+    \setlength{\parsep}{0em}
+    \setlength{\leftmargin}{1.5em}
+}{\end{itemize}}
+
+% =========================================================
+% SYRS — Casos de prueba (uno por requisito)
+% =========================================================
+\subsubsection{Casos de prueba SyRS}
+
+\paragraph{SyRS-001 — Operación como plataforma de validación (UC-01)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-001}
+  \item \TCMethod{D/T}
+  \item \TCObj{Demostrar que el sistema ejecuta UC-01 en el ciclo diario uplink--ejecución autónoma--downlink--idle.}
+  \item \TCPre{Rover integrado; enlace Rover--GCS disponible; parámetros de misión definidos (área objetivo, duración, etc.).}
+  \item \TCSetup{Sitio análogo; GCS para enviar cmd\_start\_exploration; logging habilitado en C\&DH; captura de telemetría en GCS.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Enviar desde GCS el comando de inicio de exploración (uplink).
+      \item Permitir ejecución autónoma durante una ventana definida (TBD: duración).
+      \item Forzar o esperar una ventana de comunicación y recibir telemetría/datos (downlink).
+      \item Finalizar actividad y pasar a idle/standby conforme al ciclo.
+    \end{enumerate}
+  \item \TCData{Logs de estado/evento; TM/CMD recibida; marcas de tiempo; evidencia de transición de modos.}
+  \item \TCAccept{Se evidencia al menos 1 ciclo completo con uplink, ejecución y downlink.}
+  \item \TCTrace{ConOps §7.3.9; UC-01.}
+\end{tcblock}
+
+\paragraph{SyRS-002 — Arquitectura de 7 subsistemas}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-002}
+  \item \TCMethod{I}
+  \item \TCObj{Confirmar que el baseline arquitectónico mantiene STR, TRAC, PROP, C\&DH, EPS, COMMS y GNC.}
+  \item \TCPre{Documentos/modelo actualizados.}
+  \item \TCSetup{BDD/IBD/N2 del proyecto (o su exportación).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Revisar el BDD del sistema y la lista de subsistemas.
+      \item Verificar consistencia con la sección de descripción del sistema y N2.
+    \end{enumerate}
+  \item \TCData{Captura/figura del BDD; checklist 7/7.}
+  \item \TCAccept{7/7 subsistemas presentes y consistentes.}
+  \item \TCTrace{§8.1 y §4.2.}
+\end{tcblock}
+
+\paragraph{SyRS-010 — Percepción visual CSI (FOV)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-010}
+  \item \TCMethod{T/D}
+  \item \TCObj{Verificar adquisición por CSI y FOV horizontal $\ge$ 120°.}
+  \item \TCPre{Cámara CSI instalada y operativa; software de adquisición activo.}
+  \item \TCSetup{Patrón/escena de calibración para estimar FOV (metodología definida en procedimiento); registro de imágenes.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Iniciar stream/captura CSI y almacenar N imágenes (TBD: N).
+      \item Estimar FOV horizontal usando el método de calibración definido.
+    \end{enumerate}
+  \item \TCData{Imágenes; parámetros de calibración; cálculo/resultado de FOV.}
+  \item \TCAccept{FOV horizontal $\ge$ 120°.}
+  \item \TCTrace{UC-01 (Analizar terreno); RF-001/GNC-REQ-001.}
+\end{tcblock}
+
+\paragraph{SyRS-011 — Clasificación de transitabilidad ($\ge$95\%)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-011}
+  \item \TCMethod{T/A}
+  \item \TCObj{Medir desempeño de clasificación de transitabilidad en sectores 10$\times$10 cm.}
+  \item \TCPre{Pipeline de visión activo; dataset/escenario de prueba con ``ground truth'' definido (TBD si no existe).}
+  \item \TCSetup{Escenario con sectores marcados o dataset etiquetado; herramienta de evaluación.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar clasificación sobre M sectores (TBD: M).
+      \item Comparar salida contra ground truth y calcular confianza/accuracy según definición del procedimiento.
+    \end{enumerate}
+  \item \TCData{Resultados por sector; matriz de confusión (si aplica); métrica final.}
+  \item \TCAccept{Confianza/criterio $\ge$ 95\% en sectores 10$\times$10 cm.}
+  \item \TCTrace{UC-01 (Procesar/Planificar); RF-002/GNC-REQ-002.}
+\end{tcblock}
+
+\paragraph{SyRS-012 — Evitación reactiva (0 colisiones; obstáculos $\ge$20 cm)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-012}
+  \item \TCMethod{D/T}
+  \item \TCObj{Demostrar evitación sin colisiones con obstáculos $\ge$ 20 cm en recorrido de verificación.}
+  \item \TCPre{Módulo de evitación habilitado; entorno con obstáculos medidos.}
+  \item \TCSetup{Circuito con K obstáculos $\ge$20 cm; video; logs de eventos obstacle\_detected/cleared.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar navegación autónoma a través del circuito.
+      \item Registrar detecciones y maniobras de evasión.
+    \end{enumerate}
+  \item \TCData{Video; logs; conteo de colisiones (=0).}
+  \item \TCAccept{0 colisiones; todos los obstáculos $\ge$20 cm evitados.}
+  \item \TCTrace{UC-01 (Evitar obstáculos); RF-003; EVT-MOB001.}
+\end{tcblock}
+
+\paragraph{SyRS-013 — Compensación de slip (mejora $\ge$30\%)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-013}
+  \item \TCMethod{A/T}
+  \item \TCObj{Cuantificar mejora $\ge$30\% en error usando EKF vs baseline.}
+  \item \TCPre{Definición de baseline sin EKF o configuración alternativa (TBD si no existe).}
+  \item \TCSetup{Recorrido replicable con transiciones; registro de estimación (con EKF y baseline); referencia (TBD).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar recorrido en modo baseline; registrar error/métrica.
+      \item Ejecutar el mismo recorrido con EKF; registrar error/métrica.
+      \item Calcular porcentaje de mejora.
+    \end{enumerate}
+  \item \TCData{Series temporales; cálculo de error; comparación y mejora.}
+  \item \TCAccept{Mejora $\ge$30\% respecto a baseline definido.}
+  \item \TCTrace{UC-01; RF-004.}
+\end{tcblock}
+
+\paragraph{SyRS-014 — Fault Stop por slip >20\% en <5 s}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-014}
+  \item \TCMethod{T}
+  \item \TCObj{Verificar activación de Fault Stop al exceder slip>20\% y tiempo <5 s.}
+  \item \TCPre{Monitoreo de slip activo; mecanismo de stop implementado.}
+  \item \TCSetup{Superficie que induzca slip; registro de slip y comandos de stop; medición de tiempos.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Inducir condición de slip >20\% durante desplazamiento.
+      \item Medir tiempo desde detección hasta comando/estado de stop.
+    \end{enumerate}
+  \item \TCData{Log de slip; timestamps; estado de paro.}
+  \item \TCAccept{Fault Stop activado en <5 s desde slip>20\%.}
+  \item \TCTrace{UC-01; RF-005.}
+\end{tcblock}
+
+\paragraph{SyRS-015 — Detención de ruedas $\le$500 ms tras Fault Stop}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-015}
+  \item \TCMethod{T}
+  \item \TCObj{Medir tiempo de detención de ruedas tras señal Fault Stop.}
+  \item \TCPre{Disponibilidad de medición de rueda (encoder o proxy por corriente/velocidad; si no, TBD).}
+  \item \TCSetup{Instrumentación: encoder/corriente (según lo disponible); trigger de Fault Stop.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Forzar Fault Stop mientras las ruedas giran.
+      \item Medir tiempo hasta velocidad$\approx$0 (según criterio) o corriente de motor en reposo.
+    \end{enumerate}
+  \item \TCData{Señal Fault Stop; velocidad/corriente; timestamps.}
+  \item \TCAccept{Detención $\le$500 ms.}
+  \item \TCTrace{PROP-REQ-002; RF-005.}
+\end{tcblock}
+
+\paragraph{SyRS-016 — Integridad TM/CMD (CSP)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-016}
+  \item \TCMethod{I/T}
+  \item \TCObj{Verificar integridad de paquetes TM/CMD usando CSP.}
+  \item \TCPre{Stack CSP activo; enlace UDP/IP operativo.}
+  \item \TCSetup{Captura pcap en GCS y/o rover; herramienta de decodificación CSP; inyección de corrupción (opcional, TBD).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Enviar N mensajes de prueba (uplink) y recibir M mensajes (downlink).
+      \item Validar integridad (checksum/CRC) para todos los paquetes.
+    \end{enumerate}
+  \item \TCData{pcap; reporte de validación; conteo válidos/total.}
+  \item \TCAccept{100\% de paquetes de prueba válidos.}
+  \item \TCTrace{RF-006; COMM-REQ-001; §9.1.1/§9.4.1.}
+\end{tcblock}
+
+\paragraph{SyRS-017 — Telemetría EPS V/I $\ge$1 Hz y $\pm$1\%}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-017}
+  \item \TCMethod{T/A}
+  \item \TCObj{Verificar frecuencia de muestreo y precisión de V/I reportados.}
+  \item \TCPre{INA219 (u otro) activo; canal de telemetría hacia C\&DH operativo.}
+  \item \TCSetup{Instrumento de referencia para V/I (TBD si no existe); logging de telemetría.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Registrar V/I durante una ventana de tiempo (TBD).
+      \item Calcular frecuencia efectiva (muestras/s).
+      \item Comparar contra instrumento de referencia para estimar error.
+    \end{enumerate}
+  \item \TCData{Serie temporal V/I; cálculo de frecuencia; error vs referencia.}
+  \item \TCAccept{$\ge$1 Hz y $\pm$1\%.}
+  \item \TCTrace{EPS-REQ-001; UC-01 (monitorización).}
+\end{tcblock}
+
+\paragraph{SyRS-018 — Enlace 2.4 GHz estable $\ge$50 m (LoS)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-018}
+  \item \TCMethod{T/D}
+  \item \TCObj{Demostrar enlace LoS $\ge$50 m.}
+  \item \TCPre{Radio/Wi-Fi configurado; TM/CMD operativa.}
+  \item \TCSetup{Tramo LoS; métrica de estabilidad definida (TBD si no existe: pérdida de paquetes, RSSI, throughput, etc.).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Separar rover y GCS en incrementos hasta $\ge$50 m.
+      \item En cada distancia, transmitir TM/CMD durante una ventana (TBD).
+      \item Evaluar estabilidad según criterio.
+    \end{enumerate}
+  \item \TCData{pcap; métricas de enlace (TBD); distancia.}
+  \item \TCAccept{Cumple criterio de estabilidad hasta $\ge$50 m.}
+  \item \TCTrace{COMM-REQ-002; ConOps/Interfaces.}
+\end{tcblock}
+
+\paragraph{SyRS-030 — Telemetría mínima para operador (modo, tiempo, link, V/I)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-030}
+  \item \TCMethod{I/T}
+  \item \TCObj{Verificar que el payload de telemetría contiene campos mínimos.}
+  \item \TCPre{Downlink habilitado; formato de TM definido.}
+  \item \TCSetup{Captura de mensajes TM y decodificación en GCS.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Recibir N mensajes de estado.
+      \item Verificar presencia de los 4 campos requeridos en cada mensaje.
+    \end{enumerate}
+  \item \TCData{Mensajes decodificados; checklist de campos.}
+  \item \TCAccept{4/4 campos presentes en todos los mensajes de prueba.}
+  \item \TCTrace{ConOps downlink; UC-01; Interfaces.}
+\end{tcblock}
+
+\paragraph{SyRS-040 — Latencia de procesamiento $\le$2 s}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-040}
+  \item \TCMethod{T/A}
+  \item \TCObj{Medir latencia por ciclo de agente durante UC-01.}
+  \item \TCPre{Instrumentación de tiempos por ciclo habilitada.}
+  \item \TCSetup{Carga representativa de UC-01; logging de timestamps; definición de estadístico (p95 o similar).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar UC-01 durante una ventana (TBD).
+      \item Registrar latencia por ciclo.
+      \item Calcular estadísticos y verificar umbral.
+    \end{enumerate}
+  \item \TCData{Tiempos por ciclo; p95/p99; reporte.}
+  \item \TCAccept{$\le$2 s según métrica definida.}
+  \item \TCTrace{RNF-001; UC-01; §9.4.2.}
+\end{tcblock}
+
+\paragraph{SyRS-041 — Precisión navegación (error <5\% distancia)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-041}
+  \item \TCMethod{A/T}
+  \item \TCObj{Comparar distancia estimada vs distancia de referencia.}
+  \item \TCPre{Método de referencia disponible (TBD si no existe: medición manual, instrumentación del sitio, etc.).}
+  \item \TCSetup{Recorrido definido; registro de distancia estimada; medición de referencia.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar recorrido y registrar distancia estimada.
+      \item Medir distancia real (referencia).
+      \item Calcular error relativo.
+    \end{enumerate}
+  \item \TCData{Distancia estimada; referencia; error \%.}
+  \item \TCAccept{Error <5\%.}
+  \item \TCTrace{RNF-003; UC-01.}
+\end{tcblock}
+
+\paragraph{SyRS-042 — Resiliencia (éxito $\ge$90\% en rescates)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-042}
+  \item \TCMethod{D/T}
+  \item \TCObj{Demostrar éxito $\ge$90\% en maniobras de recuperación ante contingencias.}
+  \item \TCPre{Definición de ``rescate'' y conjunto de escenarios (TBD si no existe).}
+  \item \TCSetup{N escenarios reproducibles (p.ej., atascos, pérdida de enlace, condiciones adversas) definidos por campaña; logging completo.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar N escenarios de rescate.
+      \item Registrar éxito/fallo según criterio definido.
+      \item Calcular tasa de éxito.
+    \end{enumerate}
+  \item \TCData{Tabla de escenarios; éxitos/fallos; tasa \%.}
+  \item \TCAccept{$\ge$90\% éxito.}
+  \item \TCTrace{RNF-002; UC-01; modos HomingRetreat/SafeMode.}
+\end{tcblock}
+
+\paragraph{SyRS-050 — Interfaz Rover–GCS (UDP/IP + CSP)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-050}
+  \item \TCMethod{I/T}
+  \item \TCObj{Confirmar que TM/CMD viaja en UDP/IP y encapsulado CSP.}
+  \item \TCPre{Enlace operativo; envío de TM/CMD habilitado.}
+  \item \TCSetup{pcap en GCS; decodificador CSP; mensajes de prueba.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Capturar tráfico durante uplink/downlink.
+      \item Verificar que los paquetes corresponden a UDP/IP y encapsulan CSP.
+    \end{enumerate}
+  \item \TCData{pcap; reporte de decodificación.}
+  \item \TCAccept{Tráfico cumple UDP/IP y CSP decodificable.}
+  \item \TCTrace{§9.1.1/§9.4.1; UC-01.}
+\end{tcblock}
+
+\paragraph{SyRS-051 — Inyección de latencia 0–5 s}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-051}
+  \item \TCMethod{T}
+  \item \TCObj{Verificar configuración y efecto de latencia simulada 0–5 s.}
+  \item \TCPre{Mecanismo de inyección disponible.}
+  \item \TCSetup{Herramienta de medición de retardo (p.ej., timestamps en TM/CMD); configuración de delay.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Configurar delay a 0 s y medir retardo.
+      \item Configurar delay a 5 s y medir retardo.
+      \item Configurar un valor intermedio y medir retardo.
+    \end{enumerate}
+  \item \TCData{Retardo medido por configuración; evidencia de configuración.}
+  \item \TCAccept{Retardo dentro de [0,5] s según configuración.}
+  \item \TCTrace{CON-002; ConOps/Interfaces.}
+\end{tcblock}
+
+\paragraph{SyRS-052 — Interfaces internas críticas (CSI/I2C/PWM/bus datos)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-052}
+  \item \TCMethod{I/D}
+  \item \TCObj{Demostrar que las interfaces internas críticas existen y son funcionales.}
+  \item \TCPre{Rover integrado.}
+  \item \TCSetup{Inspección N2/IBD; pruebas de humo: captura CSI, lectura I2C V/I, comando PWM/CTRL a actuador (sin carga peligrosa).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Verificar en N2/IBD las conexiones CSI/I2C/PWM/bus datos.
+      \item Ejecutar smoke tests de cada interfaz (lectura/captura/actuación).
+    \end{enumerate}
+  \item \TCData{Checklist; logs de lectura/captura/actuación.}
+  \item \TCAccept{Todas las interfaces críticas verificadas como presentes y operativas.}
+  \item \TCTrace{Cuadro N2 (Cuadro 5); §9.5; UC-01.}
+\end{tcblock}
+
+\paragraph{SyRS-060 — Modos y transiciones por eventos}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-060}
+  \item \TCMethod{D/T}
+  \item \TCObj{Verificar modos (Standby, Exploración, HomingRetreat, SafeMode, Final) y transiciones por eventos.}
+  \item \TCPre{Máquina de estados implementada; logging activo.}
+  \item \TCSetup{GCS para inyección de comandos; método de inyección de fallas (TBD si no existe).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item cmd\_start\_exploration: verificar transición desde Standby.
+      \item cmd\_pause\_exploration: verificar retorno a Standby.
+      \item cmd\_homing\_retreat: verificar entrada a HomingRetreat (si last\_safe\_waypoint\_known aplica).
+      \item Inyectar sw\_fault\_critical/power\_anomaly\_detected: verificar SafeMode.
+      \item cmd\_end\_mission: verificar Final.
+    \end{enumerate}
+  \item \TCData{Logs de estado/evento; timestamps; evidencia de modos.}
+  \item \TCAccept{Transiciones ocurren conforme a la tabla de transiciones.}
+  \item \TCTrace{§7.3.8; UC-01.}
+\end{tcblock}
+
+\paragraph{SyRS-061 — HomingRetreat a último waypoint seguro}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-061}
+  \item \TCMethod{D/T}
+  \item \TCObj{Verificar retiro a lastSafeWaypoint al detectar condiciones adversas.}
+  \item \TCPre{Registro de waypoint seguro implementado; condición adversa detectable (definición/severidad TBD si no existe).}
+  \item \TCSetup{Escenario que dispare conditions\_adverse\_detected; logging de selección de waypoint.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar UC-01 hasta registrar un waypoint seguro.
+      \item Disparar conditions\_adverse\_detected (según definición).
+      \item Verificar transición a HomingRetreat y llegada safe\_waypoint\_reached.
+    \end{enumerate}
+  \item \TCData{Logs de waypoint; evento adverso; transición; llegada.}
+  \item \TCAccept{HomingRetreat ejecutado y waypoint alcanzado.}
+  \item \TCTrace{§7.3.8; UC-01.}
+\end{tcblock}
+
+\paragraph{SyRS-070 — Almacenamiento local ($\ge$2 h de logs/TM)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-070}
+  \item \TCMethod{T/I}
+  \item \TCObj{Confirmar capacidad de registro continuo $\ge$2 h y recuperabilidad.}
+  \item \TCPre{Logging activo; almacenamiento disponible.}
+  \item \TCSetup{Ejecución UC-01 o carga de logging equivalente; verificación de integridad de archivos.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar logging continuo durante 2 h.
+      \item Verificar que no hay pérdidas (gaps) y que los archivos se pueden recuperar/leer.
+    \end{enumerate}
+  \item \TCData{Archivos de log; timestamps; tamaño y continuidad.}
+  \item \TCAccept{2 h registradas sin pérdida; recuperables.}
+  \item \TCTrace{CDH-REQ-002; ConOps downlink/análisis.}
+\end{tcblock}
+
+\paragraph{SyRS-080 — Entrada a SafeMode por fallas críticas}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-080}
+  \item \TCMethod{D/T}
+  \item \TCObj{Verificar transición Any$\rightarrow$SafeMode ante sw\_fault\_critical o power\_anomaly\_detected.}
+  \item \TCPre{Eventos de falla disponibles; logging activo.}
+  \item \TCSetup{Método de inyección de falla SW/EPS (TBD si no existe).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Inyectar sw\_fault\_critical y verificar SafeMode.
+      \item Inyectar power\_anomaly\_detected y verificar SafeMode.
+    \end{enumerate}
+  \item \TCData{Evento; logs de transición; estado final.}
+  \item \TCAccept{Transición a SafeMode demostrada en ambos casos.}
+  \item \TCTrace{EVT-CDH-010/EVT-EPS-005; §7.3.8.}
+\end{tcblock}
+
+\paragraph{SyRS-081 — Protecciones eléctricas (BMS/protección EPS)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-081}
+  \item \TCMethod{I/T}
+  \item \TCObj{Confirmar presencia y funcionamiento básico de protecciones EPS.}
+  \item \TCPre{EPS integrado.}
+  \item \TCSetup{Inspección física; prueba controlada de condición anómala (TBD: procedimiento seguro).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Inspeccionar BMS y protecciones instaladas.
+      \item Ejecutar prueba controlada (segura) que evidencie protección/aislamiento según procedimiento.
+    \end{enumerate}
+  \item \TCData{Checklist; evidencia fotográfica; resultado de prueba.}
+  \item \TCAccept{Protecciones presentes y evidencia de funcionamiento conforme al procedimiento.}
+  \item \TCTrace{EPS y N2; §8.2.1.7.}
+\end{tcblock}
+
+\paragraph{SyRS-090 — Restricción CON-001 (lab-only/sitio análogo)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-090}
+  \item \TCMethod{I}
+  \item \TCObj{Confirmar que la aceptación se realiza bajo el marco lab-only/sitio análogo.}
+  \item \TCPre{Plan de campaña disponible.}
+  \item \TCSetup{Actas/plan de campaña; descripción del sitio.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Revisar documentos de campaña y verificar declaración de entorno análogo terrestre.
+    \end{enumerate}
+  \item \TCData{Acta/plan; checklist.}
+  \item \TCAccept{Condición lab-only/sitio análogo documentada.}
+  \item \TCTrace{CON-001; §7.3.11.}
+\end{tcblock}
+
+\paragraph{SyRS-091 — Entorno de validación con pendientes/obstáculos}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-091}
+  \item \TCMethod{I/D}
+  \item \TCObj{Verificar que el entorno de validación incluye pendientes hasta 20° y obstáculos representativos.}
+  \item \TCPre{Sitio de campaña definido.}
+  \item \TCSetup{Medición de pendiente (instrumento TBD si no existe); inventario de obstáculos; registro fotográfico.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Medir y documentar pendiente máxima utilizada.
+      \item Documentar obstáculos y su representatividad.
+    \end{enumerate}
+  \item \TCData{Mediciones; fotos; checklist.}
+  \item \TCAccept{Pendiente $\le$20° incluida y obstáculos presentes.}
+  \item \TCTrace{§4.4; §7.3.11; UC-01.}
+\end{tcblock}
+
+\paragraph{SyRS-100 — Protección contra partículas (nivel TBD)}
+\begin{tcblock}
+  \item \TCID{VT-SyRS-100}
+  \item \TCMethod{I/T}
+  \item \TCObj{Verificar protección de electrónica contra ingreso de partículas según criterio definido (TBD).}
+  \item \TCPre{Criterio de protección definido (TBD si no existe).}
+  \item \TCSetup{Inspección de envolvente; exposición controlada a polvo/partículas (procedimiento seguro TBD).}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Inspeccionar sellos/encapsulado.
+      \item Ejecutar exposición controlada conforme al criterio y luego inspeccionar interior.
+    \end{enumerate}
+  \item \TCData{Checklist; evidencia antes/después.}
+  \item \TCAccept{Cumple criterio de protección definido.}
+  \item \TCTrace{STR-REQ-002; entorno análogo.}
+\end{tcblock}
+
+% =========================================================
+% SRS — Casos de prueba (uno por requisito)
+% =========================================================
+\subsubsection{Casos de prueba SRS}
+
+\paragraph{SRS-001 — CSP sobre UDP/IP (encapsulado/decapsulado)}
+\begin{tcblock}
+  \item \TCID{VT-SRS-001}
+  \item \TCMethod{I/T}
+  \item \TCObj{Verificar que el software encapsula/decapsula TM/CMD en CSP sobre UDP/IP.}
+  \item \TCPre{Stack CSP operativo; enlace activo.}
+  \item \TCSetup{pcap; decodificador CSP; mensajes de prueba.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Enviar y recibir mensajes TM/CMD.
+      \item Capturar tráfico y decodificar CSP.
+    \end{enumerate}
+  \item \TCData{pcap; reporte decodificación.}
+  \item \TCAccept{Mensajes decodificables como CSP en UDP/IP.}
+  \item \TCTrace{§9.4.1; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-002 — Latencia simulada configurable [0,5] s}
+\begin{tcblock}
+  \item \TCID{VT-SRS-002}
+  \item \TCMethod{T}
+  \item \TCObj{Verificar que el software aplica latencia configurable 0–5 s al intercambio TM/CMD.}
+  \item \TCPre{Mecanismo de inyección de latencia disponible.}
+  \item \TCSetup{Medición de retardo basada en timestamps; configuración de delay.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Configurar delay=0 s y medir.
+      \item Configurar delay=5 s y medir.
+      \item Configurar delay intermedio y medir.
+    \end{enumerate}
+  \item \TCData{Retardo por configuración.}
+  \item \TCAccept{Retardo dentro de [0,5] s.}
+  \item \TCTrace{CON-002; §9.4.1.}
+\end{tcblock}
+
+\paragraph{SRS-010 — Implementación máquina de estados UC-01 (incluye history)}
+\begin{tcblock}
+  \item \TCID{VT-SRS-010}
+  \item \TCMethod{D/T}
+  \item \TCObj{Demostrar que el software implementa estados/transiciones y pseudoestado history.}
+  \item \TCPre{Máquina de estados habilitada; logging activo.}
+  \item \TCSetup{GCS para cmd\_start/cmd\_pause/cmd\_homing\_retreat; escenarios de salida/retorno para activar history.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Iniciar exploración, avanzar hasta un subestado interno.
+      \item Forzar salida a HomingRetreat (condición adversa) y retornar con safe\_waypoint\_reached.
+      \item Verificar reingreso por history al último subestado activo.
+    \end{enumerate}
+  \item \TCData{Trazas de estados (origen/destino/evento).}
+  \item \TCAccept{Transiciones válidas y reingreso por history evidenciado.}
+  \item \TCTrace{§7.3.8; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-011 — Consumo/producción de eventos del diccionario formal}
+\begin{tcblock}
+  \item \TCID{VT-SRS-011}
+  \item \TCMethod{T/D}
+  \item \TCObj{Verificar soporte de eventos mínimos del diccionario (cmd/status/fault/time).}
+  \item \TCPre{Interfaz de inyección de eventos disponible (desde GCS o harness TBD).}
+  \item \TCSetup{Lista de eventos a validar; logging que muestre consumo/producción.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Inyectar eventos seleccionados (p.ej., cmd\_start\_exploration, link\_lost, telemetry\_due).
+      \item Verificar que el software los registra y ejecuta respuesta/transición esperada.
+    \end{enumerate}
+  \item \TCData{Logs por evento; estados resultantes.}
+  \item \TCAccept{Eventos soportados y respuesta coherente con tablas de transición.}
+  \item \TCTrace{Cuadro 1; §7.3.8; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-012 — Política por defecto: evento no manejado $\rightarrow$ log, sin transición}
+\begin{tcblock}
+  \item \TCID{VT-SRS-012}
+  \item \TCMethod{T/I}
+  \item \TCObj{Verificar que eventos no manejados no causan transiciones y sí se registran.}
+  \item \TCPre{Logging activo; posibilidad de inyectar un evento fuera de tabla.}
+  \item \TCSetup{Evento ``no manejado'' definido para el estado actual; inspección de logs.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Colocar el sistema en un estado conocido.
+      \item Inyectar un evento no especificado para ese estado.
+      \item Verificar que el estado no cambia y que el evento se registra con campos requeridos.
+    \end{enumerate}
+  \item \TCData{Log de evento; estado antes/después.}
+  \item \TCAccept{0 transiciones + evento registrado con estado, timestamp y event\_id.}
+  \item \TCTrace{§7.3.8.3; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-013 — Gestión de enlace (link\_lost/link\_restored)}
+\begin{tcblock}
+  \item \TCID{VT-SRS-013}
+  \item \TCMethod{D/T}
+  \item \TCObj{Verificar transiciones a GestiónEnlace ante link\_lost y retorno ante link\_restored.}
+  \item \TCPre{Detección de enlace implementada.}
+  \item \TCSetup{Método para forzar pérdida/restauración de enlace (TBD si no existe); logging.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Forzar pérdida de enlace y observar transición a GestiónEnlace.
+      \item Restaurar enlace y observar transición a Comunicar.
+    \end{enumerate}
+  \item \TCData{Logs de eventos link\_lost/link\_restored; estados resultantes.}
+  \item \TCAccept{Transiciones coherentes con tabla de estados.}
+  \item \TCTrace{§7.3.8; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-014 — storage\_near\_full: priorización de downlink}
+\begin{tcblock}
+  \item \TCID{VT-SRS-014}
+  \item \TCMethod{D/T}
+  \item \TCObj{Verificar reacción del software ante almacenamiento cercano a lleno.}
+  \item \TCPre{Umbral storage\_near\_full definido (TBD si no existe).}
+  \item \TCSetup{Llenado controlado de almacenamiento; ventana de comunicación; logging.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Llenar almacenamiento hasta cruzar el umbral.
+      \item Verificar emisión de storage\_near\_full y priorización de downlink cuando comms\_window\_open esté disponible.
+    \end{enumerate}
+  \item \TCData{Espacio libre; evento; orden/prioridad de transmisión.}
+  \item \TCAccept{Evidencia de evento y cambio de prioridad conforme a política.}
+  \item \TCTrace{EVT-CDH-007; §7.3.8; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-020 — Telemetría de estado con campos mínimos}
+\begin{tcblock}
+  \item \TCID{VT-SRS-020}
+  \item \TCMethod{I/T}
+  \item \TCObj{Verificar que el software forma mensajes de estado con campos mínimos.}
+  \item \TCPre{Downlink habilitado; decodificación en GCS disponible.}
+  \item \TCSetup{Captura de TM y verificación de campos.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Recibir N mensajes de estado.
+      \item Verificar presencia de modo, timestamp, link y V/I en cada mensaje.
+    \end{enumerate}
+  \item \TCData{Mensajes decodificados; checklist.}
+  \item \TCAccept{4/4 campos presentes.}
+  \item \TCTrace{ConOps downlink; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-030 — Latencia por ciclo $\le$2 s (métrica p95 o definida)}
+\begin{tcblock}
+  \item \TCID{VT-SRS-030}
+  \item \TCMethod{T/A}
+  \item \TCObj{Verificar desempeño software: latencia $\le$2 s por ciclo con estadístico definido.}
+  \item \TCPre{Profiling activo; carga representativa UC-01.}
+  \item \TCSetup{Ejecución UC-01; logging de tiempos por ciclo; cálculo de p95/p99.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar UC-01 por una ventana (TBD).
+      \item Registrar tiempos por ciclo.
+      \item Calcular estadístico y comparar con umbral.
+    \end{enumerate}
+  \item \TCData{Series de tiempos; estadístico; reporte.}
+  \item \TCAccept{$\le$2 s según métrica definida.}
+  \item \TCTrace{RNF-001; §9.4.2; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-040 — Persistencia logs/TM $\ge$2 h}
+\begin{tcblock}
+  \item \TCID{VT-SRS-040}
+  \item \TCMethod{T/I}
+  \item \TCObj{Verificar persistencia de logs/TM por 2 h y recuperabilidad.}
+  \item \TCPre{Logging habilitado.}
+  \item \TCSetup{Ejecución prolongada; verificación de archivos y continuidad.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Registrar logs durante 2 h.
+      \item Verificar integridad y continuidad temporal.
+    \end{enumerate}
+  \item \TCData{Archivos; timestamps; tamaño; checksum (opcional).}
+  \item \TCAccept{2 h registradas; recuperables.}
+  \item \TCTrace{CDH-REQ-002; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-050 — Plataforma Embedded Linux (Yocto Project)}
+\begin{tcblock}
+  \item \TCID{VT-SRS-050}
+  \item \TCMethod{I}
+  \item \TCObj{Confirmar que el software ejecuta en una imagen a la medida basada en Yocto Project en C\&DH.}
+  \item \TCPre{Acceso a consola/logs del OBC; acceso a manifiestos de build Yocto.}
+  \item \TCSetup{Inspección de la build Yocto.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Verificar la firma/versión del sistema operativo y manifiestos de build (manifest/lock/hashes).
+    \end{enumerate}
+  \item \TCData{Captura de manifiestos; checklist de servicios operativos.}
+  \item \TCAccept{Evidencia de build Yocto operativa y servicios requeridos activos.}
+  \item \TCTrace{CDH-REQ-001.}
+\end{tcblock}
+
+\paragraph{SRS-060 — Falla crítica: transición a SafeMode + registro}
+\begin{tcblock}
+  \item \TCID{VT-SRS-060}
+  \item \TCMethod{D/T}
+  \item \TCObj{Verificar que sw\_fault\_critical provoca SafeMode y se registra evidencia.}
+  \item \TCPre{Mecanismo de inyección de falla SW (TBD si no existe).}
+  \item \TCSetup{Inyección de sw\_fault\_critical; logging.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Inyectar sw\_fault\_critical.
+      \item Verificar transición a SafeMode y presencia de fault\_code/module\_id/severity en logs (según payload).
+    \end{enumerate}
+  \item \TCData{Evento; logs; estado final.}
+  \item \TCAccept{SafeMode + evidencia registrada.}
+  \item \TCTrace{EVT-CDH-010; §7.3.8; UC-01.}
+\end{tcblock}
+
+\paragraph{SRS-061 — Auditabilidad (logs de transiciones)}
+\begin{tcblock}
+  \item \TCID{VT-SRS-061}
+  \item \TCMethod{I/T}
+  \item \TCObj{Verificar que cada transición registra origen/destino/evento/timestamp.}
+  \item \TCPre{Logging activo.}
+  \item \TCSetup{Ejecución de escenarios que produzcan múltiples transiciones.}
+  \item \textbf{Procedimiento:}
+    \begin{enumerate}
+      \item Ejecutar un escenario con al menos P transiciones (TBD: P).
+      \item Revisar logs y verificar presencia de campos por transición.
+    \end{enumerate}
+  \item \TCData{Logs; muestreo de transiciones; checklist de campos.}
+  \item \TCAccept{100\% de transiciones revisadas con campos completos.}
+  \item \TCTrace{§7.3.8.3; trazabilidad V\&V; UC-01.}
+\end{tcblock}

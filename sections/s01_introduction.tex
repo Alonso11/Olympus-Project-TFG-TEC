@@ -1,0 +1,58 @@
+\section{Introduction}
+ Este documento constituye la Especificación de Requisitos del Sistema (SyRS/SRS) del Rover Olympus y establece un baseline único y trazable de requisitos, arquitectura e información de V\&V. El contexto del sistema, su propósito como plataforma de validación de ELANav y el rol del UC-01 como caso núcleo se presentan en §\ref{sec:system_context}; la definición completa de casos de uso top-level se encuentra en §\ref{subsec:use_cases_top_level} y el detalle del UC-01 se desarrolla en §\ref{sec:uc01}.
+
+
+\subsection{Purpose}
+
+El propósito de este SyRS es definir de manera completa, verificable y trazable los requisitos del Rover Olympus como plataforma de validación para ELANav, orientada a demostrar capacidades de navegación autónoma sobre terreno en condiciones análogas, conforme al entorno operacional descrito en §\ref{subsec:operational_environment} y a las restricciones operacionales de sitio análogo en §\ref{subsec:operational_constraints}. \cite{ieee_29148} 
+
+Este documento sirve como referencia técnica principal para:
+\begin{itemize}
+    \item \textbf{Guiar el diseño e integración del sistema:} Hardware COTS y software embebido.
+    \item \textbf{Establecer criterios de desempeño y calidad:} Criterios medibles para UC‑01.
+    \item \textbf{Planificar y ejecutar V\&V:} Soporte para campañas de prueba representativas. \cite{nasa_se_handbook, ieee_29148} 
+\end{itemize}
+
+Adicionalmente, este SyRS formaliza la coherencia entre ConOps, Casos de Uso, arquitectura lógica/física (7 subsistemas) y la matriz de cumplimiento V\&V, evitando redundancias y divergencias entre borradores previos. \cite{nasa_se_handbook} 
+
+\subsection{Scope}
+
+\textbf{Alcance del sistema:} El Rover Olympus es un rover terrestre de exploración de carácter académico, integrado principalmente con hardware COTS y diseñado como plataforma de validación de ELANav. La descripción del sistema, su frontera y entidades externas se detallan en §\ref{subsec:system_description}–§\ref{subsec:system_boundary}. \cite{ieee_29148}  
+
+\textbf{Alcance funcional:} Este SyRS especifica los requisitos necesarios para soportar los casos de uso top-level del proyecto, manteniendo UC-01 como caso núcleo de operación y validación. La lista y descripción de los casos de uso UC-01…UC-05 se presenta en §\ref{subsec:use_cases_top_level}, y el detalle completo de UC-01 se desarrolla en §\ref{sec:uc01}. \cite{nasa_se_handbook}
+
+\textbf{Alcance de validación:} La validación se ejecuta en sitio análogo terrestre; el entorno operacional se caracteriza en §\ref{subsec:operational_environment} y las restricciones operacionales específicas se enumeran en §\ref{subsec:operational_constraints}. Los criterios y métricas de aceptación/verificación se consolidan en las secciones de requisitos y V\&V correspondientes (§\ref{sec:requirements}–§\ref{sec:vv}). \cite{nasa_se_handbook}
+
+\subsection{Intended Audience and Use}
+
+Este SyRS está dirigido a:
+\begin{enumerate}[label=\alph*)]
+    \item Investigadores y desarrolladores del SETEC Lab/TEC responsables de ELANav y del rover.
+    \item Ingenieros de integración y pruebas que ejecutan campañas en sitio análogo.
+    \item Evaluadores académicos que revisan cumplimiento y evidencia de V\&V. \cite{ieee_29148} 
+\end{enumerate}
+
+El uso previsto es:
+\begin{enumerate}
+    \item Especificar requisitos verificables del sistema centrados en UC‑01.
+    \item Servir como baseline técnico para decisiones de arquitectura (MBSE/SysML) e interfaces.
+    \item Soportar planificación y ejecución de V\&V mediante criterios cuantitativos y métodos T/A/D/I. \cite{nasa_se_handbook, segoldmine_ppi}
+\end{enumerate}
+
+\subsection{Document Overview}
+
+El documento incluye:
+\begin{itemize}
+    \item Referencias normativas, términos y acrónimos.
+    \item Contexto del sistema y entorno operacional.
+    \item Stakeholders, actores y resumen ConOps.
+    \item Interfaces y organización de requisitos.
+    \item Requisitos del sistema (RF/RNF/CON) agrupados por categorías.
+    \item Referencias de arquitectura y modelos (MBSE/SysML).
+    \item Estrategia de V\&V, criterios de aceptación y trazabilidad. \cite{ieee_29148}
+\end{itemize}
+
+La sección 11 contiene la ``definición maestra'' de los requisitos RF/RNF/CON; otras secciones solo referencian IDs cuando sea necesario para contexto o trazabilidad. \cite{nasa_se_handbook, segoldmine_ppi}
+
+\subsection{Conformance and Tailoring Statement}
+Este SyRS adota la estructura de un SRS/SyRS conforme a ISO/IEC/IEEE 29148:2018 y se alinea con prácticas NASA de ingeniería de sistemas para proyectos de exploración robótica, aplicando ``tailoring'' apropiado al contexto académico (plataforma COTS, validación en sitio análogo, foco UC‑01). \cite{ieee_29148, nasa_se_handbook} 

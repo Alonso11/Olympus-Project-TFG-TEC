@@ -1,0 +1,39 @@
+\section{Appendices}\label{sec:appendices}
+
+Esta sección agrupa anexos de apoyo para el SyRS/SRS final del Rover Olympus. Incluye (i) un glosario consolidado (sinónimos/abreviaturas y términos de dominio) y (ii) un resumen de historial de revisiones, depurando inconsistencias entre los borradores main/main1/main3 y dejando un criterio claro de baseline para el documento final. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+Los anexos se mantienen concisos: el propósito es facilitar lectura y auditoría académica, sin duplicar contenido ``maestro'' que ya está en secciones 1--13 (requisitos, V\&V, trazabilidad, arquitectura). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+
+\subsection{Glossary}
+
+Este glosario consolida términos y abreviaturas utilizados en el SyRS/SRS final. Para evitar redundancias, se considera complementario a la Sección 3 (Terms, Definitions, Acronyms), que contiene las definiciones operativas principales. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+
+\textbf{Términos clave (consolidación):}
+\begin{itemize}
+    \item \textbf{ELANav:} Embedded Library for Autonomous Navigation (biblioteca embebida para navegación autónoma). \cite{omg_sysml_mbse, nasa_cm}  
+    \item \textbf{Rover Olympus:} Rover académico tipo exploración, plataforma de validación de ELANav (7 subsistemas). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{UC‑01:} Exploración de superficie (caso núcleo); navegación autónoma continua con percepción y evitación. \cite{segoldmine_ppi, nasa_cm}  
+    \item \textbf{Sitio análogo:} Terreno volcánico / regolito simulado usado para validación (pendientes hasta 20°, obstáculos, transiciones de suelo). \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Slip ratio / deslizamiento:} Indicador de diferencia entre avance teórico y real; usado como disparador de contingencia con umbral slip $>$ 20\%. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{GCS / Estación terrena:} Sistema externo operado por Rover Planner para uplink/downlink. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{CSP:} CubeSat Space Protocol (encapsulamiento TM/CMD). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{V\&V:} Verification \& Validation, con métodos T/A/D/I (Test/Analysis/Demonstration/Inspection). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{BDD/IBD/PBS/N2/ASM:} Artefactos de arquitectura (SysML y descomposición física) usados para trazabilidad y soporte de integración. \cite{omg_sysml_mbse, segoldmine_ppi}  
+\end{itemize}
+
+\subsection{Revision History}
+
+Este SyRS/SRS final es el resultado de un proceso iterativo de borradores (main, main1, main3) que fueron generados en distintas iteraciones y niveles de detalle. En lugar de mantener historias de revisión divergentes por archivo, esta sección consolida el historial relevante y establece un criterio único de baseline para el documento final. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+
+\textbf{Historial consolidado (síntesis):}
+\begin{itemize}
+    \item \textbf{Iteración inicial:} Creación del documento base y establecimiento del foco UC‑01 como caso núcleo de validación. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Reestructuración:} Adopción de estructura alineada a ISO/IEC/IEEE 29148 y guía NASA SE (reorganización de secciones, formalización de V\&V y trazabilidad). \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+    \item \textbf{Auditoría e integración:} Consolidación de arquitectura lógica/física (7 subsistemas), diferenciación PBS vs BDD, inclusión de PBS/ASM y matriz N2, y fortalecimiento del plan V\&V con criterios cuantitativos. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Versión extendida:} Incorporación de detalle adicional de integración y apéndices ampliados de ConOps/Casos de Uso (main3), usados como insumo para completar secciones de main.pdf. \cite{segoldmine_ppi}  
+    \item \textbf{Consolidación final (esta versión):} Unificación, depuración y normalización de contenido entre main/main1/main3, eliminando redundancias y fijando ``definición maestra'' de requisitos en Sección 11; referencias cruzadas por ID en el resto del documento; y ajuste realista del UC‑05 hacia ``Safe Deactivation/Passivation'' documentado como [EXTERNO] en ConOps/Scope. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+\end{itemize}
+
+\textbf{Nota (SE) sobre inconsistencias depuradas:}
+\begin{itemize}
+    \item En main.pdf aparecía texto residual (``TBD'' en algunas secciones y referencias a una ``versión 3.15''); para este SRS final se adopta el control de revisiones más consistente observado en main1/main3 (v3.12 como referencia interna de borrador) y se elimina la numeración residual no sustentada. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+\end{itemize}

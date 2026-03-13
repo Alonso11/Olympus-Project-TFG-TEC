@@ -1,0 +1,47 @@
+\section{Stakeholders, Users, and Actors}
+
+Esta sección identifica a las partes interesadas (stakeholders), clases de usuarios y actores externos relevantes para el Rover Olympus, con el objetivo de (i) asegurar que los requisitos RF/RNF/CON se derivan de necesidades reales, (ii) delimitar responsabilidades operacionales, y (iii) mantener coherencia entre ConOps, Casos de Uso y arquitectura MBSE/SysML. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+En el contexto de este proyecto, el ``usuario'' principal del sistema es un operador/planificador en Tierra (Rover Planner / Ground Operator) que configura metas de exploración, supervisa telemetría y evalúa resultados en campañas análogas, mientras que el sistema ejecuta UC‑01 de forma autónoma. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+
+\subsection{Stakeholder Profiles}
+
+\textbf{Stakeholders primarios (directamente responsables del éxito del proyecto):}
+\begin{enumerate}
+    \item \textbf{SETEC Lab / Escuela de Ingeniería Electrónica (TEC):} Define el contexto académico, objetivos de validación, criterios de aceptación y restricciones de recursos. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Investigador Principal / Responsable de Ingeniería de Sistemas:} Asegura la coherencia entre ConOps, requisitos, arquitectura y V\&V. \cite{nasa_cm, segoldmine_ppi}  
+\end{enumerate}
+
+\textbf{Stakeholders secundarios (impacto indirecto):}
+\begin{enumerate}[resume]
+    \item \textbf{Equipo de Integración y Pruebas (I\&T):} Responsable de la integración física, preparación de campañas y recolección de evidencia en terreno. \cite{segoldmine_ppi, nasa_cm}  
+    \item \textbf{Evaluadores académicos / Comité de revisión:} Requieren trazabilidad, consistencia documental y evidencia reproducible de validación. \cite{omg_sysml_mbse, segoldmine_ppi}  
+\end{enumerate}
+
+\subsection{User Classes and Characteristics}
+
+\textbf{Clase de usuario U1 – Rover Planner / Operador en Tierra (Ground Operator):}
+\begin{itemize}
+    \item \textbf{Rol:} Define objetivos de alto nivel, selecciona escenarios, configura parámetros y supervisa telemetría. \cite{segoldmine_ppi, nasa_cm}  
+    \item \textbf{Características:} Usuario técnico familiarizado con navegación robótica; toma decisiones estratégicas sin teleoperación continua. \cite{nasa_cm, omg_sysml_mbse, segoldmine_ppi}  
+    \item \textbf{Necesidades:} Visibilidad del estado del sistema, evidencia de desempeño y capacidad de recuperación de datos. \cite{nasa_cm, segoldmine_ppi}  
+\end{itemize}
+
+\textbf{Clase de usuario U2 – Integración y Pruebas (I\&T / Test Engineer):}
+\begin{itemize}
+    \item \textbf{Rol:} Prepara el sistema (calibraciones, interfaces), ejecuta pruebas T/A/D/I y documenta evidencias. \cite{segoldmine_ppi, nasa_cm}  
+    \item \textbf{Características:} Acceso físico al rover; requiere trazabilidad clara entre requisitos y criterios de prueba. \cite{nasa_cm, segoldmine_ppi} 
+\end{itemize}
+
+\subsection{Actors and External Systems}\label{subsec:actors_systems}
+
+\textbf{Actores principales (interacción directa):}
+\begin{itemize}
+    \item \textbf{A1) Rover Planner / Estación Terrena (GCS):} Envía comandos (uplink) y recibe telemetría (downlink) soportando el ciclo diario operacional. \cite{segoldmine_ppi, omg_sysml_mbse, nasa_cm}  
+    \item \textbf{A2) Entorno (Environment / Terreno Análogo):} Provee condiciones físicas (pendientes, obstáculos) y contingencias (eventos de slip $>$ 20\%) que disparan comportamientos. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+\end{itemize}
+
+\textbf{Sistemas externos de soporte:}
+\begin{itemize}
+    \item \textbf{E1) Infraestructura de comunicaciones:} Soporta el intercambio TM/CMD y el encapsulamiento CSP; su desempeño afecta la latencia. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{E2) Instrumentación del sitio:} Provee mediciones auxiliares y soporte de registro durante las pruebas del UC‑01. \cite{segoldmine_ppi, omg_sysml_mbse} 
+\end{itemize}

@@ -20,7 +20,11 @@ all: $(MAIN).pdf ## Generate the PDF (default)
 $(MAIN).pdf: $(SOURCES)
 	@echo "Generating PDF (Pass 1)..."
 	$(LATEX) $(LATEX_FLAGS) $(MAIN).tex
-	@echo "Generating PDF (Pass 2 for references/TOC)..."
+	@echo "Running BibTeX..."
+	bibtex $(MAIN)
+	@echo "Generating PDF (Pass 2 for citations)..."
+	$(LATEX) $(LATEX_FLAGS) $(MAIN).tex
+	@echo "Generating PDF (Pass 3 for references/TOC)..."
 	$(LATEX) $(LATEX_FLAGS) $(MAIN).tex
 	@echo "Done! PDF generated: $(MAIN).pdf"
 

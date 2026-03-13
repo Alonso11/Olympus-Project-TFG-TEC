@@ -1,0 +1,51 @@
+\section{Terms, Definitions, Acronyms}
+
+Esta sección establece la terminología y las abreviaturas utilizadas a lo largo del SyRS/SRS para asegurar consistencia semántica y evitar ambigüedades, especialmente en requisitos (RF/RNF/CON), ConOps, arquitectura MBSE/SysML e ingeniería de V\&V. \cite{omg_sysml_mbse, nasa_cm}
+Los términos aquí definidos se emplean con significado único dentro del documento; cuando se usa un término en inglés (p. ej., ConOps, V\&V, BDD), se incluye por alineamiento con la práctica del proyecto y la notación ya presente en los borradores. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi} 
+
+\subsection{Terms and Definitions}
+
+A continuación se definen los términos clave del SyRS/SRS:
+
+\begin{description}
+    \item[ELANav (Embedded Library for Autonomous Navigation):] Biblioteca embebida de navegación autónoma utilizada y validada en el Rover Olympus; integra percepción, estimación/fusión y toma de decisiones para apoyar UC‑01 en terreno análogo. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi} 
+    \item[Rover Olympus:] Plataforma tipo rover (académica) diseñada como banco de pruebas para validar ELANav; integra hardware COTS y se organiza en 7 subsistemas (STR, TRAC, PROP, C\&DH, EPS, COMMS, GNC). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item[Caso de Uso (Use Case):] Descripción operacional de una interacción sistema‑actores con objetivos, flujo nominal y contingencias; en este SyRS el caso núcleo es UC‑01 (Exploración autónoma de superficie). \cite{segoldmine_ppi, nasa_cm, omg_sysml_mbse} 
+    \item[UC‑01 (Exploración de superficie):] Operación en la cual el rover analiza el terreno y navega de forma autónoma, manteniendo percepción continua, evitación de obstáculos y compensación de deslizamiento, reportando telemetría a estación terrena. \cite{nasa_cm, segoldmine_ppi}  
+    \item[ConOps (Concept of Operations):] Descripción del concepto de operación del sistema a nivel de misión (fases, escenarios, ciclo diario, restricciones operacionales) que contextualiza los requisitos y criterios de V\&V. \cite{segoldmine_ppi, nasa_cm}  
+    \item[Sitio Análogo (Analog Site):] Terreno de prueba en la Tierra utilizado para emular condiciones relevantes de superficie planetaria (p. ej., terreno volcánico, regolito simulado, pendientes y obstáculos) para validación del rover. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item[Slip Ratio / Deslizamiento:] Diferencia entre avance/velocidad teórica y real del sistema de locomoción; en este proyecto se utiliza un umbral de contingencia asociado a slip $>$ 20\% (activación de fault stop). \cite{omg_sysml_mbse, nasa_cm} 
+    \item[Estación Terrena (Ground Control Station, GCS):] Sistema externo operado por el Rover Planner/Ground Operator para enviar comandos/objetivos (uplink) y recibir telemetría/datos (downlink) durante las campañas en entorno análogo. \cite{nasa_cm, segoldmine_ppi}
+    \item[CSP (CubeSat Space Protocol):] Protocolo utilizado para encapsulamiento de telemetría y comandos (TM/CMD) sobre el enlace rover–estación terrena, con verificación de integridad asociada. \cite{omg_sysml_mbse, nasa_cm} 
+    \item[V\&V (Verification and Validation):] Conjunto de actividades para verificar que el sistema cumple sus requisitos (RF/RNF/CON) y validar que satisface su propósito operacional en escenarios representativos (entorno análogo), usando métodos T/A/D/I. \cite{omg_sysml_mbse, nasa_cm}
+    \item[Yocto Project:] Conjunto de herramientas y metadatos para construir imágenes de \emph{Linux embebido} a la medida. Se adopta como base del SO en C\&DH/GNC (imagen propia del proyecto).
+    \item[Store-and-forward:] Estrategia de red en la que un nodo intermedio recibe, almacena temporalmente y reenvía paquetes (retransmisor CSP) para salvar obstrucciones de LoS.
+\end{description}
+
+\subsection{Acronyms and Abbreviations}
+
+Acrónimos y abreviaturas principales:
+
+\begin{itemize}
+    \item \textbf{BDD:} Block Definition Diagram (SysML). \cite{omg_sysml_mbse}  
+    \item \textbf{IBD:} Internal Block Diagram (SysML). \cite{omg_sysml_mbse}  
+    \item \textbf{PBS:} Physical Breakdown Structure (descomposición física/ensambles). \cite{omg_sysml_mbse, segoldmine_ppi}  
+    \item \textbf{ASM:} Assembly / identificadores de ensamble físico (ASM‑xxxx) usados para trazabilidad física e integración. \cite{segoldmine_ppi, nasa_cm}  
+    \item \textbf{COTS:} Commercial Off‑The‑Shelf (componentes comerciales). \cite{omg_sysml_mbse, nasa_cm}  
+    \item \textbf{C\&DH:} Command \& Data Handling (computación y manejo de comandos/datos a bordo). \cite{segoldmine_ppi, nasa_cm}  
+    \item \textbf{EPS:} Electrical Power System (subsistema de potencia). \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{GNC:} Guidance, Navigation \& Control (subsistema de guiado/navegación/control). \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{COMMS:} Communications (subsistema de comunicaciones). \cite{nasa_cm, segoldmine_ppi}  
+    \item (Eliminado) MOV/SCI/ENV/C\&A: No forman parte de la arquitectura oficial del Rover Olympus en este SyRS (baseline de 7 subsistemas).
+    \item \textbf{GCS:} Ground Control Station (estación terrena). \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{TM/CMD:} Telemetry / Commands (telemetría y comandos). \cite{segoldmine_ppi, omg_sysml_mbse}  
+    \item \textbf{T/A/D/I:} Test / Analysis / Demonstration / Inspection (métodos de verificación). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{AX.25:} Protocolo de enlace de datos (derivado de HDLC) usado en radio UHF con modulación GFSK a 9600\,bps y encapsulado \emph{KISS}.
+    \item \textbf{KISS:} Encapsulamiento ligero para transportar tramas AX.25 sobre un puerto serie (USB/UART) entre TNC y OBC.
+    \item \textbf{RDP (Reliable Datagram Protocol):} Protocolo de transporte fiable (CSP-RDP) con handshake y ACKs para TM/CMD crítica.
+\end{itemize}
+
+Nota de trazabilidad interna:
+\begin{itemize}
+    \item Basado en: main.pdf (3.2), main1.pdf (lista de acrónimos y subsistemas), main3.pdf (PBS/ASM, integración y notación de V\&V). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+\end{itemize}

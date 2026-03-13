@@ -1,0 +1,74 @@
+\section{System Context and Overview}\label{sec:system_context}
+
+Esta sección describe el contexto del sistema Rover Olympus, su propósito operativo y los límites del sistema dentro del ``ecosistema'' de misión (operador–estación terrena–entorno), estableciendo el marco para interpretar correctamente los requisitos RF/RNF/CON y su verificación/validación. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+El Rover Olympus se concibe como una plataforma académica de validación para ELANav, por lo que el énfasis del contexto se centra en: (i) operación en entornos análogos (terreno volcánico/regolito simulado), (ii) ejecución de exploración autónoma (UC‑01) con contingencias típicas (p. ej., alto slip, pérdida de enlace), y (iii) telemetría/comandos desde estación terrena bajo latencia simulada. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+
+\subsection{Mission Objectives}\label{subsec:mission_objectives}
+
+\textbf{Objetivo de misión del sistema (académico/validación):} Validar la operación de ELANav en un rover tipo exploración mediante la ejecución del UC‑01 (Exploración autónoma de superficie), demostrando capacidades de percepción, estimación/fusión y toma de decisiones autónoma sobre terreno análogo. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+
+\textbf{Objetivos técnicos asociados al UC‑01 (medibles vía V\&V):}
+\begin{enumerate}
+    \item Percepción visual y adquisición confiable de datos de entorno.
+    \item Clasificación de transitabilidad para navegación segura.
+    \item Evitación reactiva de obstáculos.
+    \item Compensación dinámica de deslizamiento (slip) y respuesta a contingencias (fault stop).
+    \item Reporte de telemetría íntegra hacia estación terrena. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}
+\end{enumerate}
+
+\subsection{System Description}\label{subsec:system_description}
+
+El Rover Olympus es un sistema robótico terrestre (tipo rover) compuesto por hardware COTS e integrado para ejecutar y validar algoritmos de navegación autónoma (ELANav). El sistema se organiza arquitectónicamente en 7 subsistemas:
+\begin{itemize}
+    \item \textbf{Structural:} Provee integridad mecánica y el chasis del rover.
+    \item \textbf{Tracción:} Transmisión de potencia al suelo y geometría de locomoción.
+    \item \textbf{Propulsión:} Generación de torque mediante motores DC y drivers L298N.
+    \item \textbf{C\&DH (Command \& Data Handling):} Computación a bordo (Raspberry Pi 5) y manejo de datos.
+    \item \textbf{Energía (EPS):} Gestión, monitoreo (INA219) y distribución de potencia.
+    \item \textbf{COMM:} Enlace de datos RF/WiFi y protocolos de misión (CSP).
+    \item \textbf{GNC (Guía, Navegación y Control):} Inteligencia de navegación, percepción visual y fusión sensorial. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}
+\end{itemize}
+El sistema está diseñado para operar con apoyo de estación terrena (GCS) que envía objetivos/comandos de alto nivel y recibe telemetría, preservando el principio operacional de UC‑01: ejecución autónoma continua en el terreno con supervisión y registro de datos. \cite{omg_sysml_mbse, segoldmine_ppi, nasa_cm} 
+
+\subsection{System Boundary and External Entities}\label{subsec:system_boundary}
+
+\textbf{Frontera del sistema:} La frontera física del Rover Olympus se define por el conjunto integrado dentro del chasis/estructura del rover, incluyendo los 7 subsistemas internos (STR, TRAC, PROP, C\&DH, EPS, COMMS, GNC) y sus interconexiones internas. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+
+\textbf{Entidades externas relevantes:}
+\begin{itemize}
+    \item \textbf{1) Estación Terrena / Operador (GCS):} Actor externo que planifica, configura y supervisa la operación, realizando uplink de comandos/objetivos y downlink de telemetría/datos. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{2) Entorno (Terreno Análogo):} Superficie volcánica/regolito simulado que provee pendientes, obstáculos, transiciones de suelo y variabilidad de iluminación para la validación del UC‑01. \cite{omg_sysml_mbse, segoldmine_ppi, nasa_cm}  
+    \item \textbf{3) Infraestructura de comunicaciones:} Medio y red que soportan el enlace rover–GCS (p. ej., Wi‑Fi/2.4 GHz), transporte IP/UDP y encapsulamiento CSP para TM/CMD. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi} 
+\end{itemize}
+
+\subsection{Operational Environment}\label{subsec:operational_environment}
+
+\textbf{Entorno operacional de validación (real):} El Rover Olympus opera y se valida en entornos análogos (terreno volcánico/regolito simulado) con pendientes de hasta 20°, presencia de grava/arena suelta y obstáculos representativos, y con variabilidad de iluminación (p. ej., zonas de sombra). \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+\textbf{Condiciones operacionales relevantes para UC‑01:} Se considera la ejecución bajo latencia simulada en comunicaciones (0–5 s) y la ocurrencia de eventos de alto deslizamiento (slip $>$ 20\%) como contingencias operacionales a gestionar por el sistema (fault stop/recuperación). \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+\textbf{Entornos de referencia (conceptuales):} Los borradores usan Luna y Marte como referencia conceptual para motivar condiciones de operación y riesgos (p. ej., baja iluminación, suelos sueltos); el entorno de aceptación para este SyRS es el sitio análogo terrestre definido arriba. \cite{omg_sysml_mbse, segoldmine_ppi} 
+
+\subsection{Assumptions and Dependencies}\label{subsec:assumptions}
+
+\textbf{Suposiciones (assumptions):}
+\begin{itemize}
+    \item \textbf{1)} El rover ejecuta ELANav localmente a bordo (procesamiento ``on‑board'') sobre un sistema operativo Linux embebido, con un esquema de software basado en agentes. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+    \item \textbf{2)} La operación nominal del UC‑01 asume que el rover puede recibir objetivos de alto nivel desde GCS, pero ejecuta navegación de forma autónoma. \cite{segoldmine_ppi, nasa_cm, omg_sysml_mbse}  
+    \item \textbf{3)} La validación se realiza en 1g (Tierra) y el sitio análogo se considera representativo para demostrar el comportamiento funcional requerido. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+\end{itemize}
+
+\textbf{Dependencias (dependencies):}
+\begin{itemize}
+    \item \textbf{1)} Dependencia de enlace rover–GCS sobre infraestructura Wi‑Fi/2.4 GHz (o equivalente) con transporte IP/UDP y encapsulamiento CSP. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+    \item \textbf{2)} Dependencia de sensores/actuadores COTS y buses internos (CSI‑2, I2C, GPIO, PWM) descritos en la arquitectura y matriz de integración (N2/PBS/ASM). \cite{segoldmine_ppi, nasa_cm, omg_sysml_mbse} 
+\end{itemize}
+
+\subsection{Constraints}\label{subsec:constraints}
+
+Las siguientes restricciones delimitan el diseño, la implementación y/o la validación del Rover Olympus en este SyRS:
+
+\begin{enumerate}
+    \item \textbf{Restricción de plataforma COTS:} El sistema se implementa con hardware COTS, lo cual condiciona desempeño y tolerancias ambientales frente a un rover espacial ``flight‑grade''. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+    \item \textbf{CON‑001 (Simplificación energética):} La campaña académica se define como ``lab‑only / sitio análogo'', sin imponer las mismas restricciones energéticas estrictas que una misión espacial real. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{CON‑002 (Inyección de latencia):} Se impone latencia simulada de 0–5 s en el enlace de comunicación para emular retrasos operacionales. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Restricción de entorno de validación:} La aceptación del sistema se evalúa en un sitio análogo terrestre con pendientes hasta 20° y transiciones de suelo. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse} 
+\end{enumerate}

@@ -11,26 +11,21 @@
 \usepackage{tabularx}
 \usepackage{booktabs}
 \usepackage[hidelinks]{hyperref}
+\usepackage[spanish, capitalize]{cleveref}
 \usepackage{titlesec}
 \usepackage{enumitem}
 \usepackage{tocloft}
-
-% --- ToC Spacing Adjustment ---
-\renewcommand{\cftaftertoctitle}{\vspace{-1em}}
-\setlength{\cftbeforesecskip}{2pt}
-\setlength{\cftbeforesubsecskip}{1pt}
 \usepackage{float}
 \usepackage{longtable}
+\usepackage{pdflscape}
+\usepackage{array}
 \usepackage{caption}
 \usepackage[table]{xcolor}
+\usepackage{multirow}
+\usepackage{mdframed}
+\usepackage{amssymb}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, shadows, babel}
-
-% --- TikZ Styles for Diagrams ---
-\tikzset{
-    block/.style={rectangle, draw, fill=AgencyBlue!10, text width=8em, text centered, rounded corners, minimum height=3em, copy shadow},
-    line/.style={draw, -{Latex[length=2mm]}, thick}
-}
 
 % --- Custom Colors ---
 \definecolor{AgencyBlue}{RGB}{0, 51, 102}
@@ -38,8 +33,8 @@
 % --- Header & Footer ---
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{\color{AgencyBlue}\textbf{Rover Olympus }}
-\rhead{\color{AgencyBlue}SRS - ISO/IEC/IEEE 29148:2018}
+\lhead{\color{AgencyBlue}\textbf{Rover Olympus}}
+\rhead{\color{AgencyBlue}SyRS - ISO/IEC/IEEE 29148:2018}
 \lfoot{\small \copyright \the\year \ SETEC Lab - Space Systems Laboratory}
 \rfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -47,76 +42,96 @@
 % --- Formatting ---
 \titleformat{\section}{\color{AgencyBlue}\normalfont\Large\bfseries}{\thesection}{1em}{}
 \titleformat{\subsection}{\color{AgencyBlue}\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\color{AgencyBlue}\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{\paragraph}{\color{AgencyBlue}\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
 
-% --- Requirements Counter ---
-\newcounter{reqcount}
-\newcommand{\reqid}[1]{#1-\the\numexpr\value{reqcount}+1\relax\stepcounter{reqcount}}
+% --- Compact TOC spacing ---
+\setlength{\cftbeforesecskip}{2pt}
+\setlength{\cftbeforesubsecskip}{0pt}
+\setlength{\cftbeforesubsubsecskip}{0pt}
+\renewcommand{\cftdotsep}{1}
+
+% --- Requirements Counters ---
+\newcounter{frcount}
+\newcommand{\frid}{\stepcounter{frcount}RF-\ifnum\value{frcount}<10 00\else\ifnum\value{frcount}<100 0\fi\fi\thefrcount}
+
+\newcounter{nfrcount}
+\newcommand{\nfrid}{\stepcounter{nfrcount}RNF-\ifnum\value{nfrcount}<10 00\else\ifnum\value{nfrcount}<100 0\fi\fi\thenfrcount}
+
+\newcounter{concount}
+\newcommand{\conid}{\stepcounter{concount}CON-\ifnum\value{concount}<10 00\else\ifnum\value{concount}<100 0\fi\fi\theconcount}
+
+\newmdenv[
+    linecolor=AgencyBlue,
+    linewidth=1pt,
+    roundcorner=2pt,
+    backgroundcolor=AgencyBlue!2,
+    innerleftmargin=10pt,
+    innerrightmargin=10pt,
+    innertopmargin=8pt,
+    innerbottommargin=8pt,
+    skipabove=10pt,
+    skipbelow=10pt
+]{reqbox}
+
+\newcommand{\sysreq}[5]{
+    \begin{reqbox}
+        \noindent\textbf{#1: #2} \hfill \textit{Prioridad: #3} \\
+        \rule{\textwidth}{0.4pt} \\
+        \small
+        \textbf{Fuente:} #4 \\
+        \textbf{Verificación:} #5
+    \end{reqbox}
+}
 
 % --- Document Info ---
 \title{
-
     \begin{center}
         \includegraphics[height=2.5cm]{figures/TEC.png} \hspace{4cm}
         \includegraphics[height=2.8cm]{figures/setecLAb.jpg}
     \end{center}
     \vspace{1cm}
-    \textbf{\Huge Especificación de Requerimientos del Sistema (SRS)}\\
+    \textbf{\Huge System Requirements Specification (SyRS)}\\
     \vspace{1.5cm}
-    \Large Rover Autónomo de Exploración Lunar \\
+    \Large Rover Olympus: Plataforma de Validación para ELANav\\
+    \large ISO/IEC/IEEE 29148:2018 Restructured Edition
 }
-
-\date{}
+\date{\today}
 
 \begin{document}
 
 \maketitle
 \thispagestyle{empty}
-
-\vspace{1cm}
-\section*{Información del Documento}
-\begin{table}[H]
-    \centering
-    \begin{tabularx}{\textwidth}{|l|X|}
-        \hline
-        \rowcolor{AgencyBlue!20} \textbf{Título} & \textbf{Software Requirements Specification for Rover Olympus} \\ \hline
-        \textbf{Fecha} & \today \\ \hline
-        \textbf{Estado} & Draft / En Revisión \\ \hline
-        \textbf{Versión} & 2.2 \\ \hline
-        \textbf{Preparado para} & SETEC Lab - Space Systems Laboratory \\ \hline
-        \textbf{Referencia} & SRS-OLYMPUS-2026-V2.2 \\ \hline
-    \end{tabularx}
-\end{table}
-
+\newpage
+{
+  \small
+  \tableofcontents
+}
 \newpage
 
-% --- Revision History ---
-\section*{Control de Revisiones}
-\begin{table}[H]
-    \centering
-    \begin{tabularx}{\textwidth}{|l|l|X|l|}
-        \hline
-        \rowcolor{AgencyBlue!20} \textbf{Fecha} & \textbf{Versión} & \textbf{Descripción} & \textbf{Autor} \\ \hline
-        10/02/2026 & 1.0 & Creación inicial del documento. & SETEC Lab \\ \hline
-        17/02/2026 & 2.0 & Reestructuración bajo híbrido ISO 29148 y NASA SE. & Gemini CLI \\ \hline
-        17/02/2026 & 2.1 & Unificación de formato según estándares Annex-A. & Gemini CLI \\ \hline
-        18/02/2026 & 2.2 & Mejora a grado profesional (Requerimientos, Arquitectura, V\&V y Riesgos). & Gemini CLI \\ \hline
-    \end{tabularx}
-\end{table}
-\newpage
-\begingroup
-\enlargethispage{2cm} % Give it a little more room
-\small
-\tableofcontents
-\endgroup
-\newpage
+% --- Restructured Sections 1-13 ---
+\input{sections/s01_introduction}
+\input{sections/s02_references}
+\input{sections/s03_terms_definitions}
+\input{sections/s04_system_context}
+\input{sections/s05_stakeholders}
+\input{sections/s06_conops_summary}
+\input{sections/s10_architecture_models}
+\input{sections/s07_system_interfaces}
+\input{sections/s08_req_org_notation}
+\input{sections/s09_system_requirements}
+\input{sections/s09a_teamtet_requirements}
+\input{sections/s11_v_v_acceptance}
+\input{sections/s11a_teamtet_verification}
+\input{sections/s11b_teamtet_testcases}
+\input{sections/s12_traceability_change}
+\input{sections/s13_appendices}
 
-% --- Sections ---
-\input{sections/01_introduccion}
-\input{sections/02_analisis_casos_uso}
-\input{sections/03_requerimientos}
-\input{sections/04_arquitectura}
-\input{sections/05_integracion}
-\input{sections/06_validacion}
-\input{sections/07_gestion_riesgos}
+\newpage
+\bibliographystyle{ieeetr}
+\bibliography{references}
 
 \end{document}

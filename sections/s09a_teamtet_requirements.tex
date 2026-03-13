@@ -1,0 +1,411 @@
+% =========================================================
+% TEAM TET — Análisis y síntesis de requerimientos (SyRS/SRS)
+% Inserción: después de s09_system_requirements
+% Fuente: main.pdf (ConOps, UC, arquitectura, RF/RNF/CON, V&V)
+% =========================================================
+
+\section{Análisis y síntesis de requerimientos}\label{sec:teamtet_requirements}
+
+\subsubsection{Introducción breve}
+Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) verificables y trazables a ConOps y Casos de Uso, siguiendo el enfoque CONOPS $\rightarrow$ Casos de Uso $\rightarrow$ SyRS/SRS $\rightarrow$ Matrices de Verificación (I/A/D/T). El foco operacional es UC-01 (Exploración de superficie) y su ciclo diario (uplink--ejecución autónoma--downlink--idle) en sitio análogo.
+
+% ---------- Formato estándar de requisito ----------
+% (Se usan \providecommand para evitar choques si ya existen macros similares)
+\providecommand{\ReqID}[1]{\textbf{ID:} #1}
+\providecommand{\ReqShall}[1]{\textbf{Enunciado:} #1}
+\providecommand{\ReqMetric}[1]{\textbf{Criterio cuantitativo:} #1}
+\providecommand{\ReqCond}[1]{\textbf{Condición de aplicación:} #1}
+\providecommand{\ReqAccept}[1]{\textbf{Criterio de aceptación:} #1}
+\providecommand{\ReqTrace}[1]{\textbf{Trazabilidad:} #1}
+
+\newenvironment{reqblock}{%
+  \begin{itemize}
+    \setlength{\itemsep}{0.25em}
+    \setlength{\parskip}{0em}
+    \setlength{\parsep}{0em}
+    \setlength{\leftmargin}{1.5em}
+  }{\end{itemize}}
+
+% =========================================================
+% 1.2 SyRS — Requerimientos del sistema (SyRS-###)
+% =========================================================
+\subsubsection{SyRS — Requerimientos del sistema}
+
+\paragraph{Top-level requirements}
+\begin{reqblock}
+  \item \ReqID{SyRS-001}
+  \item \ReqShall{El sistema deberá operar como plataforma de validación de ELANav ejecutando el caso de uso UC-01 (Exploración de superficie) en un sitio análogo terrestre.}
+  \item \ReqMetric{Ejecución completa del ciclo operacional (uplink $\rightarrow$ ejecución autónoma $\rightarrow$ downlink $\rightarrow$ idle) al menos 1 vez por campaña de verificación.}
+  \item \ReqCond{Fase 4 (Operación nominal) en sitio análogo.}
+  \item \ReqAccept{Registro de misión que evidencie: comando de inicio, ejecución autónoma y transmisión de telemetría/datos.}
+  \item \ReqTrace{CONOPS: Fase 4 (§6.1) y Ciclo diario (§7.3.9); CU: UC-01 (§7.3).}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-002}
+  \item \ReqShall{El sistema deberá estar compuesto por los 7 subsistemas: STR, TRAC, PROP, C\&DH, EPS, COMMS y GNC.}
+  \item \ReqMetric{7/7 subsistemas identificados y presentes en el baseline de arquitectura e integración.}
+  \item \ReqCond{Baseline de arquitectura del sistema.}
+  \item \ReqAccept{Evidencia documental del BDD/arquitectura mostrando los 7 subsistemas.}
+  \item \ReqTrace{Arquitectura: §8.1; Contexto del sistema: §4.2.}
+\end{reqblock}
+
+\paragraph{Functional requirements}
+\begin{reqblock}
+  \item \ReqID{SyRS-010}
+  \item \ReqShall{El sistema deberá adquirir percepción visual mediante cámara CSI frontal para soportar la exploración autónoma.}
+  \item \ReqMetric{Campo de visión horizontal $\ge$ 120°.}
+  \item \ReqCond{UC-01 en modo Exploración activa.}
+  \item \ReqAccept{Evidencia (capturas/stream) que demuestre adquisición CSI y FOV medido $\ge$ 120°.}
+  \item \ReqTrace{CU: UC-01; Req: RF-001 / GNC-REQ-001.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-011}
+  \item \ReqShall{El sistema deberá clasificar la transitabilidad del terreno para soportar decisiones de ruta segura en UC-01.}
+  \item \ReqMetric{Confianza de clasificación $\ge$ 95\% en sectores de 10$\times$10 cm.}
+  \item \ReqCond{UC-01 durante Evaluar/Planificar.}
+  \item \ReqAccept{Reporte de prueba con evidencia de desempeño $\ge$ 95\% bajo el criterio definido en el procedimiento de verificación.}
+  \item \ReqTrace{CU: UC-01; Req: RF-002 / GNC-REQ-002.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-012}
+  \item \ReqShall{El sistema deberá evitar obstáculos durante la navegación autónoma para prevenir colisiones y atascos.}
+  \item \ReqMetric{0 colisiones con obstáculos de altura $\ge$ 20 cm durante un recorrido de verificación.}
+  \item \ReqCond{UC-01 en Desplazarse/EvitarObstáculo.}
+  \item \ReqAccept{Video/telemetría + registro de eventos (\texttt{obstacle\_detected}/\texttt{cleared}) sin colisiones.}
+  \item \ReqTrace{CU: UC-01; Req: RF-003; Eventos: EVT-MOB001.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-013}
+  \item \ReqShall{El sistema deberá compensar dinámicamente el deslizamiento (slip) durante la navegación.}
+  \item \ReqMetric{Reducción de error $\ge$ 30\% mediante fusión/estimación (EKF) respecto a la línea base.}
+  \item \ReqCond{UC-01 en terreno con transiciones/pendientes.}
+  \item \ReqAccept{Análisis comparativo (baseline vs EKF) que evidencie mejora $\ge$ 30\%.}
+  \item \ReqTrace{CU: UC-01; Req: RF-004; Interfaces internas SW condicionadas por desempeño.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-014}
+  \item \ReqShall{El sistema deberá ejecutar una parada segura (Fault Stop) ante deslizamiento (slip) > 20\%.}
+  \item \ReqMetric{Activación de Fault Stop en < 5 s desde la detección de slip > 20\%.}
+  \item \ReqCond{UC-01 durante Desplazarse en terreno que induzca slip.}
+  \item \ReqAccept{Log de evento + medición temporal que muestre slip > 20\% y detención dentro de 5 s.}
+  \item \ReqTrace{CU: UC-01; Req: RF-005; umbral slip > 20\% (contingencia).}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-015}
+  \item \ReqShall{El sistema deberá detener el giro de las ruedas en respuesta a una señal de Fault Stop.}
+  \item \ReqMetric{Tiempo de detención $\le$ 500 ms tras la señal de Fault Stop.}
+  \item \ReqCond{UC-01, cualquier estado con movimiento.}
+  \item \ReqAccept{Medición con telemetría/encoder/corriente que demuestre paro $\le$ 500 ms.}
+  \item \ReqTrace{Req: PROP-REQ-002 (soporte a RF-005).}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-016}
+  \item \ReqShall{El sistema deberá asegurar la integridad de telemetría y comandos usando CSP como encapsulamiento sobre el enlace Rover--GCS.}
+  \item \ReqMetric{100\% de paquetes TM/CMD de prueba verificados como válidos por el mecanismo de integridad (checksum/CRC) definido por CSP.}
+  \item \ReqCond{UC-01 (uplink/downlink) y ciclo diario.}
+  \item \ReqAccept{Captura de tráfico + verificación de integridad documentada.}
+  \item \ReqTrace{CU: UC-01; Req: RF-006 / COMM-REQ-001; Interfaces: §9.1.1 / §9.4.1.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-017}
+  \item \ReqShall{El sistema deberá reportar voltaje y corriente al C\&DH para monitoreo de energía.}
+  \item \ReqMetric{Frecuencia $\ge$ 1 Hz y precisión $\pm$ 1\%.}
+  \item \ReqCond{Operación nominal y modo seguro.}
+  \item \ReqAccept{Registro de telemetría EPS (serie temporal) que demuestre $\ge$ 1 muestra/s y error dentro de $\pm$ 1\%.}
+  \item \ReqTrace{CU: UC-01 (monitorizar estado); Req: EPS-REQ-001.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-018}
+  \item \ReqShall{El sistema deberá mantener un enlace de comunicaciones en 2.4 GHz en línea de vista durante campañas de validación.}
+  \item \ReqMetric{Alcance $\ge$ 50 m en línea de vista.}
+  \item \ReqCond{Sitio análogo, operación nominal.}
+  \item \ReqAccept{Prueba de rango con TM/CMD que evidencie enlace estable hasta $\ge$ 50 m (definición de estabilidad según procedimiento; si no existe, TBD).}
+  \item \ReqTrace{Interfaces externas; Req: COMM-REQ-002.}
+\end{reqblock}
+
+\paragraph{Usability requirements}
+\begin{reqblock}
+  \item \ReqID{SyRS-030}
+  \item \ReqShall{El sistema deberá proveer al GCS telemetría de estado suficiente para observar el modo operativo y la salud del sistema durante UC-01.}
+  \item \ReqMetric{Cada mensaje de estado incluye: modo actual, timestamp, estado de enlace y telemetría de energía (V/I).}
+  \item \ReqCond{UC-01 durante comunicación y ventanas de comunicación.}
+  \item \ReqAccept{Captura TM que muestre campos requeridos y decodificación en GCS.}
+  \item \ReqTrace{CONOPS: downlink/ciclo diario; CU: UC-01; Interfaces: §9.1/§9.4; EPS telemetría.}
+\end{reqblock}
+
+\paragraph{Performance requirements}
+\begin{reqblock}
+  \item \ReqID{SyRS-040}
+  \item \ReqShall{El sistema deberá sostener el procesamiento a bordo de agentes dentro de la latencia máxima establecida.}
+  \item \ReqMetric{$\le$ 2 s por ciclo de agente.}
+  \item \ReqCond{UC-01, modo Exploración activa.}
+  \item \ReqAccept{Medición de latencia por ciclo en logs del sistema con estadísticos (definidos en el procedimiento) $\le$ 2 s.}
+  \item \ReqTrace{CU: UC-01; Req: RNF-001; §9.4.2.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-041}
+  \item \ReqShall{El sistema deberá mantener la precisión de navegación dentro del error máximo permitido durante un recorrido de validación.}
+  \item \ReqMetric{Error < 5\% de la distancia total recorrida.}
+  \item \ReqCond{UC-01 en sitio análogo (pendientes/transiciones).}
+  \item \ReqAccept{Comparación entre distancia estimada vs medición de referencia con error relativo < 5\% (método de referencia definido en el procedimiento; si no existe, TBD).}
+  \item \ReqTrace{CU: UC-01; Req: RNF-003.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-042}
+  \item \ReqShall{El sistema deberá demostrar resiliencia ante contingencias operacionales mediante maniobras de recuperación/``rescate''.}
+  \item \ReqMetric{Éxito $\ge$ 90\% en maniobras de rescate definidas por V\&V.}
+  \item \ReqCond{UC-01 bajo contingencias (p.\,ej., atascos, pérdida de enlace, condiciones adversas).}
+  \item \ReqAccept{Resultados de campaña con conteo de intentos/éxitos $\ge$ 90\% (definición de rescate según procedimiento; si no existe, TBD).}
+  \item \ReqTrace{CU: UC-01; Req: RNF-002; Modos: HomingRetreat/SafeMode.}
+\end{reqblock}
+
+\paragraph{System interface requirements}
+\begin{reqblock}
+  \item \ReqID{SyRS-050}
+  \item \ReqShall{El sistema deberá intercambiar TM/CMD con el GCS mediante UDP/IP y encapsulado CSP.}
+  \item \ReqMetric{Mensajes TM/CMD decodificables como paquetes CSP transportados por UDP/IP.}
+  \item \ReqCond{Uplink y downlink del ciclo diario; UC-01.}
+  \item \ReqAccept{Captura de red (pcap) + decodificación CSP de mensajes de prueba.}
+  \item \ReqTrace{CONOPS: ciclo diario; CU: UC-01; Interfaces: §9.1.1 y §9.4.1.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-051}
+  \item \ReqShall{El sistema deberá permitir la inyección de latencia en el enlace Rover--GCS dentro del rango definido por la restricción CON-002.}
+  \item \ReqMetric{Latencia simulada configurable entre 0 y 5 s.}
+  \item \ReqCond{Campañas que requieran emulación de retardo operacional.}
+  \item \ReqAccept{Evidencia de configuración + medición de retardo efectivo dentro de [0, 5] s.}
+  \item \ReqTrace{CONOPS/Restricción: CON-002; Interfaces: §9.1.1/§9.4.1.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-052}
+  \item \ReqShall{El sistema deberá implementar las interfaces internas necesarias entre subsistemas conforme al IBD/N2 físico para soportar UC-01.}
+  \item \ReqMetric{Existencia de conectividad funcional para al menos: CSI-2 (cámara), I2C (telemetría EPS), PWM/CTRL (actuación PROP) y bus de datos C\&DH$\leftrightarrow$GNC$\leftrightarrow$COMMS.}
+  \item \ReqCond{Integración física del sistema.}
+  \item \ReqAccept{Inspección del IBD/N2 + prueba básica (smoke test) de sensado, actuación y enlace.}
+  \item \ReqTrace{Arquitectura/Interfaces: Cuadro N2 (Cuadro 5) y §9.5; CU: UC-01.}
+\end{reqblock}
+
+\paragraph{Operation \& modes}
+\begin{reqblock}
+  \item \ReqID{SyRS-060}
+  \item \ReqShall{El sistema deberá soportar los modos Standby, Exploración activa, HomingRetreat, SafeMode y Final, y transicionar entre ellos por eventos definidos.}
+  \item \ReqMetric{Transiciones disparadas por al menos: cmd\_start\_exploration, cmd\_pause\_exploration, cmd\_homing\_retreat, sw\_fault\_critical, power\_anomaly\_detected, cmd\_end\_mission.}
+  \item \ReqCond{Operación UC-01 y contingencias.}
+  \item \ReqAccept{Evidencia de ejecución de la máquina de estados (logs evento/estado) conforme a las tablas de transición.}
+  \item \ReqTrace{Modelo de estados y tablas: §7.3.8; CU: UC-01.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-061}
+  \item \ReqShall{El sistema deberá ejecutar HomingRetreat al último waypoint seguro cuando se detecten condiciones adversas y la política lo permita.}
+  \item \ReqMetric{Registro de selección de lastSafeWaypoint y navegación hacia él tras conditions\_adverse\_detected.}
+  \item \ReqCond{UC-01; evento conditions\_adverse\_detected con guarda severity\_allows\_retreat (TBD si no está cuantificada).}
+  \item \ReqAccept{Logs de transición a HomingRetreat + llegada safe\_waypoint\_reached.}
+  \item \ReqTrace{Modelo de estados: §7.3.8; CU: UC-01.}
+\end{reqblock}
+
+\paragraph{Maintenance requirements}
+\begin{reqblock}
+  \item \ReqID{SyRS-070}
+  \item \ReqShall{El sistema deberá almacenar datos localmente para permitir recuperación y análisis posterior de campañas.}
+  \item \ReqMetric{Capacidad para al menos 2 horas de telemetría y logs de misión.}
+  \item \ReqCond{Operación nominal de campaña.}
+  \item \ReqAccept{Verificación de almacenamiento disponible + registro continuo de 2 h sin pérdida según procedimiento.}
+  \item \ReqTrace{C\&DH: CDH-REQ-002 (capacidad de almacenamiento); CONOPS: downlink/análisis.}
+\end{reqblock}
+
+\paragraph{Safety \& security requirements}
+\begin{reqblock}
+  \item \ReqID{SyRS-080}
+  \item \ReqShall{El sistema deberá entrar a SafeMode ante falla lógica crítica o anomalía de potencia detectada.}
+  \item \ReqMetric{Transición Any $\rightarrow$ SafeMode ante sw\_fault\_critical o power\_anomaly\_detected.}
+  \item \ReqCond{Cualquier modo.}
+  \item \ReqAccept{Logs de evento y transición; evidencia de acciones de preservación definidas en el procedimiento.}
+  \item \ReqTrace{Eventos: EVT-CDH-010, EVT-EPS-005; Modelo de estados: §7.3.8; CU: UC-01.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-081}
+  \item \ReqShall{El sistema deberá implementar mecanismos de protección eléctrica ante condiciones anómalas mediante EPS (BMS y protecciones asociadas).}
+  \item \ReqMetric{Presencia de mecanismos de protección definidos en EPS (BMS/protecciones/distribución) y verificación funcional según procedimiento.}
+  \item \ReqCond{Integración del subsistema EPS.}
+  \item \ReqAccept{Inspección física + verificación funcional de disparo/aislamiento conforme a procedimiento de prueba.}
+  \item \ReqTrace{Arquitectura EPS/N2: §8.2.1.7 y Cuadro N2 (potencia/protecciones).}
+\end{reqblock}
+
+\paragraph{Regulatory/policy requirements}
+\begin{reqblock}
+  \item \ReqID{SyRS-090}
+  \item \ReqShall{El sistema deberá ser verificado/aceptado bajo el marco operativo lab-only / sitio análogo conforme a la restricción CON-001.}
+  \item \ReqMetric{Evidencia documental de campaña en entorno análogo terrestre (lab-only/sitio análogo).}
+  \item \ReqCond{Aceptación del sistema (campaña).}
+  \item \ReqAccept{Acta/registro de campaña y configuración del entorno.}
+  \item \ReqTrace{Restricción: CON-001; CONOPS: §7.3.11.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SyRS-091}
+  \item \ReqShall{El sistema deberá ser validado en un entorno que incluya pendientes de hasta 20° y obstáculos representativos para evaluar navegación y evitación.}
+  \item \ReqMetric{Presencia de pendiente $\le$ 20° e inclusión de obstáculos representativos en el setup de validación.}
+  \item \ReqCond{Validación de UC-01 en sitio análogo.}
+  \item \ReqAccept{Evidencia del setup del sitio (medición de pendiente/obstáculos) en el reporte de campaña.}
+  \item \ReqTrace{CONOPS/Entorno: §4.4 y §7.3.11; CU: UC-01.}
+\end{reqblock}
+
+\paragraph{Environmental / lifecycle / transport (si aplica)}
+\begin{reqblock}
+  \item \ReqID{SyRS-100}
+  \item \ReqShall{El sistema deberá proteger la electrónica (C\&DH/EPS) para prevenir ingreso de partículas del sitio análogo.}
+  \item \ReqMetric{Nivel de protección: TBD (si se adopta IP4X u otro criterio verificable).}
+  \item \ReqCond{Operación en sitio análogo con presencia de polvo/partículas.}
+  \item \ReqAccept{Inspección + prueba de exposición a partículas conforme al criterio definido (TBD si no existe).}
+  \item \ReqTrace{STR-REQ-002 (protección de envolvente) y CONOPS (entorno).}
+\end{reqblock}
+
+% =========================================================
+% 1.3 SRS — Requerimientos del software (SRS-###)
+% =========================================================
+\subsubsection{SRS — Requerimientos del software}
+
+\paragraph{External interfaces}
+\begin{reqblock}
+  \item \ReqID{SRS-001}
+  \item \ReqShall{El software deberá encapsular y decapsular mensajes TM/CMD usando CSP sobre UDP/IP en el enlace Rover--GCS.}
+  \item \ReqMetric{Mensajes identificables como CSP y decodificables extremo a extremo.}
+  \item \ReqCond{Uplink/downlink en UC-01.}
+  \item \ReqAccept{Captura pcap + decodificación CSP e integridad verificada.}
+  \item \ReqTrace{Interfaces SW: §9.4.1; CU: UC-01; Req: RF-006.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SRS-002}
+  \item \ReqShall{El software deberá permitir aplicar latencia simulada configurable entre 0 y 5 s al intercambio TM/CMD para emular retardo operacional.}
+  \item \ReqMetric{Rango configurable [0, 5] s.}
+  \item \ReqCond{Campañas con CON-002 activa.}
+  \item \ReqAccept{Prueba que mida el retardo impuesto dentro del rango configurado.}
+  \item \ReqTrace{Restricción: CON-002; Interfaces SW: §9.4.1.}
+\end{reqblock}
+
+\paragraph{Software functions}
+\begin{reqblock}
+  \item \ReqID{SRS-010}
+  \item \ReqShall{El software deberá implementar la máquina de estados de UC-01 con estados y transiciones definidos, incluyendo el pseudoestado de history ExploracionActiva.H.}
+  \item \ReqMetric{Evidencia de transición coherente con las tablas (p.\,ej., Standby $\rightarrow$ ExploracionActiva.Evaluar por cmd\_start\_exploration).}
+  \item \ReqCond{Ejecución de UC-01.}
+  \item \ReqAccept{Logs de estado/evento que demuestren trazas válidas para escenarios de prueba definidos.}
+  \item \ReqTrace{Modelo de estados: §7.3.8; CU: UC-01.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SRS-011}
+  \item \ReqShall{El software deberá consumir y producir los eventos definidos en el diccionario formal para UC-01.}
+  \item \ReqMetric{Soporte verificable de eventos mínimos (comando/estado/falla/tiempo) según el diccionario formal.}
+  \item \ReqCond{UC-01 y contingencias.}
+  \item \ReqAccept{Pruebas de inyección de eventos + evidencia de respuesta/consumo y transición adecuada.}
+  \item \ReqTrace{Diccionario de eventos: Cuadro 1; Modelo de estados: §7.3.8; CU: UC-01.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SRS-012}
+  \item \ReqShall{El software deberá ignorar eventos no especificados para un estado dado y registrar el evento con estado, timestamp y event\_id.}
+  \item \ReqMetric{Para eventos no manejados inyectados: 0 transiciones + 100\% eventos registrados con campos requeridos.}
+  \item \ReqCond{Ejecución UC-01.}
+  \item \ReqAccept{Logs verificables con estado, timestamp y event\_id sin cambio de estado.}
+  \item \ReqTrace{Política por defecto: §7.3.8.3; CU: UC-01.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SRS-013}
+  \item \ReqShall{El software deberá detectar pérdida de enlace y ejecutar la lógica de gestión/reconexión definida por los estados/eventos de GestiónEnlace.}
+  \item \ReqMetric{Transición a GestiónEnlace ante link\_lost y retorno a Comunicar ante link\_restored o reconnect\_attempt\_succeeded.}
+  \item \ReqCond{UC-01 durante comunicación.}
+  \item \ReqAccept{Logs de transición y evidencia de reintentos conforme a guardas/políticas (si no están cuantificadas, TBD).}
+  \item \ReqTrace{Modelo de estados: §7.3.8; Eventos: link\_lost/link\_restored; CU: UC-01.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SRS-014}
+  \item \ReqShall{El software deberá detectar condición storage\_near\_full y ejecutar acciones de priorización de downlink/retención conforme a política.}
+  \item \ReqMetric{Generación del evento storage\_near\_full con payload de espacio libre y priorización de transmisión cuando exista ventana de comunicación.}
+  \item \ReqCond{UC-01 en GestiónDatos.}
+  \item \ReqAccept{Evidencia de evento + cambio de prioridad de transmisión en presencia de comms\_window\_open.}
+  \item \ReqTrace{Evento: EVT-CDH-007; Modelo de estados: GestiónDatos$\rightarrow$Comunicar; CU: UC-01.}
+\end{reqblock}
+
+\paragraph{Usability}
+\begin{reqblock}
+  \item \ReqID{SRS-020}
+  \item \ReqShall{El software deberá formar mensajes de telemetría de estado con campos mínimos para observabilidad del operador.}
+  \item \ReqMetric{4/4 campos presentes: modo, timestamp, estado de enlace y V/I.}
+  \item \ReqCond{Downlink durante UC-01.}
+  \item \ReqAccept{Captura y decodificación en GCS mostrando campos mínimos requeridos.}
+  \item \ReqTrace{CONOPS: downlink; CU: UC-01; SyRS-030.}
+\end{reqblock}
+
+\paragraph{Performance}
+\begin{reqblock}
+  \item \ReqID{SRS-030}
+  \item \ReqShall{El software deberá completar cada ciclo de agente en $\le$ 2 s durante UC-01.}
+  \item \ReqMetric{Métrica de cumplimiento: p95 (o la definida en el procedimiento) $\le$ 2 s.}
+  \item \ReqCond{Operación nominal con adquisición y planificación activas.}
+  \item \ReqAccept{Perfilado/logs de tiempos por ciclo que cumplan el umbral.}
+  \item \ReqTrace{Req: RNF-001; Interfaces internas SW: §9.4.2; CU: UC-01.}
+\end{reqblock}
+
+\paragraph{Data / database requirements}
+\begin{reqblock}
+  \item \ReqID{SRS-040}
+  \item \ReqShall{El software deberá persistir logs y telemetría de misión en almacenamiento local para recuperación y análisis posterior.}
+  \item \ReqMetric{Persistencia continua durante al menos 2 horas de operación.}
+  \item \ReqCond{Campaña UC-01.}
+  \item \ReqAccept{Verificación de existencia, integridad y continuidad temporal de los registros.}
+  \item \ReqTrace{C\&DH: CDH-REQ-002; CONOPS: downlink/análisis; CU: UC-01.}
+\end{reqblock}
+
+\paragraph{Design constraints}
+\begin{reqblock}
+  \item \ReqID{SRS-050}
+  % SRS-050 (alineado a Yocto Project)
+  \item \ReqShall{El software \textbf{DEBERÁ} ejecutarse en un entorno de \emph{Linux embebido basado en Yocto Project} (imagen a la medida) en el subsistema C\&DH.}
+  \item \ReqMetric{Verificación de imagen Yocto y servicios.}
+  \item \ReqCond{Integración C\&DH y campañas.}
+  \item \ReqAccept{Evidencia de la \emph{build} Yocto (manifest/lock, hashes de capas, versión de imagen) y verificación de servicios/daemons requeridos operativos en dicha imagen.}
+  \item \ReqTrace{CDH-REQ-001; Suposiciones de ejecución a bordo.}
+\end{reqblock}
+
+\paragraph{Software quality attributes}
+\begin{reqblock}
+  \item \ReqID{SRS-060}
+  \item \ReqShall{El software deberá propagar y actuar ante fallas críticas (sw\_fault\_critical) para transicionar a SafeMode y registrar evidencia.}
+  \item \ReqMetric{Al inyectar sw\_fault\_critical: transición a SafeMode + registro del payload requerido.}
+  \item \ReqCond{Cualquier modo.}
+  \item \ReqAccept{Log de falla + transición de estado demostrable en trazas.}
+  \item \ReqTrace{Evento: EVT-CDH-010; Modelo de estados: Any$\rightarrow$SafeMode; CU: UC-01.}
+\end{reqblock}
+
+\begin{reqblock}
+  \item \ReqID{SRS-061}
+  \item \ReqShall{El software deberá registrar eventos, transiciones y timestamps para permitir auditoría posterior de la campaña.}
+  \item \ReqMetric{Cada transición registra: estado\_origen, estado\_destino, event\_id, timestamp.}
+  \item \ReqCond{UC-01 y contingencias.}
+  \item \ReqAccept{Revisión de logs que evidencie el esquema de auditoría en un conjunto de pruebas.}
+  \item \ReqTrace{Política de logs/tabla de transiciones: §7.3.8.3; CU: UC-01.}
+\end{reqblock}
+
+\subsubsection*{TBD (pendientes por definición de umbrales/políticas)}
+Se mantienen como \textbf{TBD} los umbrales y políticas explícitamente no cuantificados (p.\,ej., criterios de \texttt{route\_valid}, severidades de \texttt{conditions\_adverse\_detected}, políticas de reintentos \texttt{retry\_allowed/retry\_exhausted}, umbral de \texttt{storage\_near\_full}, definición de ``enlace estable'' y método de referencia para medición de error de navegación).
+
+Las guardas basadas en severidad y políticas de reintento se consideran TBD operativos; se definirán mediante parámetros configurables en el software (config files) documentados en el ICD de software y reflejados en los procedimientos de prueba. Su valor por defecto se definirá en la configuración de campaña.

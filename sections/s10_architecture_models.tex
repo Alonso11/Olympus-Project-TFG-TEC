@@ -1,0 +1,1125 @@
+\section{System Architecture and Model References}\label{sec:architecture}
+
+Esta sección establece los límites técnicos y las decisiones de diseño de alto nivel que actúan como restricciones mandatorias para el desarrollo del Rover Olympus. La arquitectura se organiza en siete subsistemas principales, siguiendo estándares internacionales de ingeniería de sistemas espaciales (NASA/JPL) para asegurar una clara separación de funciones entre locomoción, actuación y control.
+
+\subsection{Vista Funcional del Sistema}\label{subsec:functional_view}
+
+Esta vista describe la organización lógica de las capacidades del Rover Olympus y cómo se distribuyen las responsabilidades operacionales antes de su asignación a componentes físicos de hardware.
+
+\subsubsection{Block Definition Diagram (BDD) -- Arquitectura de Subsistemas}
+
+El BDD del sistema \textit{Rover Olympus} define la descomposición estructural a nivel de arquitectura de sistema, representando al rover como un bloque principal compuesto por siete subsistemas. La relación principal usada es \textbf{composición} (\textit{part-of}), indicando que cada subsistema es una parte constitutiva del rover y que su integración es necesaria para lograr las capacidades del sistema (movilidad, energía, cómputo a bordo, comunicaciones, navegación y soporte mecánico).
+
+
+\begin{landscape}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\paperheight]{figures/BDD-bdd.drawio.png}
+    \caption{Block Definition Diagram (BDD) -- Jerarquía lógica de los 7 subsistemas.}
+    \label{fig:paso1}
+\end{figure}
+\end{landscape}
+
+
+\paragraph{Bloque principal: Rover Olympus.}
+El bloque \texttt{Rover\_Olympus} encapsula la arquitectura del rover y agrupa los siete subsistemas: \texttt{Structural}, \texttt{TRAC}, \texttt{PROP}, \texttt{EPS}, \texttt{C\&DH}, \texttt{GNC} y \texttt{COMMS}. Esta partición es coherente con una descomposición funcional típica de rovers de exploración, separando (i) la movilidad en conversión electro-mecánica (PROP) e interacción terreno (TRAC), (ii) la energía (EPS), (iii) el cómputo y manejo de datos (C\&DH), (iv) la navegación/autonomía (GNC), (v) el enlace con estación base (COMMS), y (vi) la estructura mecánica (Structural).
+
+\paragraph{Relaciones e interfaces conceptuales entre subsistemas (nivel arquitectura).}
+A nivel de BDD se representan asociaciones conceptuales que orientan las interfaces del sistema:
+(i) \texttt{EPS} se asocia con todos los subsistemas consumidores de potencia (distribución/energía);
+(ii) \texttt{COMMS} se asocia con \texttt{C\&DH} como canal de comandos y telemetría;
+(iii) \texttt{C\&DH} se asocia con los subsistemas para gestión de datos, telemetría e interfaces;
+(iv) \texttt{GNC} se asocia con \texttt{PROP} y \texttt{TRAC} para generación de comandos de movilidad, y con \texttt{C\&DH} para ejecución/orquestación y registro de datos.
+
+El BDD no detalla diseño electrónico ni componentes; su propósito es fijar la estructura de alto nivel y soportar trazabilidad de requisitos e interfaces entre subsistemas.
+
+
+\subsubsection{Mapeo de Funciones de los Subsistemas por componentes (PBS)}
+
+\begin{landscape}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|p{0.9cm}|p{2.0cm}|p{6.8cm}|p{9.2cm}|}
+\caption{Funciones del BDD vs. Componentes COTS propuestos (tabla reducida)}\label{tab:funciones_cots_reducida}\\
+\hline
+\textbf{ID} & \textbf{Subsistema / Bloque} & \textbf{Nombre de la función} & \textbf{Componente(s) COTS propuesto(s)}\\
+\hline
+\endfirsthead
+
+\hline
+\textbf{ID} & \textbf{Subsistema / Bloque} & \textbf{Nombre de la función} & \textbf{Componente(s) COTS propuesto(s)}\\
+\hline
+\endhead
+
+\hline
+\multicolumn{4}{r}{\textit{Continúa en la siguiente página}}\\
+\endfoot
+
+\hline
+\endlastfoot
+
+% -------------------- STR --------------------
+F1 & STR & Soportar vibraciones y choques operacionales esperados en el entorno análogo &
+Estructura impresa (PLA MAX) + aisladores/soportes antivibración + tornillería/inserciones.\\ \hline
+
+F2 & STR & Proporcionar el chasis y la geometría base para el montaje e integración del rover &
+Chasis modular impreso (PLA MAX) + perfiles/placas de refuerzo (si aplica).\\ \hline
+
+F3 & STR & Distribuir cargas estáticas, dinámicas y térmicas dentro de límites admisibles &
+Estructura con refuerzos + separadores/insertos roscados + uniones mecánicas.\\ \hline
+
+F4 & STR & Encapsular y proteger componentes electrónicos frente a condiciones ambientales operacionales &
+Caja/electronics bay impresa (PLA MAX) + prensaestopas/juntas (si aplica).\\ \hline
+
+F5 & STR & Soportar la masa total del sistema y mantener la integridad estructural durante operación &
+Chasis reforzado + distribución de masa + puntos de montaje/agarre.\\ \hline
+
+% -------------------- TRAC --------------------
+F6 & TRAC & Transmitir el torque aplicado hacia el terreno a través de sus elementos de contacto &
+Ruedas/llantas + hubs impresos (PLA MAX) + rodamientos F687ZZ + ejes/acoples.\\ \hline
+
+F7 & TRAC & Generar fuerzas de avance y frenado suficientes para la movilidad del rover &
+Motores DC (NFP-5840-31ZY-EN) + ruedas/llantas + control PWM mediante drivers.\\ \hline
+
+F8 & TRAC & Acomodar irregularidades del terreno manteniendo estabilidad y contacto efectivo &
+Suspensión pasiva (bogies/rocker simple) + articulaciones con rodamientos + piezas impresas.\\ \hline
+
+F9 & TRAC & Proporcionar despeje al suelo suficiente para evitar interferencias con obstáculos esperados &
+Selección de diámetro de rueda + geometría de chasis + posible suspensión (diseño mecánico).\\ \hline
+
+F10 & TRAC & Proporcionar capacidad de dirección (steering) y maniobra conforme al esquema de movilidad &
+Control de motores (skid-steer) y servomotor de dirección (MG996R) mediante Arduino Mega.\\ \hline
+
+% -------------------- PROP --------------------
+F11 & PROP & Convertir energía eléctrica en torque mecánico utilizable por el sistema de movilidad &
+Motores DC con reductora (NFP-5840-31ZY-EN) + acoples a rueda/tren de tracción.\\ \hline
+
+F12 & PROP & Regular la velocidad angular de los actuadores de propulsión conforme a comandos de control &
+Puentes H (L298N) con PWM + Arduino Mega (control) y/o Raspberry Pi (alto nivel).\\ \hline
+
+F13 & PROP & Permitir la inversión del sentido de giro de los actuadores &
+Puentes H (L298N) + control digital desde Arduino Mega.\\ \hline
+
+F14 & PROP & Proteger al actuador ante la entrega de potencia anómala &
+Protecciones del driver (L298N) + BMS Daly 4S 20A + (recomendado) fusibles/TVS externos.\\ \hline
+
+F15 & PROP & Limitar y regular el consumo de potencia/corriente de los actuadores &
+Drivers (L298N) + control (Arduino Mega) + (recomendado) sensado de corriente externo (INA/ACS).\\ \hline
+
+% -------------------- C&DH --------------------
+F16 & C\&DH & Recibir y enrutar comandos provenientes de COMMS &
+Raspberry Pi 4/5 (interfaz de red y ruteo de comandos) + enlace (Wi-Fi/radio).\\ \hline
+
+F17 & C\&DH & Gestionar la telemetría y los registros (logs) del sistema &
+Raspberry Pi 4/5 + almacenamiento local (microSD/SSD) + software de logging.\\ \hline
+
+F18 & C\&DH & Procesar datos a bordo para soportar funciones del sistema &
+Raspberry Pi 5 (principal) + Raspberry Pi 4 (backup/auxiliar).\\ \hline
+
+F19 & C\&DH & Almacenar datos generados por el rover para recuperación y análisis posterior &
+Almacenamiento local (microSD/SSD) conectado a Raspberry Pi 4/5.\\ \hline
+
+F20 & C\&DH & Detectar y gestionar fallas lógicas del software &
+Watchdog SW/HW en Raspberry Pi + (opcional) Arduino Mega como supervisor auxiliar.\\ \hline
+
+F21 & C\&DH & Administrar el almacenamiento local &
+Raspberry Pi 4/5 + gestión de filesystem/rotación de logs (software).\\ \hline
+
+F22 & C\&DH & Manejar las interfaces de comunicación/datos con los subsistemas &
+Arduino Mega (I/O y tiempo real) + Raspberry Pi 4/5 (alto nivel) + buses (UART/I2C/SPI/USB).\\ \hline
+
+% -------------------- GNC --------------------
+F23 & GNC & Determinar la trayectoria de navegación conforme a objetivos y restricciones del terreno &
+Raspberry Pi 4/5 (planificación) + (recomendado) sensores de navegación (IMU/odometría/LiDAR).\\ \hline
+
+F24 & GNC & Estimar el estado del rover a partir de sensores disponibles &
+Raspberry Pi 4/5 + fusión sensorial (EKF) + (recomendado) IMU + encoders (si disponibles).\\ \hline
+
+F25 & GNC & Generar comandos de control hacia los actuadores para ejecutar la trayectoria y mantener estabilidad &
+Arduino Mega (control) + drivers (L298N) + motores DC (lazo cerrado si hay encoders).\\ \hline
+
+F26 & GNC & Obtener/consumir imágenes del entorno mediante las interfaces del sistema para soportar la percepción &
+Cámara Raspberry Pi v1.3 (CSI) + cámara FPV + capturadora USB + Raspberry Pi 4/5.\\ \hline
+
+F27 & GNC & Preprocesar la información visual para habilitar detección/clasificación eficiente y robusta &
+Raspberry Pi 5 + pipeline de visión (OpenCV/ML) + cámara Raspberry.\\ \hline
+
+F28 & GNC & Detectar y evitar obstáculos para prevenir colisiones y atascos &
+Cámara Raspberry + Raspberry Pi 5 (visión) + (recomendado) sensor distancia (TF-Luna LiDAR).\\ \hline
+
+F29 & GNC & Fusionar datos de múltiples fuentes sensoriales para mejorar la estimación y la percepción &
+Raspberry Pi 4/5 + fusión (EKF/UKF) + (recomendado) IMU + odometría + rango/visión.\\ \hline
+
+F30 & GNC & Clasificar la transitabilidad del terreno para soportar decisiones de ruta &
+Raspberry Pi 5 + cámara Raspberry (clasificación por visión/ML).\\ \hline
+
+% -------------------- COMMS --------------------
+F31 & COMMS & Establecer y mantener un enlace de comunicación &
+Raspberry Pi 4/5 (Wi-Fi) + enlace FPV (TX/RX) para video.\\ \hline
+
+F32 & COMMS & Transmitir/recibir comandos y datos &
+Raspberry Pi 4/5 (Wi-Fi/protocolo) + (opcional) radio telemetría externa.\\ \hline
+
+F33 & COMMS & Gestionar la disponibilidad del enlace y sus ventanas de comunicación, &
+Raspberry Pi 4/5 (supervisión de enlace, QoS, reconexión) + infraestructura de red.\\ \hline
+
+F34 & COMMS & Detectar pérdida de enlace &
+Raspberry Pi 4/5 (heartbeat/timeouts) + política fail-safe (software).\\ \hline
+
+% -------------------- EPS --------------------
+F35 & EPS & Generar/capturar energía conforme a la fuente disponible &
+Packs con 18650 + (recomendado) cargador 4S Li-ion / fuente externa de carga.\\ \hline
+
+F36 & EPS & Almacenar energía en un reservorio &
+Pack 4S basado en baterías 18650 (8 celdas por pack).\\ \hline
+
+F37 & EPS & Balancear y gestionar el reservorio de energía &
+BMS Daly 4S 20A (Li-ion; balanceo/protección del pack).\\ \hline
+
+F38 & EPS & Suministrar energía regulada a los subsistemas consumidores. &
+Convertidores DC-DC (buck 4S$\rightarrow$5V/6V/12V según cargas) + distribución.\\ \hline
+
+F39 & EPS & Distribuir potencia incorporando mecanismos de aislamiento/segmentación &
+Power Distribution (PDB) + fusibles por rama + interruptor principal/e-stop (recomendado).\\ \hline
+
+F40 & EPS & Implementar funciones de protección y seguridad eléctrica ante condiciones anómalas &
+BMS Daly + (recomendado) fusibles/TVS/e-stop + buenas prácticas de cableado.\\ \hline
+
+F41 & EPS & Ejecutar mecanismos de recuperación/reconexión conforme a una política definida &
+Raspberry Pi 4/5 + (opcional) relé/contactor + supervisor de tensión (según política).\\ \hline
+
+\end{longtable}
+\end{landscape}
+\subsubsection{Behavioral and Parametric References}
+
+Los modelos de comportamiento (Casos de Uso, Actividad y Estados) y los modelos paramétricos se enlazan a la arquitectura de 7 subsistemas para verificar el cumplimiento de los RNF de desempeño y las restricciones de misión. \cite{segoldmine_ppi, nasa_cm}
+
+
+\subsection{Arquitectura Física del Sistema}\label{subsec:physical_view}
+
+Esta vista detalla la implementación del sistema mediante componentes de hardware COTS y define cómo se integran físicamente para cumplir con la vista funcional.
+
+\subsubsection{Descripción por subsistemas (IBD físico) del Rover Olympus}
+Una vez definidos el sistema \textit{Rover Olympus} y sus elementos físicos, se construye la arquitectura física mediante un \textbf{Internal Block Diagram (IBD)}. En este diagrama se \textbf{mapean explícitamente} los componentes de hardware a las funciones del modelo funcional, y se detallan las \textbf{interfaces} (potencia, datos, control, RF y mecánicas) que habilitan las interacciones entre subsistemas. A continuación, se describe la interacción del sistema por subsistemas, considerando los componentes internos modelados y sus conexiones principales. 
+
+\begin{landscape}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\paperheight]{figures/BDD-Page-2.drawio.png}
+    \caption{Internal Block Diagram (IBD) físico del Rover Olympus: Interconexiones y puertos por subsistema.}
+    \label{fig:ibd_fisico}
+\end{figure}
+\end{landscape}
+
+La figura final del IBD se incluye en los anexos.
+
+\paragraph{Subsistema de Estructura (STR)}
+En primera instancia, se tiene el subsistema \textbf{Structural (STR)}, cuya responsabilidad es proveer la \textbf{base mecánica} del rover y garantizar integridad estructural durante operación. Está compuesto principalmente por \textbf{ChasisEstructural}, \textbf{CarcasaElectrónica (Avionics Box)}, \textbf{PanelesProtección} e \textbf{InterfacesDeMontaje}. 
+
+Desde el punto de vista de interacción, STR recibe cargas externas del entorno (vibraciones, choques, cargas estáticas y dinámicas por contacto con el terreno) y las \textbf{distribuye} a través del chasis. Asimismo, STR entrega \textbf{interfaces de montaje} al resto de subsistemas: soporta y referencia físicamente sensores del GNC (p.\ ej., IMU y cámaras mediante \texttt{pSensorMounts}), aloja la electrónica de C\&DH/EPS en la bahía de aviónica, y provee puntos de fijación para la fuente de generación energética (p.\ ej., paneles) mediante \texttt{pMount\_Panels}. En el IBD, estas relaciones se modelan con conectores mecánicos tipo \textit{mount} (linea punteada), enfatizando que el intercambio es de \textbf{soporte y restricciones geométricas}, no de señales eléctricas.
+
+\paragraph{Subsistema de Tracción (TRAC)}
+El subsistema \textbf{Tracción (TRAC)} implementa el \textbf{contacto efectivo} con el terreno y la capacidad de mantener estabilidad en superficies irregulares. Sus componentes internos principales son el \textbf{SistemaSuspensión} (p.\ ej., rocker-bogie), el \textbf{ConjuntoRuedas x6}, el \textbf{MecanismoTransmisiónTorque} (ejes/juntas/reductores mecánicos) y elementos de \textbf{GeometríaDespeje}.
+
+TRAC interactúa con el entorno a través de las ruedas: recibe reacciones del suelo (fuerzas normales, fricción, obstáculos) y, a partir del torque aplicado desde PROP, genera fuerzas de avance/frenado. Además, TRAC entrega información de movilidad a GNC mediante \textbf{EncodersRueda} y/o sensores asociados al tren de rodaje: en el IBD se representa el flujo \texttt{TRAC.pEncodersOut} $\rightarrow$ \texttt{GNC.pSensorsIn\_Encoders}. Dependiendo de la implementación final, TRAC puede incluir sensado adicional de suspensión/contacto (TBD) y exponer estados/diagnóstico al bus principal a través de C\&DH.
+
+\paragraph{Subsistema de Propulsión (PROP)}
+El subsistema \textbf{Propulsión (PROP)} convierte potencia eléctrica en \textbf{torque mecánico utilizable} para movilidad. En el modelo físico se compone de \textbf{MotoresRueda x6}, \textbf{ControladoresVelocidad} (drivers L298N o BTS7960) y módulos de protección.
+
+PROP recibe energía desde EPS (canal dedicado \texttt{EPS.pPowerChannel\_PROP} $\rightarrow$ \texttt{PROP.pPowerIn\_PROP}) y recibe comandos de actuación directamente desde el **Arduino Mega** (\texttt{MCU.pPWM\_Out} $\rightarrow$ \texttt{PROP.pControlIn\_Motores}). El Arduino, bajo mando de la Raspberry Pi 5, orquesta la velocidad y sentido de giro. Los eventos de diagnóstico del driver pueden reportarse localmente a la MCU para su consolidación en la telemetría del C\&DH. Esta arquitectura asegura que la ejecución del movimiento ocurra en un nodo de tiempo real, mientras que la decisión de alto nivel reside en la OBC.
+
+\paragraph{Subsistema de Manejo de Comandos y Datos (C\&DH)}
+El subsistema \textbf{C\&DH} constituye el \textbf{centro de cómputo y coordinación} del rover. En la arquitectura física se modela con una \textbf{arquitectura de dos nodos}: (i) la \textbf{Computadora a Bordo (OBC) Principal} (Raspberry Pi 5) encargada del procesamiento de IA, visión y lógica de alto nivel, y (ii) el \textbf{Nodo de Actuación} (Arduino Mega 2560 R3) especializado en la ejecución de comandos de movimiento en tiempo real. Ambos nodos se interconectan mediante un \textbf{enlace UART} dedicado.
+
+C\&DH integra los flujos de información del sistema: la RPi 5 actúa como el \textbf{hub de percepción}, recibiendo datos directos de cámaras y sensores de rango (LiDAR/Ultrasonido), y se conecta con COMMS vía \textbf{USB (KISS)}. El Arduino Mega recibe comandos de dirección y velocidad desde la RPi 5 para gestionar los actuadores. A nivel energético, el subsistema se alimenta desde EPS (\texttt{EPS.pPowerOut\_Regulada} $\rightarrow$ \texttt{C\&DH.pPowerIn\_CDH}) y monitorea la telemetría eléctrica a través del bus I2C (sensor INA219).
+
+\paragraph{Subsistema de Guía, Navegación y Control (GNC)}
+El subsistema \textbf{GNC} implementa la autonomía de navegación: percepción del entorno, estimación de estado y generación de comandos de movimiento. En el modelo IBD, la percepción se centraliza en la \textbf{Raspberry Pi 5}, conectando directamente la \textbf{Cámara CSI}, el \textbf{LiDAR TF-Luna} (UART/I2C) y el \textbf{Sensor Ultrasónico HC-SR04} (GPIO). Esta configuración permite que los modelos de IA procesen datos de proximidad y visión con mínima latencia. 
+
+La IMU principal y los encoders de rueda completan el esquema sensorial para satisfacer GNC-REQ-003, RF-004 y RNF-003. GNC (ejecutado en la RPi 5) genera setpoints de movilidad que se envían vía UART al \textbf{Arduino Mega}, el cual implementa la ejecución final mediante señales **PWM** hacia los drivers de motor y servos de dirección. Se añade un canal de \emph{e-stop} cableado en EPS/PDU que garantiza la detención $\le 500$\,ms conforme a PROP-REQ-002.
+
+GNC recibe alimentación desde EPS (\texttt{EPS.pPowerChannel\_GNC} $\rightarrow$ \texttt{GNC.pPowerIn\_GNC}). A nivel de datos, los sensores de percepción alimentan el flujo de IA en la OBC, mientras que la telemetría de navegación se consolida para su envío a COMMS. El montaje de sensores se garantiza por STR mediante puertos mecánicos (\textit{mount}), asegurando alineación y rigidez.
+
+\paragraph{Subsistema de Comunicaciones (COMMS)}
+El subsistema \textbf{COMMS} proporciona los enlaces de datos entre el rover y la estación base. En el modelo físico, se integra mediante un módulo **Wi-Fi 2.4 GHz** (nativo de la RPi 5) y un canal robusto **UHF (430-440 MHz)** basado en el NinoTNC y transceptores Kenwood. 
+
+COMMS recibe alimentación desde EPS (\texttt{EPS.pPowerChannel\_COMMS} $\rightarrow$ \texttt{COMMS.pPowerIn\_COMMS}). La integración de datos se realiza mediante un enlace **USB (protocolo KISS)** entre la Raspberry Pi 5 y el TNC para el canal UHF, mientras que el flujo Wi-Fi se gestiona internamente en la OBC. Esto asegura que la gestión de paquetes CSP y el ruteo de telemetría se centralicen en el nodo de alto nivel del C\&DH. La interacción con el ambiente se modela mediante el puerto RF (\texttt{pRF\_Out}), incluyendo el enlace de video **FPV independiente** de 5.8 GHz.
+
+\paragraph{Subsistema de Potencia Eléctrica (EPS)}
+El subsistema \textbf{EPS} gestiona la energía del rover: almacenamiento, regulación y distribución. Sus componentes internos incluyen \textbf{Banco de Baterías (18650)}, \textbf{BMS}, \textbf{Convertidores DC/DC (buck)}, \textbf{PDU} (unidad de distribución), \textbf{Protecciones Eléctricas} (fusibles/breakers/switches) y \textbf{Módulo de Supervisión de Potencia} (medición de V/I y lógica de protección). Opcionalmente, puede incluir \textbf{Fuente de Generación} (p.\ ej., paneles) como entrada energética. La PDU implementará segmentación por ramas con fusibles y límites de corriente documentados en el ICD de potencia. Cada convertidor DC-DC incluirá su curva de eficiencia y su nivel de \emph{derating}. Se define una política de \emph{load-shed} para modo SAFE donde se inhabilitan secuencialmente: COMMS vídeo (FPV), GNC visión intensiva y servicios no esenciales de C\&DH.
+
+EPS entrega potencia a los subsistemas mediante canales dedicados: \texttt{pPowerChannel\_GNC}, \texttt{pPowerChannel\_PROP}, \texttt{pPowerChannel\_TRAC} y \texttt{pPowerChannel\_COMMS}, además de una línea de \textbf{potencia regulada} hacia C\&DH (\texttt{pPowerOut\_Regulada}). En sentido de control, EPS recibe comandos de gestión de potencia desde C\&DH (\texttt{pPowerMgmtIface\_EPS}) para habilitar/inhabilitar canales o cambiar modos energéticos, y reporta telemetría de salud eléctrica (\texttt{pTlmPowerOut}) al subsistema de datos. Internamente, la \textbf{PDU} centraliza entradas desde la \textbf{Fuente} y el \textbf{BancoBaterías}, consolidando el \textit{battery bus} y distribuyendo energía hacia los convertidores/reguladores y cargas.
+
+\paragraph{Interfaz del sistema con el ambiente (visión IBD)}
+Finalmente, el IBD también permite identificar entradas externas al sistema: (i) interacción mecánica con el terreno (fuerzas en ruedas/suspensión), (ii) excitación ambiental sobre la estructura (vibración, choques, polvo/temperatura), (iii) señales ópticas del entorno capturadas por cámaras (GNC), (iv) enlace RF hacia/desde el exterior (COMMS) y (v) energía externa si existe generación (paneles) o recarga. Estas interfaces delimitan los \textbf{confines del sistema} y clarifican qué variables provienen del entorno durante operación.
+
+\paragraph{Extensión COMMS (UHF, añadido).}
+Además del enlace Wi‑Fi 2.4\,GHz, el sistema integra un canal UHF 430–440\,MHz con
+modulación GFSK a 9600\,bps, empleando AX.25 (KISS) como capa de enlace y CSP como
+encapsulamiento de misión. Este canal está orientado a TM/CMD robusta y habilita
+operación \emph{store-and-forward} mediante un nodo retransmisor CSP cuando la LoS
+directa es limitada por la topografía.
+
+\paragraph{Selección de materiales (Manufactura aditiva).}
+La estructura principal (chasis, ruedas y bahía de aviónica) se fabrica mediante impresión 3D utilizando filamento \textbf{PLA MAX}. Este material ha sido seleccionado por su \textbf{alta tenacidad y rigidez}, superando al PLA estándar en resistencia a impactos y tracción, lo que garantiza la integridad estructural durante la navegación en terrenos irregulares. Presenta una densidad de 1.24\,g/cm$^3$, una temperatura de deformación de 57\,$^{\circ}\mathrm{C}$ y una precisión dimensional de $\pm$0.02\,mm, facilitando el ensamblaje de piezas de precisión como hubs y soportes de rodamientos.
+
+% ============================================================
+% 02 · HARDWARE SELECCIONADO (COTS / DEV) — ROVER OLYMPUS
+% Tabla estilo "flight-qualified", adaptada a COTS académicos
+% ============================================================
+
+\subsubsection{Hardware Seleccionado (COTS / DEV)}
+\label{sec:hw_selected}
+
+Esta sección consolida los componentes físicos integrados en el Rover Olympus,
+clasificados por subsistema y tipo (COTS, DEV).  
+Las especificaciones y valores cuantitativos no provistos en el SyRS se
+marcan como \textbf{TBD} para completarse en el ICD/BOM final.
+
+\begin{table}[H]
+\centering
+\caption{Inventario de Hardware (Parte 1: C\&DH, EPS, PROP) --- Especificaciones técnicas y consumos.}
+\renewcommand{\arraystretch}{1.25}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{1.9cm} p{4cm} p{3.2cm} p{4.5cm} p{1.7cm} p{1.7cm} p{1.6cm}}
+\hline
+\textbf{SUBSIS} &
+\textbf{COMPONENTE} &
+\textbf{P/N \,/\, MODELO} &
+\textbf{ESPECIFICACIÓN} &
+\textbf{MASA (kg)} &
+\textbf{POTENCIA (W)} &
+\textbf{TIPO}
+\\ \hline
+
+% ---------------------
+% C&DH
+% ---------------------
+C\&DH &
+OBC Principal (Raspberry Pi 5) &
+RPI 5 &
+BCM2712 Quad-Core A76 @ 2.4GHz; 4GB/8GB RAM; 2x USB3.0, PCIe 2.0; MIPI CSI-2; 5V/5A (USB-C PD) &
+0.046 &
+2.7--12.0 &
+COTS
+\\
+C\&DH &
+OBC Auxiliar (Raspberry Pi 4) &
+\textbf{TBD} &
+SO \emph{Linux embebido (Yocto Project)}; soporte de servicios, backup, telemetría &
+0.047 &
+2.5--8.0 &
+COTS
+\\
+C\&DH &
+Almacenamiento SSD/microSD &
+\textbf{TBD} &
+$\ge$ 2 h de TM/logs; interfaz USB3 &
+0.050 &
+1.5--4.5 &
+COTS
+\\
+C\&DH &
+MCU Arduino Mega 2560 R3 &
+Mega 2560 R3 (Gen) &
+ATmega2560; Nodo de actuación; Control exclusivo de Motores/Servos vía PWM &
+0.037 &
+0.35--1.0 &
+COTS
+\\
+
+% ---------------------
+% EPS
+% ---------------------
+EPS &
+Batería Li-ion 18650 (Pack 4S2P) &
+LG INR18650MJ1 &
+Li-ion 4S2P (14.54V nom); Capacidad 7000mAh (3500mAh/celda); Descarga max. 10A/celda; 49g/celda &
+0.392 &
+--- &
+COTS
+\\
+EPS &
+BMS Daly 4S 20A &
+Daly-4S-20A &
+Para Li-ion 4S (14.8V nom / 16.8V max); 20A cont.; Balanceo pasivo (30mA); protecciones OC/OV/OT &
+0.100 &
+< 0.001 &
+COTS
+\\
+EPS &
+DC-DC Buck Regulados &
+\textbf{TBD} &
+5V/12V; conversión 4S→cargas internas; Eficiencia $\ge$ 85\% &
+\textbf{TBD} &
+\textbf{TBD} &
+COTS
+\\
+EPS &
+PDU + Fusibles por rama &
+\textbf{TBD} &
+Distribución y aislamiento eléctrico &
+\textbf{TBD} &
+\textbf{TBD} &
+DEV
+\\
+
+% ---------------------
+% PROPULSIÓN
+% ---------------------
+PROP &
+Motor DC con reductora (×6) &
+NFP-5840-31ZY-EN &
+Worm Gear (Self-locking); 12V DC; 6 RPM; Torque nominal 70 kg$\cdot$cm; incluye encoder de efecto Hall &
+0.360 &
+1.0--19.2 &
+COTS
+\\
+PROP &
+Motor DC con reductora (Alt) &
+JGY-370 &
+Worm Gear (Self-locking); 12V DC; 40 RPM; Torque nominal 15.5 kg$\cdot$cm &
+0.162 &
+0.4--3.6 &
+COTS
+\\
+PROP &
+Driver Dual H-Bridge L298N &
+L298N (Red) &
+Dual H-Bridge; 2A cont./3A peak; $\le$ 46V DC; PWM+DIR &
+0.026 &
+0.18 &
+COTS
+\\
+PROP &
+Driver High-Power BTS7960 &
+BTS7960 (Alt) &
+H-Bridge; 43A peak; 5.5--27V DC; Protecciones OC/OV/OT &
+0.066 &
+0.10 &
+COTS
+\\
+\hline
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Inventario de Hardware (Parte 2: TRAC, COMMS, GNC, STR) --- Especificaciones técnicas y consumos.}
+\renewcommand{\arraystretch}{1.25}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{1.9cm} p{4cm} p{3.2cm} p{4.5cm} p{1.7cm} p{1.7cm} p{1.6cm}}
+\hline
+\textbf{SUBSIS} &
+\textbf{COMPONENTE} &
+\textbf{P/N \,/\, MODELO} &
+\textbf{ESPECIFICACIÓN} &
+\textbf{MASA (kg)} &
+\textbf{POTENCIA (W)} &
+\textbf{TIPO}
+\\ \hline
+
+% ---------------------
+% TRACCIÓN
+% ---------------------
+TRAC &
+Ruedas + Hubs impresos &
+\textbf{TBD} &
+Filamento PLA MAX (1.75 mm); alta tenacidad y rigidez; densidad 1.24 g/cm$^3$; precisión $\pm$0.02 mm &
+\textbf{TBD} &
+0 &
+COTS
+\\
+TRAC &
+Rocker-Bogie simplificado &
+\textbf{TBD} &
+Suspensión pasiva; despeje objetivo $\ge$ 10 cm &
+\textbf{TBD} &
+0 &
+DEV
+\\
+TRAC &
+Servomotor de dirección &
+MG996R &
+Metal Gear; Torque 11 kg/cm @ 6V; 4.8--6.6V; control PWM &
+0.055 &
+0.06--3.0 &
+COTS
+\\
+TRAC &
+Rodamientos F687ZZ &
+F687ZZ &
+Bridado (Flanged); Acero; 7 mm (DI), 14 mm (DE), 5 mm (Ancho) &
+0.003 &
+0 &
+COTS
+\\
+
+% ---------------------
+% COMMS
+% ---------------------
+COMMS &
+Wi-Fi 2.4 GHz (interfaces RPi) &
+\textbf{TBD} &
+Enlace UDP/IP + CSP; alcance $\ge$ 50 m (LoS) &
+\textbf{TBD} &
+Incl. en RPi &
+COTS
+\\
+COMMS &
+Transmisor/Receptor FPV (5.8GHz) &
+AKK TS832 / RC832 &
+5.8GHz 48CH; Potencia 600mW; Alcance $\ge$ 3km; Voltaje 7--16V; Conector RP-SMA &
+0.107 &
+2.6 (TX) &
+COTS
+\\
+COMMS &
+Radio UHF (Kenwood) &
+TM-D710GA/TS-2000 &
+Transceptor UHF para telemetría crítica; \textbf{Alimentación Externa} &
+1.500 &
+Externa &
+COTS
+\\
+COMMS &
+Antenas (montaje en STR) &
+\textbf{TBD} &
+LGA/Omnidireccional según geometría &
+\textbf{TBD} &
+0 &
+DEV
+\\
+
+% ---------------------
+% GNC
+% ---------------------
+GNC &
+Cámara CSI (Raspberry Pi v1.3) &
+RPi Cam v1.3 &
+Sensor OV5647 (5 MP); video 1080p30; interfaz CSI; requiere lente gran angular para FOV $\ge$ 120° &
+0.003 &
+1.25 &
+COTS
+\\
+GNC &
+IMU (modelo académico) &
+\textbf{TBD} &
+9DOF; salida I2C/SPI; 100–200 Hz &
+0.003 &
+0.05--0.15 &
+COTS
+\\
+GNC &
+LiDAR TF-Luna &
+TF-Luna &
+Rango 0.2--8 m; Interfaz UART/I2C directa a Raspberry Pi 5 (IA) &
+0.005 &
+0.35--0.75 &
+COTS
+\\
+GNC &
+Sensor Ultrasónico HC-SR04 &
+HC-SR04 &
+Rango 2--400 cm; interfaz Trigger/Echo directa a Raspberry Pi 5 (IA) &
+0.009 &
+0.075 &
+COTS
+\\
+GNC &
+Encoders de rueda &
+\textbf{TBD} &
+Odometría para slip/estimación EKF &
+\textbf{TBD} &
+0.10--0.30 &
+DEV
+\\
+
+% ---------------------
+% STRUCTURAL
+% ---------------------
+STR &
+Chasis impreso (PLA MAX) &
+\textbf{TBD} &
+Estructural portante; material PLA MAX (alta resistencia a impactos); temp. deformación 57 °C &
+\textbf{TBD} &
+0 &
+COTS
+\\
+STR &
+Bahía de aviónica sellada &
+\textbf{TBD} &
+Protección IP parcial (nivel \textbf{TBD}) &
+\textbf{TBD} &
+0 &
+COTS
+\\
+STR &
+Brackets para IMU/Cámara/Antenas &
+\textbf{TBD} &
+Alineamiento rígido; montaje preciso &
+\textbf{TBD} &
+0 &
+DEV
+\\
+
+\hline
+\end{tabular}}
+\end{table}
+
+% Nota de consistencia OS
+\paragraph{Nota de consistencia de SO.}
+El proyecto adopta \emph{Yocto Project} como base del sistema operativo embebido en C\&DH/GNC.
+Queda desautorizada cualquier referencia previa a distribuciones genéricas (p.\,ej.\ Ubuntu).
+
+\paragraph{COMMS UHF (componentes de integración).}
+TNC por hardware (\emph{NinoTNC 9600A}, KISS a 9600\,GFSK), transceptor UHF de laboratorio
+(\emph{Kenwood TM‑D710GA / TS‑2000}), y antenas UHF (Eggbeater para nodo móvil, Yagi para
+estación/retransmisor). Conexiones: C\&DH$\leftrightarrow$TNC (\textbf{USB KISS}), TNC$\leftrightarrow$Radio
+(audio/PTT), Radio$\leftrightarrow$Antena (RF). Alimentación desde EPS (5\,V TNC, 12\,V Radio).
+
+% Notas de integración
+\noindent\textbf{Notas.} El TNC se conecta a C\&DH por \textbf{USB} (KISS). El transceptor UHF se
+interconecta por audio/datos con el TNC (incluye PTT). La potencia se suministra desde EPS
+(12\,V al radio, 5\,V al TNC). La capa CSP mantiene compatibilidad con la interfaz Wi‑Fi.
+La comunicación OBC$\leftrightarrow$MCU se realiza mediante \textbf{UART}.
+
+
+% ============================================================
+% 02.x · PRESUPUESTO DE MASA — Rover Olympus (adaptado a 7 subsistemas)
+% ============================================================
+
+\subsubsection{Presupuesto de Masa (Baseline y Márgenes)}
+\label{sec:mass_budget}
+
+Este presupuesto de masa se estructura exclusivamente según la arquitectura oficial de \textbf{7 subsistemas} del Rover Olympus —\textbf{STR}, \textbf{TRAC}, \textbf{PROP}, \textbf{C\&DH}, \textbf{EPS}, \textbf{COMMS}, \textbf{GNC}— para mantener coherencia con la vista de arquitectura ($\S$\ref{sec:architecture}) y la definición de interfaces (IBD/N2, $\S$\ref{subsec:physical_view}). Los valores no especificados en el SyRS se dejan como \textbf{TBD} y deberán cerrarse en el ICD/BOM y el reporte de integración física. \cite{nasa_cm, segoldmine_ppi}
+
+\paragraph{Criterios.}
+(a) La masa de cada subsistema es la suma de sus ítems COTS/DEV seleccionados en §\ref{sec:hw_selected}. (b) El \emph{Margen de diseño} se aplica como porcentaje sobre el subtotal (por defecto, \textbf{20\%}) mientras el proyecto esté en fase académica/integración. (c) El \emph{Límite de masa} de campaña se define a nivel de proyecto; si no existe un valor contractual, se mantiene como \textbf{TBD}. (d) Las estimaciones parciales por componente se consolidan en la PBS/N2 y el ICD de integración para evitar divergencias con el baseline de §\ref{sec:architecture}–§\ref{subsec:physical_view}. \cite{nasa_cm, segoldmine_ppi}
+
+\begin{table}[H]
+\centering
+\caption{Presupuesto de masa agregado por subsistema (estimación CBE con margen AIAA del 20\%).}
+\renewcommand{\arraystretch}{1.20}
+\begin{tabular}{p{7.5cm} r}
+\hline
+\textbf{Bloque / Rubro} & \textbf{Masa [kg]} \\
+\hline
+\textbf{STR — Estructura / Chasis} & 2.700 \\
+\textit{(Chasis impreso, bahía de aviónica, brackets/mounts)} & \\[1ex]
+
+\textbf{TRAC — Tracción (Locomotion)} & 1.591 \\
+\textit{(Ruedas + hubs, rodamientos, servomotor de dirección)} & \\[1ex]
+
+\textbf{PROP — Propulsión (Drive / Actuación)} & 2.338 \\
+\textit{(Motores NFP-5840-31ZY-EN ×6, drivers L298N, acoples)} & \\[1ex]
+
+\textbf{C\&DH — Command \& Data Handling} & 0.230 \\
+\textit{(RPi 5, RPi 4 auxiliar, MCU, SSD/microSD, cableado)} & \\[1ex]
+
+\textbf{EPS — Energía (Baterías, BMS, PDU, DC/DC)} & 0.700 \\
+\textit{(Pack 18650 4S2P, BMS Daly, convertidores, PDU)} & \\[1ex]
+
+\textbf{COMMS — Comunicaciones} & 0.197 \\
+\textit{(Wi-Fi, Sistema FPV TS832/RC832, TNC, Antenas)} & \\[1ex]
+
+\textbf{GNC — Guía, Navegación y Control} & 0.100 \\
+\textit{(Cámara CSI, IMU, LiDAR TF-Luna, HC-SR04, encoders)} & \\[1ex]
+
+\textbf{MISC — Otros (Tornillería, cables, adhesivos)} & 0.500 \\
+\hline
+\textbf{SUBTOTAL (sin margen)} & 8.356 \\
+\textbf{Margen de diseño (20\% del subtotal)} & 1.671 \\
+\hline
+\textbf{MASA TOTAL (con margen)} & \textbf{10.027} \\
+\hline
+\textbf{LÍMITE DE MASA (campaña / proyecto)} & \textbf{10.500} \\
+\textbf{MARGEN vs. LÍMITE} & \textbf{+0.473} \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Notas y plan de cierre.}
+\begin{itemize}
+  \item \textbf{Fuentes de masa por ítem}: tabla de hardware de §\ref{sec:hw_selected} y BOM del PBS; consolidar en ICD con evidencia (fichas técnicas, pesaje de banco). \cite{nasa_cm}
+  \item \textbf{Criterio de margen}: 20\% mientras existan \textbf{TBD} significativos en componentes/impresiones; ajustar a un margen por subsistema cuando el diseño esté congelado y existan pesajes reales. \cite{nasa_cm, segoldmine_ppi}
+  \item \textbf{Consistencia con N2/IBD}: verificar que toda adición mecánica (brackets, herrajes, cableado con masa relevante) esté asignada al subsistema correcto para evitar \emph{underestimation}. \cite{nasa_cm}
+\end{itemize}
+
+\paragraph{Placeholders para completar (ICD/BOM).}
+\begin{enumerate}
+  \item Masa por componente COTS/DEV (STR, TRAC, PROP, C\&DH, EPS, COMMS, GNC): \textbf{Completado (CBE)}.
+  \item Subtotal por subsistema y \% de contribución al total: \textbf{Definido en Tabla 10.2.x}.
+  \item Límite de masa de campaña (si aplica al sitio análogo): \textbf{10.500 kg}.
+\end{enumerate}
+% ============================================================
+% 02.y · PRESUPUESTO DE POTENCIA — Rover Olympus (7 subsistemas)
+% ============================================================
+
+\subsubsection{Presupuesto de Potencia (Modos Operacionales)}
+\label{sec:power_budget}
+
+Este presupuesto se organiza estrictamente por los \textbf{7 subsistemas} del Rover Olympus —\textbf{STR}, \textbf{TRAC}, \textbf{PROP}, \textbf{C\&DH}, \textbf{EPS}, \textbf{COMMS}, \textbf{GNC}— y por \emph{modos} coherentes con el ConOps y la máquina de estados: \textbf{SCIENCE / Exploración activa}, \textbf{CRUISE / Tránsito nominal}, \textbf{SAFE / Modo seguro}. Los valores se consolidarán a partir de la tabla de hardware ($\S$\ref{sec:hw_selected}) y de las especificaciones de integración definidas en la arquitectura física (IBD) y la matriz N2 ($\S$\ref{sec:architecture}--$\S$\ref{subsec:physical_view}). \textit{En este proyecto académico (lab-only) no existe generación continua a bordo (p.\,ej., paneles); la energía proviene del banco de baterías EPS, por lo que el presupuesto refleja \emph{consumo} y \emph{autonomía} esperada, no balance GEN--LOAD.} \cite{nasa_cm}
+
+\paragraph{Criterios y supuestos.}
+(a) \textbf{SCIENCE} corresponde al modo \emph{Exploración activa} (carga de sensado/visión, planificación y comando de actuadores). (b) \textbf{CRUISE} es un tránsito nominal con percepción y comunicaciones en carga reducida. (c) \textbf{SAFE} minimiza cargas (COMMS esenciales, C\&DH básico) para preservar integridad. (d) Los valores no definidos en el SyRS se marcan \textbf{TBD} y deberán cerrarse en el ICD de EPS (niveles de tensión/corriente, distribución por ramas) y en el BOM/PBS. (e) La asignación de buses y líneas de potencia se rige por el IBD/N2 físico del sistema. \cite{nasa_cm}
+
+% -------------------------------
+% Tabla por subsistema y modo
+% -------------------------------
+\begin{table}[H]
+\centering
+\caption{Presupuesto de potencia por subsistema: Consumo nominal basado en componentes COTS integrados.}
+\renewcommand{\arraystretch}{1.20}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{5.5cm} r r r p{5.5cm}}
+\hline
+\multirow{2}{*}{\textbf{Subsistema / Carga}} & \multicolumn{3}{c}{\textbf{Potencia \,[W] por Modo}} & \multirow{2}{*}{\textbf{Notas}} \\
+\cline{2-4}
+ & \textbf{SCIENCE} & \textbf{CRUISE} & \textbf{SAFE} & \\
+\hline
+\textbf{GNC} (RPi5 load, LiDAR, Cámara, IMU) & 14.50 & 5.50 & 0.50 & Percepción y IA activas. \cite{nasa_cm} \\
+\textbf{C\&DH} (RPi4 aux., Arduino, SSD) & 9.50 & 4.00 & 2.50 & Orquestación y ruteo de datos. \cite{nasa_cm} \\
+\textbf{PROP} (Motores NFP-5840 ×6 + Drivers) & 115.20 & 38.40 & 0.00 & Rating nominal 1.6A/motor @ 12V. \cite{nasa_cm} \\
+\textbf{TRAC} (Servomotor MG996R) & 3.00 & 1.00 & 0.00 & Dirección activa en exploración. \cite{nasa_cm} \\
+\textbf{COMMS} (FPV TS832 + NinoTNC) & 3.10 & 0.50 & 0.50 & Excluye Kenwood (externo). \cite{nasa_cm} \\
+\textbf{EPS} (Pérdidas DC/DC + BMS) & 21.80 & 7.40 & 0.50 & Eficiencia calculada del 85\%. \cite{nasa_cm} \\
+\textbf{STR} (pasivo) & 0 & 0 & 0 & Estructura pasiva. \\
+\hline
+\textbf{TOTAL por modo} & \textbf{167.10} & \textbf{56.80} & \textbf{4.00} &  \\
+\hline
+\end{tabular}}
+\end{table}
+
+% -------------------------------
+% Tabla de modos agregados y margen
+% -------------------------------
+\begin{table}[H]
+\centering
+\caption{Potencia agregada por modo y margen de diseño conservador del 20\%.}
+\renewcommand{\arraystretch}{1.20}
+\begin{tabular}{p{7.5cm} r}
+\hline
+\textbf{Modo Operacional} & \textbf{Potencia Total \,[W]} \\
+\hline
+\textbf{SCIENCE (Exploración activa)} & 167.10 \\
+\textbf{CRUISE (Tránsito nominal)} & 56.80 \\
+\textbf{SAFE (Modo seguro)} & 4.00 \\
+\hline
+\textbf{Consumo pico considerado (SCIENCE)} & 167.10 \\
+\textbf{Margen de diseño (energía), 20\% sobre pico} & 33.42 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Análisis de Autonomía (Pack 4S2P - 101.78 Wh).}
+Considerando el banco de baterías LG MJ1 (101.78 Wh nominales), la autonomía estimada sin margen de descarga (100\% DoD) es:
+\begin{itemize}
+    \item \textbf{Modo SCIENCE:} ~36 minutos (operación continua de 6 motores a torque nominal).
+    \item \textbf{Modo CRUISE:} ~1.8 horas (desplazamiento nominal y telemetría).
+    \item \textbf{Modo SAFE:} ~25.4 horas (supervivencia y monitoreo de enlace).
+\end{itemize}
+Nota: El aislamiento eléctrico de los transceptores UHF (Kenwood) es crítico para mantener estos perfiles de autonomía.
+
+\paragraph{Notas de integración (por cerrar en ICD/BOM).}
+\begin{itemize}
+  \item \textbf{Distribución EPS}: documentar eficiencias de cada convertidor DC/DC (rail 5\,V/12\,V), pérdidas en PDU y criterio de \emph{derating}; capturar en ICD con pruebas de banco. \cite{nasa_cm}
+  \item \textbf{Perfiles de carga por modo}: instrumentar telemetría V/I (INA219) en campañas y registrar series para estimar \emph{typical}/\emph{peak} por subsistema; alimentar esta tabla y el análisis de autonomía. \cite{nasa_cm}
+  \item \textbf{Cargas pico de PROP}: establecer casos límite (arranque en pendiente, evitación reactiva, Fault Stop) y medir demanda dinámica para validar requisitos de movilidad y tiempos de paro. \cite{nasa_cm}
+  \item \textbf{COMMS}: definir perfiles de transmisión (duty-cycle TM/CMD, vídeo FPV opcional) y su impacto por modo (SCIENCE/CRUISE/SAFE). \cite{nasa_cm}
+\end{itemize}
+
+\paragraph{Resumen.}
+Este presupuesto de potencia es consistente con la arquitectura física (IBD/N2) y con los modos operacionales definidos para UC-01; al cerrarse los \textbf{TBD} con medidas reales de banco/campaña, la tabla pasará a ser el insumo directo para: (i) la verificación de \emph{autonomía} (capacidad del pack 4S vs perfiles de carga), (ii) el dimensionamiento final de convertidores/reglas de derating y (iii) la validación de contingencias (SAFE/HomingRetreat) conforme a $\S$\ref{sec:hw_selected}--$\S$\ref{subsec:software_functional_view}. \cite{nasa_cm}
+
+% ============================================================
+% 08.x · PHYSICAL BREAKDOWN STRUCTURE (PBS) + ASM Registry
+% Rover Olympus — Alineado a la arquitectura de 7 subsistemas
+% ============================================================
+
+\subsubsection{Physical Breakdown Structure (PBS) y Registro ASM}
+\label{sec:pbs_asm}
+
+Esta sección define la \textbf{Estructura de Descomposición Física (PBS)} del \emph{Rover Olympus} y el \textbf{registro de identificadores de ensamble (ASM-xxxx)} para trazabilidad física. La jerarquía PBS se alinea estrictamente con los \textbf{7 subsistemas} del baseline: \textbf{STR}, \textbf{TRAC}, \textbf{PROP}, \textbf{C\&DH}, \textbf{EPS}, \textbf{COMMS}, \textbf{GNC}. Las descripciones y ejemplos de componentes se derivan de $\S$\ref{sec:architecture} (vista funcional/física, PBS reducido) y $\S$\ref{subsec:physical_view} (N2/IBD). \textit{Ningún subsistema fuera de estos 7 es introducido.} \cite{nasa_cm, segoldmine_ppi}
+
+% ------------------------------------------------------------
+% A. Jerarquía PBS (L0 → L3)
+% ------------------------------------------------------------
+\paragraph{Jerarquía PBS (L0$\rightarrow$L3).}
+\label{subsec:pbs_hierarchy}
+
+\noindent\textbf{PBS--L0 (Sistema)} \cite{nasa_cm}
+\begin{itemize}
+  \item \textbf{PBS--L0.1} \; \textit{Rover\_Olympus} (Sistema) --- límite físico del sistema en $\S$\ref{subsec:physical_view}; arquitectura en $\S$\ref{sec:architecture}; I/F externas $\S$\ref{sec:architecture}.
+\end{itemize}
+
+\noindent\textbf{PBS--L1 (Subsistemas --- 7 bloques)} \emph{(composición del sistema; ver BDD $\S$\ref{sec:architecture})} \cite{nasa_cm}
+\begin{itemize}
+  \item \textbf{STR} Structural (chasis, bahía aviónica, \emph{mounts}).
+  \item \textbf{TRAC} Tracción (ruedas, hubs, suspensión pasiva).
+  \item \textbf{PROP} Propulsión (motores DC, drivers H-bridge, disipación).
+  \item \textbf{C\&DH} Command \& Data Handling (RPi5, RPi4, MCU, almacenamiento, bus de datos).
+  \item \textbf{EPS} Energía (pack 18650 4S, BMS Daly 4S/20A, DC/DC, PDU/fusibles, e-stop).
+  \item \textbf{COMMS} Comunicaciones (Wi‑Fi 2.4\,GHz, FPV opc., antenas y \emph{mounts}).
+  \item \textbf{GNC} Guía, Navegación y Control (cámara CSI v1.3, IMU, TF-Luna LiDAR opc., HC-SR04, encoders).
+\end{itemize}
+
+\noindent\textbf{PBS--L2 (Ensamblajes por subsistema)} \emph{(ejemplos representativos; ver $\S$\ref{sec:architecture})} \cite{nasa_cm}
+\begin{itemize}
+  \item \textbf{STR}: Chasis estructural; Bahía de aviónica; Placas de refuerzo; Brackets de sensores/antenas.
+  \item \textbf{TRAC}: Conjunto rueda+hub ($\times$N); Conjunto suspensión pasiva (rocker/bogie).
+  \item \textbf{PROP}: Conjunto motor+reductora ($\times$N); Conjunto driver de motor (L298N); Conjunto disipación.
+  \item \textbf{C\&DH}: OBC principal (RPi5); OBC auxiliar (RPi4); MCU I/O; Módulo de almacenamiento; Segmento del bus de datos.
+  \item \textbf{EPS}: Pack 18650 4S; Módulo BMS Daly 4S/20A (Li-ion); Conjunto DC/DC 5/12V; PDU+fusibles/e-stop; Módulo de sensado V/I (INA219).
+  \item \textbf{COMMS}: NIC Wi‑Fi / dongle; FPV TX/RX (opcional); Antenas + \emph{mounts}.
+  \item \textbf{GNC}: Cámara CSI v1.3; IMU; LiDAR TF-Luna (opcional); Sensor Ultrasónico HC-SR04; Encoders de rueda.
+\end{itemize}
+
+\noindent\textbf{PBS--L3 (Componentes/ítems COTS/DEV)} \emph{(detalles cerrados en BOM/ICD; ver $\S$\ref{sec:hw_selected} y $\S$\ref{subsec:physical_view})} \cite{nasa_cm}
+\begin{itemize}
+  \item Ej.: Rodamientos F687ZZ; cables/conectores por bus; tornillería/inserciones; sensores específicos; tarjeta INA219; etc. \emph{(P/N y masa/potencia $\rightarrow$ BOM; pines/buses/voltajes $\rightarrow$ ICD)}.
+\end{itemize}
+
+% ------------------------------------------------------------
+% B. Registro ASM (identificadores de ensamble — sample baseline)
+% ------------------------------------------------------------
+\paragraph{Registro de Identificadores de Ensamble (ASM).}
+\label{subsec:asm_registry}
+
+Los siguientes \textbf{ASM-ids} se asignan para habilitar trazabilidad \emph{PBS $\leftrightarrow$ N2/IBD $\leftrightarrow$ ICD/BOM} y soportar V\&V y control de configuración. La columna \emph{Interfaces clave} referencia el Cuadro N2/$\S$\ref{subsec:physical_view} (p.\,ej., \texttt{[PWR]}, \texttt{[DATA]}, \texttt{[CTRL]}, \texttt{[MEC]}). Los campos no definidos en el SyRS quedan \textbf{TBD}. \cite{nasa_cm}
+
+\begin{table}[H]
+\centering
+\caption{Registro ASM (Parte 1: STR, TRAC, PROP, C\&DH) --- Identificadores de ensamble por subsistema.}
+\renewcommand{\arraystretch}{1.15}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{1.8cm} p{1.2cm} p{1.6cm} p{4.5cm} p{5.0cm} p{1.3cm} p{2.5cm}}
+\hline
+\textbf{ASM-ID} & \textbf{PBS} & \textbf{Subsys} & \textbf{Ensamble / Ítem} & \textbf{Interfaces clave (N2)} & \textbf{Tipo} & \textbf{P/N} \\
+\hline
+ASM-010 & L2 & STR & Chasis estructural (marco + refuerzos) & [MEC] soporte TRAC/PROP/C\&DH/EPS/COMMS/GNC & COTS & \textbf{TBD} \\
+ASM-011 & L2 & STR & Bahía de aviónica (envolvente) & [MEC] mounts; nivel IP \textbf{TBD} & COTS & \textbf{TBD} \\
+ASM-012 & L3 & STR & Brackets/mounts sensores/antenas & [MEC] alineación IMU/cámara/antenas & DEV & \textbf{TBD} \\
+
+ASM-020 & L2 & TRAC & Conjunto rueda+hub \#1 & [MEC] acople PROP; [DATA] enc.$\rightarrow$GNC & COTS & \textbf{TBD} \\
+ASM-021 & L2 & TRAC & Conjunto rueda+hub \#N & [MEC] idem; [DATA] opcional & COTS & \textbf{TBD} \\
+ASM-022 & L2 & TRAC & Suspensión pasiva (rocker/bogie) & [MEC] contacto terreno/estabilidad & DEV & \textbf{TBD} \\
+ASM-024 & L3 & TRAC & Servomotor de dirección (MG996R) & [MEC] giro; [CTRL] PWM$\rightarrow$MCU & COTS & MG996R \\
+ASM-023 & L3 & TRAC & Rodamientos F687ZZ & [MEC] soporte ejes & COTS & F687ZZ \\
+
+ASM-030 & L2 & PROP & Motor+reductora \#1 & [PWR] EPS$\rightarrow$PROP; [CTRL] GNC/MCU$\rightarrow$driver; [MEC] TRAC & COTS & NFP-5840-31ZY-EN \\
+ASM-030b & L2 & PROP & Motor+reductora (Alt) & [PWR]/[CTRL]/[MEC] & COTS & JGY-370 \\
+ASM-031 & L2 & PROP & Motor+reductora \#N & [PWR]/[CTRL]/[MEC] & COTS & NFP-5840-31ZY-EN \\
+ASM-032 & L2 & PROP & Driver motor (L298N) & [PWR] EPS; [CTRL] PWM+DIR; [DATA] diag$\rightarrow$C\&DH & COTS & L298N (Red) \\
+ASM-032b & L2 & PROP & Driver High-Power (BTS7960) & Alt. alta corriente (43A); [PWR]/[CTRL] & COTS & BTS7960 \\
+ASM-033 & L3 & PROP & Disipación/soportes drivers & [MEC]/térmico & DEV & \textbf{TBD} \\
+
+ASM-040 & L2 & C\&DH & OBC principal (Raspberry Pi 5) & [PWR] EPS 5V; [DATA] bus principal; [DATA] CSI & COTS & RPI 5 \\
+ASM-041 & L2 & C\&DH & OBC auxiliar (Raspberry Pi 4) & [PWR]/[DATA] auxiliares & COTS & \textbf{TBD} \\
+ASM-042 & L2 & C\&DH & MCU Arduino Mega 2560 R3 & [PWR]; [CTRL] Motores/Servos (PWM) & COTS & Mega 2560 R3 \\
+ASM-043 & L3 & C\&DH & Almacenamiento SSD/microSD & [DATA] USB/SD; [PWR] 5V & COTS & \textbf{TBD} \\
+ASM-044 & L3 & C\&DH & Interfaces USB / UART & [DATA] Enlaces USB (TNC) y UART (MCU) & DEV & \textbf{TBD} \\
+\hline
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Registro ASM (Parte 2: EPS, COMMS, GNC) --- Identificadores de ensamble por subsistema.}
+\renewcommand{\arraystretch}{1.15}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{1.8cm} p{1.2cm} p{1.6cm} p{4.5cm} p{5.0cm} p{1.3cm} p{2.5cm}}
+\hline
+\textbf{ASM-ID} & \textbf{PBS} & \textbf{Subsys} & \textbf{Ensamble / Ítem} & \textbf{Interfaces clave (N2)} & \textbf{Tipo} & \textbf{P/N} \\
+\hline
+ASM-050 & L2 & EPS & Pack Li-ion 18650 (4S2P) & [PWR] 14.54V nominal; 101.78 Wh; 7000mAh & COTS & LG INR18650MJ1 \\
+ASM-051 & L2 & EPS & BMS Daly 4S 20A & [PWR] protección/balanceo; [HK] V/I$\rightarrow$C\&DH & COTS & Daly 4S 20A \\
+ASM-052 & L2 & EPS & Convertidores DC/DC 5/12V & [PWR] regulación; eficiencias \textbf{TBD} & COTS & \textbf{TBD} \\
+ASM-053 & L2 & EPS & PDU + fusibles + e-stop & [PWR] segmentación/aislamiento & DEV & \textbf{TBD} \\
+ASM-054 & L3 & EPS & INA219 (medición V/I) & [HK] telemetría EPS$\rightarrow$C\&DH (I2C) & COTS & INA219 \\
+
+ASM-060 & L2 & COMMS & NIC Wi‑Fi/dongle 2.4\,GHz & [DATA] UDP/IP + CSP; [PWR] 5V & COTS & \textbf{TBD} \\
+ASM-061 & L2 & COMMS & Transmisor/Receptor FPV (5.8GHz) & [DATA] vídeo; [PWR] 7--16V & COTS & TS832 / RC832 \\
+ASM-062 & L3 & COMMS & Antenas + mounts & [MEC]; [RF] enlace externo & DEV & \textbf{TBD} \\
+
+% --- Ensambles COMMS (UHF) añadidos ---
+ASM-063 & L2 & COMMS & TNC NinoTNC 9600A & [DATA] USB/UART (KISS) C\&DH$\leftrightarrow$TNC; [CTRL] PTT; [PWR] 5V & COTS & \textbf{TBD} \\
+ASM-064 & L2 & COMMS & Transceptor UHF (TM-D710GA/TS-2000) & [AUDIO/DATA] TNC$\leftrightarrow$Radio; [RF] Radio$\leftrightarrow$Antena; [PWR] 12V & COTS & \textbf{TBD} \\
+ASM-065 & L3 & COMMS & Antenas UHF (Eggbeater/Yagi) + coax & [RF] Radio$\leftrightarrow$Antena; [MEC] montaje en STR & COTS & \textbf{TBD} \\
+
+ASM-070 & L2 & GNC & Cámara CSI v1.3 (NavCam) & [DATA] CSI; [MEC] alineación óptica & COTS & RPi Cam v1.3 \\
+ASM-071 & L2 & GNC & IMU principal & [DATA] I2C/SPI; [MEC] orientación & COTS & \textbf{TBD} \\
+ASM-072 & L2 & GNC & LiDAR TF-Luna (Rango 8m) & [DATA] UART/I2C $\rightarrow$ RPi 5; [PWR] 5V & COTS & TF-Luna \\
+ASM-073 & L3 & GNC & Encoders de rueda ($\times$N) & [DATA] cuadratura; TRAC$\rightarrow$GNC & DEV & \textbf{TBD} \\
+ASM-074 & L3 & GNC & Sensor HC-SR04 (Ultrasónico) & [DATA/CTRL] Trigger/Echo $\rightarrow$ RPi 5 & COTS & HC-SR04 \\
+\hline
+\end{tabular}}
+\end{table}
+
+% ------------------------------------------------------------
+% C. Reglas de numeración, trazabilidad y cierre (ICD/BOM)
+% ------------------------------------------------------------
+\paragraph{Reglas de numeración y cierres (ICD/BOM).}
+\label{subsec:asm_rules}
+
+\begin{enumerate}
+  \item \textbf{Bloques de numeración:} reservar rangos por subsistema (\texttt{ASM-01x}=STR, \texttt{02x}=TRAC, \texttt{03x}=PROP, \texttt{04x}=C\&DH, \texttt{05x}=EPS, \texttt{06x}=COMMS, \texttt{07x}=GNC) para facilitar lectura. \cite{nasa_cm}
+  \item \textbf{Nivel PBS:} anotar \texttt{PBS=L2/L3} para distinguir ensamble vs. componente. La revisión cambia cuando varía forma/ajuste/función. \cite{nasa_cm}
+  \item \textbf{Trazabilidad cruzada:} cada \texttt{ASM-xx} debe enlazar a: (i) fila de BOM (P/N, masa, potencia), (ii) entradas N2/IBD (interfaces \texttt{[PWR/DATA/CTRL/MEC/HK]}), (iii) requisitos asociados (RF/RNF/CON) y (iv) procedimientos V\&V. \cite{nasa_cm}
+  \item \textbf{Cierre en ICD/BOM:} completar \textbf{P/N}, masa/potencia por ítem y conectores/pines/buses de cada interfaz antes de \emph{freeze} de integración. \cite{nasa_cm}
+\end{enumerate}
+
+\paragraph{Notas.}
+(i) Los \emph{placeholders} \textbf{TBD} se cierran con mediciones de banco y con definición de conectividad (ICD); (ii) el N2 de $\S$\ref{subsec:physical_view} resume las rutas por tipo \texttt{[MEC/PWR/CTRL/DATA/HK]}; (iii) la lista ASM aquí presentada es una \emph{línea base} inicial y puede refinarse durante I\&T respetando los rangos. \cite{nasa_cm}
+
+% ============================================================
+% 08.x · BILL OF MATERIALS (BOM) — Rover Olympus
+% Alineado con PBS/ASM y la arquitectura de 7 subsistemas
+% Fuente base: SyRS main.pdf (§8 Arquitectura; §9 Interfaces; PBS/N2)
+% ============================================================
+
+\subsubsection{Bill of Materials (BOM)}
+\label{sec:bom}
+
+Este \textbf{BOM} consolida los ítems físicos del \emph{Rover Olympus} y mantiene trazabilidad directa con el \textbf{PBS/ASM} (véase $\S$\ref{sec:pbs_asm}) y con la arquitectura de \textbf{7 subsistemas} (\textbf{STR}, \textbf{TRAC}, \textbf{PROP}, \textbf{C\&DH}, \textbf{EPS}, \textbf{COMMS}, \textbf{GNC}) definida en $\S$\ref{sec:architecture}, así como con las interfaces del $\S$\ref{subsec:physical_view} (N2/IBD). Los \textbf{P/N}, \textbf{masas} y \textbf{potencias} no especificados se marcan \textbf{TBD} y deberán cerrarse en los ICDs y en el reporte de integración física.%
+\footnote{Estructura de 7 subsistemas y referencias PBS/N2/IBD conforme a la arquitectura definida en $\S$\ref{sec:architecture} y $\S$\ref{subsec:physical_view}. \cite{nasa_cm}}
+
+% ----------------------------------------------------------------
+% Formato de tabla BOM maestro (ordenado por Subsistema y ASM-ID)
+% ----------------------------------------------------------------
+\begin{table}[H]
+\centering
+\caption{BOM maestro por ASM-ID, alineado con PBS/ASM y N2 (interfaces) --- valores \textbf{TBD} a cerrar en ICD/BOM final.}
+\small
+\renewcommand{\arraystretch}{1.15}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{1.4cm} p{1.5cm} p{4.5cm} p{3.5cm} p{0.9cm} p{1.5cm} p{1.5cm} p{4.5cm}}
+\hline
+\textbf{ASM-ID} & \textbf{Subsys} & \textbf{Componente / Ensamble} & \textbf{P/N o Modelo} & \textbf{Qty} & \textbf{Masa [kg]} & \textbf{Pot. [W]} & \textbf{Notas / Interfaces (N2)} \\
+\hline
+
+% --- STR -------------------------------------------------------
+ASM-010 & STR & Chasis estructural (marco) & \textbf{TBD} & 1 & 2.000 & 0 & [MEC] soporte de subsistemas. \\
+ASM-011 & STR & Bahía de aviónica & \textbf{TBD} & 1 & 0.500 & 0 & [MEC] nivel protección IP67 est. \\
+ASM-012 & STR & Brackets/mounts & \textbf{TBD} & \textbf{TBD} & 0.200 & 0 & [MEC] alineación sensores. \\
+
+% --- TRAC ------------------------------------------------------
+ASM-020 & TRAC & Conjunto rueda+hub & \textbf{TBD} & 6 & 1.500 & 0 & [MEC] acople a PROP. \\
+ASM-022 & TRAC & Suspensión pasiva & \textbf{TBD} & 1 & 0.033 & 0 & [MEC] estabilidad/contacto. \\
+ASM-024 & TRAC & Servomotor de dirección & MG996R & 1 & 0.055 & 3.0 & [MEC] giro; [CTRL] PWM. \\
+ASM-023 & TRAC & Rodamientos F687ZZ & F687ZZ & 12 & 0.003 & 0 & [MEC] soporte de ejes. \\
+
+% --- PROP ------------------------------------------------------
+ASM-030 & PROP & Motor DC + reductora & NFP-5840-31ZY-EN & 6 & 0.360 & 19.2 & [PWR] EPS$\rightarrow$PROP; [MEC] TRAC. \\
+ASM-030b & PROP & Motor DC + reductora & JGY-370 & \textbf{Alt} & 0.162 & 3.6 & Alternativa 40 RPM, 15.5 kg$\cdot$cm. \\
+ASM-032 & PROP & Driver motor (L298N) & L298N (Red) & 3 & 0.026 & 0.18 & [CTRL] PWM+DIR; [DATA] diag. \\
+ASM-032b & PROP & Driver motor (BTS7960) & BTS7960 (Alt) & \textbf{Alt} & 0.066 & 0.10 & Alternativa alta potencia (43A). \\
+ASM-033 & PROP & Disipación/soportes & \textbf{TBD} & 3 & 0.050 & 0 & [MEC]/térmico. \\
+
+% --- C&DH ------------------------------------------------------
+ASM-040 & C\&DH & OBC principal (RPi 5) & RPI 5 & 1 & 0.046 & 12.0 & [DATA] BCM2712 Quad-Core A76; [PWR] 5V/5A. \\
+ASM-041 & C\&DH & OBC auxiliar (RPi 4) & \textbf{TBD} & 1 & 0.047 & 8.0 & Nodo de respaldo/servicios. \\
+ASM-042 & C\&DH & MCU Arduino Mega 2560 R3 & Mega 2560 R3 & 1 & 0.037 & 1.0 & [CTRL] Exclusivo Motores/Servos. \\
+ASM-043 & C\&DH & Almacenamiento SSD/microSD & \textbf{TBD} & 1 & 0.050 & 4.5 & $\ge$2\,h TM/logs. \cite{nasa_cm} \\
+ASM-044 & C\&DH & Interfaces USB / UART & \textbf{TBD} & 1 & 0.050 & 0 & [DATA] Enlace OBC$\leftrightarrow$TNC (USB) y OBC$\leftrightarrow$MCU (UART). \\
+
+% --- EPS -------------------------------------------------------
+ASM-050 & EPS & Pack Li-ion 4S2P (8 celdas) & LG INR18650MJ1 & 1 & 0.392 & 0 & 14.54V nom; 7000mAh; 101.78 Wh. \\
+ASM-051 & EPS & BMS 4S 20A (Daly) & Daly 4S 20A & 1 & 0.100 & 0.001 & Para Li-ion (14.8V); 20A cont.; Common Port. \\
+ASM-052 & EPS & Convertidores DC/DC & \textbf{TBD} & 3 & 0.050 & 21.8 & Eficiencias $\ge$85\%. \\
+ASM-053 & EPS & PDU + fusibles + e-stop & \textbf{TBD} & 1 & 0.150 & 0 & Segmentación/aislamiento. \\
+ASM-054 & EPS & Sensor V/I (INA219) & INA219 & 1 & 0.008 & 0.005 & [HK] telemetría EPS$\rightarrow$C\&DH. \\
+
+% --- COMMS -----------------------------------------------------
+ASM-060 & COMMS & NIC Wi‑Fi / dongle & \textbf{TBD} & 1 & 0.010 & 1.0 & TM/CMD sobre UDP/IP + CSP. \cite{nasa_cm} \\
+ASM-061 & COMMS & Transmisor/Receptor FPV & TS832 / RC832 & 1 & 0.107 & 2.6 & Canal de vídeo auxiliar (5.8GHz). \\
+ASM-062 & COMMS & Antenas + mounts & \textbf{TBD} & 2 & 0.030 & 0 & [MEC]/[RF] enlace externo. \\
+
+% --- [ADICIÓN] Adiciones UHF ---
+ASM-063 & COMMS & NinoTNC 9600A & \textbf{TBD} & 1 & 0.040 & 0.5 & NinoTNC 9600A (USB KISS). \\
+ASM-064 & COMMS & TM-D710GA / TS-2000 & \textbf{TBD} & 1 & 1.500 & \textbf{Ext.} & Kenwood TM‑D710GA o TS‑2000 (Externa). \\
+ASM-065 & COMMS & Antena Eggbeater/Yagi & \textbf{TBD} & 1 & 0.200 & 0 & Antena Eggbeater/Yagi. \\
+
+% --- GNC -------------------------------------------------------
+ASM-070 & GNC & Cámara CSI v1.3 & RPi Cam v1.3 & 1 & 0.003 & 1.25 & [DATA] CSI; sensor OV5647 (5MP). \cite{nasa_cm} \\
+ASM-071 & GNC & IMU principal (9DOF) & \textbf{TBD} & 1 & 0.003 & 0.15 & [DATA] I2C/SPI; fusión sensorial. \cite{nasa_cm} \\
+ASM-072 & GNC & LiDAR TF-Luna & TF-Luna & 1 & 0.005 & 0.75 & [DATA] Rango UART/I2C $\rightarrow$ RPi 5. \\
+ASM-073 & GNC & Encoders de rueda ($\times$6) & \textbf{TBD} & 6 & 0.010 & 0.10 & Odometría TRAC$\rightarrow$GNC. \\
+ASM-074 & GNC & Sensor Ultrasónico HC-SR04 & HC-SR04 & 1 & 0.009 & 0.075 & [DATA] Rango/Obstáculos $\rightarrow$ RPi 5. \\
+\hline
+\end{tabular}}
+\end{table}
+
+% ----------------------------
+% Subtotales y márgenes (BOM)
+% ----------------------------
+\paragraph{Subtotales y márgenes (para cerrar con medidas reales).}
+\begin{table}[H]
+\centering
+\caption{Subtotales de masa y potencia por subsistema (consolidados para estimación de autonomía y carga).}
+\small
+\renewcommand{\arraystretch}{1.15}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{4.5cm} r r r}
+\hline
+\textbf{Subsistema} & \textbf{Subtotal Masa [kg]} & \textbf{Subtotal Potencia [W]} & \textbf{Notas} \\
+\hline
+STR & 2.700 & 0 & Estructural pasivo (sin consumo). \\
+TRAC & 1.591 & 3.0 & Servomotor de dirección. \\
+PROP & 2.338 & 115.2 & Drivers + 6 motores (nom). \\
+C\&DH & 0.230 & 25.5 & RPi5/4, MCU, SSD (peak). \\
+EPS & 0.700 & 21.8 & Pérdidas DC/DC, BMS, PDU. \\
+COMMS & 0.197 & 3.1 & Wi‑Fi/FPV/TNC (Kenwood ext). \\
+GNC & 0.100 & 14.5 & CSI/IMU/LiDAR/encoders. \\
+\hline
+\textbf{TOTAL} & \textbf{8.356} & \textbf{183.1} & Estimación CBE (Consumo Load). \\
+\hline
+\end{tabular}}
+\end{table}
+
+% ----------------------------
+% Reglas de cierre y control
+% ----------------------------
+\paragraph{Reglas de cierre.}
+\begin{enumerate}
+  \item \textbf{P/N y cantidades:} Cada ítem ASM-XX \emph{DEBERÁ} incluir P/N, masa, potencia y cantidad. Todas las filas TBD serán completadas en la versión siguiente del ICD/BOM. Los presupuestos de masa y potencia se recalcularán automáticamente al cerrar la BOM. Mantener correspondencia 1:1 con el modelo (IBD/N2) e ICDs de señalización y potencia. \cite{nasa_cm}
+  \item \textbf{Masa/Potencia:} registrar \emph{medidas de banco} (pesaje; V/I por rama EPS con INA219) y actualizar los presupuestos de $\S$\ref{sec:mass_budget} y $\S$\ref{sec:power_budget}. \cite{nasa_cm}
+  \item \textbf{Trazabilidad:} cada fila del BOM debe enlazar a: (i) ASM-ID, (ii) celda N2 (tipo de interfaz), (iii) requisito(s) que soporta, (iv) procedimiento V\&V. \cite{nasa_cm}
+  \item \textbf{Control de cambios:} cualquier sustitución de componente implica CR y actualización del \emph{baseline} ($\S$\ref{sec:traceability}). \cite{nasa_cm}
+\end{enumerate}
+
+% ============================================================
+% 02.z · PRESUPUESTO TÉRMICO — Rover Olympus (7 subsistemas)
+% Basado en arquitectura física (§8) y requisitos operacionales (§4, §7)
+% ============================================================
+
+\subsubsection{Presupuesto Térmico (Thermal Budget)}
+\label{sec:thermal_budget}
+
+El presente presupuesto térmico establece las \textbf{bandas de operación aceptables} por subsistema del Rover Olympus, considerando el entorno del \textbf{sitio análogo terrestre} definido en el SyRS, cuya variabilidad térmica puede aproximarse a rangos operacionales similares a los usados en robótica planetaria académica. Los valores son coherentes con la arquitectura física ($\S$\ref{sec:architecture}), la integración en STR, la gestión energética (EPS) y la criticidad de C\&DH/GNC durante UC-01. \cite{nasa_cm}
+
+% ------------------------------------------------------------
+% Tabla 1 — Límites térmicos por subsistema
+% ------------------------------------------------------------
+\paragraph{Límites térmicos por subsistema.}
+
+\begin{table}[H]
+\centering
+\caption{Límites térmicos preliminares por subsistema (valores a cerrar con mediciones de banco).}
+\renewcommand{\arraystretch}{1.25}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{3.5cm} p{4.5cm} p{8.5cm}}
+\hline
+\textbf{Subsistema} & \textbf{Rango Térmico Operacional} & \textbf{Notas / Riesgos Térmicos} \\
+\hline
+
+C\&DH (OBC) &
+\(-20\,^{\circ}\mathrm{C}\) \dots \ \(+60\,^{\circ}\mathrm{C}\) &
+CPU/GPU sensibles a frío extremo; riesgo de falla SD/SSD. Gestión activa vía calefactores. \\
+
+EPS (Batería + BMS) &
+\(-10\,^{\circ}\mathrm{C}\) \dots \ \(+40\,^{\circ}\mathrm{C}\) &
+Las Li-ion presentan degradación severa bajo \(0\,^{\circ}\mathrm{C}\). Requiere aislamiento + calefacción. \\
+
+PROP / MOV &
+\(-80\,^{\circ}\mathrm{C}\) \dots \ \(+85\,^{\circ}\mathrm{C}\) &
+Elements electromecánicos toleran rangos amplios; evitar condensación. \\
+
+GNC / Cámara CSI &
+\(-40\,^{\circ}\mathrm{C}\) \dots \ \(+60\,^{\circ}\mathrm{C}\) &
+Sensor y ribbon cable sensibles a frío; deriva afecta enfoque. \\
+
+COMMS &
+\(-30\,^{\circ}\mathrm{C}\) \dots \ \(+70\,^{\circ}\mathrm{C}\) &
+RF front-end degradado por frío extremo. \\
+
+STR (pasivo) &
+Sin restricción propia &
+Transmite cargas térmicas; afecta gradiente interno. \\
+
+\hline
+\end{tabular}}
+\end{table}
+
+% ------------------------------------------------------------
+% TCS — Thermal Control Subsystem (soluciones pasivas/activas)
+% ------------------------------------------------------------
+\paragraph{Soluciones TCS implementadas.}
+
+Para el entorno análogo se emplearán soluciones térmicas COTS: aislamiento pasivo localizado, sellos IP adecuados (STR-REQ-002) y gestión térmica por conducción interna. No se utilizarán elementos de vuelo (MLI/RHU/OSR) por no corresponder al alcance experimental.
+
+% ------------------------------------------------------------
+% Tabla 2 — Entorno térmico y márgenes
+% ------------------------------------------------------------
+\paragraph{Entorno Térmico y Márgenes.}
+
+\begin{table}[H]
+\centering
+\caption{Entorno térmico, márgenes de diseño y margen respecto a cargas pico.}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{p{6.5cm} r}
+\hline
+\textbf{Parámetro} & \textbf{Valor} \\
+\hline
+\textbf{Entorno de referencia} (análogos) & \(-80\,^{\circ}\mathrm{C}\) \dots \ \(+30\,^{\circ}\mathrm{C}\) \\
+\textbf{Margen frío} (según TCS+MLI+RHU) & \(+8\,^{\circ}\mathrm{C}\) de reserva \\
+\textbf{Margen calor} (capacidad radiativa OSR) & \(+15\,^{\circ}\mathrm{C}\) de reserva \\
+\hline
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------
+% Block explicativo
+% ------------------------------------------------------------
+\paragraph{Análisis resumido.}
+\begin{itemize}
+    \item Los límites térmicos están dictados por tolerancias COTS y restricciones operacionales.  
+    \item El TCS combinado permite mantener el EPS por encima de \(0\,^{\circ}\mathrm{C}\) y el C\&DH en banda nominal.  
+    \item Los márgenes (\(+8\,^{\circ}\mathrm{C}\) frío, \(+15\,^{\circ}\mathrm{C}\) calor) garantizan compatibilidad con variaciones rápidas.
+\end{itemize}
+
+
+
+\newpage
+\subsection{Vista funcional de software}\label{subsec:software_functional_view}
+
+
+
+El sistema se compone de dos nodos con responsabilidades especializadas. El \textbf{Nodo A} (OBC con una distribución a medida de \textbf{Yocto Project}) concentra la percepción sensorial, el modelo de IA y la lógica de decisión global mediante una \textbf{Máquina de Estados Maestra (MSM)}. El \textbf{Nodo B} (MCU con \textbf{FreeRTOS}) actúa como una capa de ejecución determinista que gestiona los actuadores mediante una arquitectura basada en \textbf{prioridades de tareas}.
+
+
+\begin{landscape}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\paperheight]{figures/YoctoNodeImageProcessing.png}
+    \caption{Vista funcional de la arquitectura de software: IA en Yocto y ejecución en FreeRTOS.}
+    \label{fig:software_arqui}
+\end{figure}
+\end{landscape}
+
+\subsubsection{Nodo A (Yocto/Linux): Percepción, IA y Máquina de Estados Maestra}
+\label{subsubsec:nodoA_yocto}
+La Raspberry Pi 5 ejecuta una imagen optimizada de \textbf{Yocto Project}, centralizando la percepción directa de la \textbf{NavCam (CSI)}, el \textbf{LiDAR TF-Luna} (UART/I2C) y el \textbf{Sensor HC-SR04} (GPIO). Esta aproximación permite que el flujo de datos sea consumido directamente por el modelo de IA sin latencias de red o de paso por microcontroladores.
+
+El flujo de software en este nodo se divide en tres niveles:
+\begin{enumerate}
+    \item \textbf{Capa de Percepción:} Lectura directa de drivers del kernel (V4L2 para cámara, I2C para LiDAR, GPIO para ultrasonido) y normalización de los datos sensoriales.
+    \item \textbf{Motor de Inferencia:} Ejecución del modelo de IA (p. ej., TFLite u ONNX) para la clasificación de la transitabilidad del terreno y la detección de obstáculos en el camino.
+    \item \textbf{Máquina de Estados Maestra (MSM):} Gobierna el comportamiento global del rover basándose en los resultados de la IA y el estado de la misión. Dependiendo del estado activo (\texttt{STANDBY}, \texttt{EXPLORE}, \texttt{AVOID}, \texttt{FAULT}), la MSM habilita o deshabilita subsistemas y genera los paquetes de mando para la MCU.
+\end{enumerate}
+
+\subsubsection{Nodo B (FreeRTOS): Ejecución Determinista y Actuación}
+\label{subsubsec:nodoB_freertos}
+El Arduino Mega 2560 R3 utiliza \textbf{FreeRTOS} para garantizar latencias acotadas en el control físico de los actuadores. La arquitectura se simplifica mediante \textbf{Tareas RTOS} especializadas que se ejecutan concurrentemente bajo un esquema de prioridades:
+
+\begin{itemize}
+    \item \textbf{\texttt{Task\_Communication} (Prioridad Media):} Encargada de gestionar el enlace UART con la RPi 5. Se encarga de decodificar los paquetes binarios entrantes, validar su integridad (CRC) y actualizar los setpoints de movimiento en la memoria compartida.
+    \item \textbf{\texttt{Task\_Actuation} (Prioridad Alta):} Es la tarea más crítica. Genera las señales \textbf{PWM} para los 6 motores de tracción y el servomotor de dirección. Implementa la lógica de rampas de aceleración y asegura que los actuadores respondan de forma suave a las órdenes de la MSM.
+    \item \textbf{\texttt{Task\_Safety} (Prioridad Máxima):} Supervisa la salud del sistema. Verifica la presencia del enlace con la OBC (watchdog) y monitoriza señales de diagnóstico de los drivers. En caso de pérdida de comunicación o falla detectada, fuerza un estado de parada segura (\emph{Safe Stop}).
+\end{itemize}
+
+\subsubsection{Protocolo de Comunicación y Flujo de Mando}
+\label{subsubsec:protocolo_serial}
+El intercambio de información entre nodos se realiza mediante un protocolo binario ligero sobre el bus \textbf{UART}. La RPi 5 envía tramas que encapsulan el modo de operación y los parámetros de velocidad/dirección. A su vez, el Arduino reporta telemetría de bajo nivel (estado de motores, encoders y consumo energético del sensor INA219). Esta separación asegura que el cómputo pesado de IA no interfiera con el determinismo requerido para el control de los motores.
+En resumen, el Nodo A ejecuta el pipeline de visión e inferencia, empaqueta resultados en un payload binario compacto y los transmite por un enlace ligero. El Nodo B transforma dichos payloads en eventos internos del MAS, los distribuye mediante un broker de mensajes y, a través de agentes especializados, decide acciones, opera actuadores y mantiene telemetría/monitoreo. Esta partición mejora la escalabilidad (IA y control desacoplados), facilita la verificación del comportamiento en tiempo real en el MCU y permite evolucionar agentes y modelos de IA de forma independiente.

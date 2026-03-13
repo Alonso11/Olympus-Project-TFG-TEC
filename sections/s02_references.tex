@@ -1,0 +1,26 @@
+\section{References}
+
+Esta sección lista los documentos normativos y guías técnicas que enmarcan la estructura, el contenido mínimo y las buenas prácticas aplicadas en este SyRS/SRS del Rover Olympus. \cite{ieee_29148, segoldmine_ppi} 
+Los borradores (main/main1/main3) ya referencian ISO/IEC/IEEE 29148 y el NASA Systems Engineering Handbook como marco metodológico general, y el uso de CSP (CubeSat Space Protocol) como referencia técnica para el encapsulamiento de telemetría/comandos. \cite{ieee_29148, nasa_se_handbook} 
+Adicionalmente, debido a que el SRS final incorpora un ajuste realista del UC‑05 hacia ``Safe Deactivation / Passivation'' y menciona consideraciones de protección planetaria (no interferencia con futuras misiones), se incluyen referencias NASA de Planetary Protection como documentos externos aplicables/consultados. \cite{nasa_se_handbook, ieee_29148, segoldmine_ppi, nasa_planetary_protection}
+
+\subsection{Applicable Standards}
+
+Los siguientes estándares y guías se consideran aplicables o de referencia directa para la elaboración y mantenimiento del SyRS/SRS:
+
+\begin{enumerate}
+    \item \textbf{ISO/IEC/IEEE 29148:2018 – Systems and software engineering — Life cycle processes — Requirements engineering.} \cite{ieee_29148}
+    \begin{itemize}
+        \item Aplica como marco para estructura del documento, criterios de ``buen requisito'', contenido esperado y prácticas de gestión/ingeniería de requisitos.
+    \end{itemize}
+
+    \item \textbf{NASA Systems Engineering Handbook – NASA SP‑2016‑6105 Rev2.} \cite{nasa_se_handbook}
+    \begin{itemize}
+        \item Aplica como guía de buenas prácticas SE (incluyendo relación requisitos–arquitectura–V\&V, y recomendaciones de tailoring para el contexto de proyecto).
+    \end{itemize}
+
+    \item \textbf{CubeSat Space Protocol (CSP) Specification.} \cite{csp_spec}
+    \begin{itemize}
+        \item Aplica como referencia técnica para el encapsulamiento y verificación de integridad de paquetes de telemetría/comandos en la interfaz rover–estación terrena, tal como se utiliza en el stack descrito en los borradores. \cite{ieee_29148, nasa_se_handbook, segoldmine_ppi}
+    \end{itemize}
+\end{enumerate}
