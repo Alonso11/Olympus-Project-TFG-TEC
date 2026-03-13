@@ -92,6 +92,33 @@ El sistema DEBERÁ ejecutar parada segura ante slip $>$ 20\%. Ver PROP-REQ-002.
 \textbf{RF-006: Integridad de Telemetría (CSP)} \\
 El sistema DEBERÁ asegurar integridad vía CSP. Ver COMM-REQ-001.
 
+\subsection{Secondary Use Cases Requirements (UC-02 to UC-05)}
+Conforme a la identificación de vacíos en la auditoría técnica, se establecen los requerimientos funcionales maestros para los casos de uso secundarios que garantizan la resiliencia y seguridad del sistema.
+
+\subsubsection{UC-02: Homing and Retreat}
+\begin{itemize}
+    \item \textbf{SYS-FUN-020:} El sistema DEBERÁ mantener un registro dinámico de los últimos 5 waypoints transitables (puntos seguros) durante la navegación.
+    \item \textbf{SYS-FUN-021:} El sistema DEBERÁ iniciar una maniobra de retorno autónomo (Retreat) ante una pérdida de enlace $>$ 10 s o un deslizamiento persistente $>$ 25\%.
+\end{itemize}
+
+\subsubsection{UC-03: Manual Override}
+\begin{itemize}
+    \item \textbf{SYS-FUN-030:} El sistema DEBERÁ permitir la interrupción inmediata de los modos autónomos mediante comandos de control manual prioritarios.
+    \item \textbf{SYS-FUN-031:} El tiempo de transición entre modo autónomo y control manual NO DEBERÁ exceder los 500 ms tras la recepción del comando.
+\end{itemize}
+
+\subsubsection{UC-04: Safe Mode}
+\begin{itemize}
+    \item \textbf{SYS-FUN-040:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltajes de batería críticos ($<$ 12V) o fallos de latencia en el C\&DH $>$ 5 s.
+    \item \textbf{SYS-FUN-041:} En \emph{Safe Mode}, el sistema DEBERÁ priorizar la telemetría de salud y desenergizar los actuadores de tracción.
+\end{itemize}
+
+\subsubsection{UC-05: Safe Deactivation}
+\begin{itemize}
+    \item \textbf{SYS-FUN-050:} El sistema DEBERÁ sincronizar y cerrar todos los logs de misión en almacenamiento no volátil antes de confirmar la disponibilidad de apagado.
+    \item \textbf{SYS-FUN-051:} El sistema DEBERÁ asegurar que los actuadores se encuentran en una configuración estable (parking) antes de la desactivación final.
+\end{itemize}
+
 \subsection{Performance and Non-Functional Requirements}
 \sysreq{RNF-001}{Latencia de Procesamiento}{CRÍTICO}{ELANav}{$\le$ 2 s por ciclo.}
 \sysreq{RNF-002}{Resiliencia de Recuperación}{ALTO}{ConOps}{Éxito $\ge$ 90\% en rescates.}
