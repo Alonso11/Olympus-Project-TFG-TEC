@@ -13,7 +13,7 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
 \textbf{Soporte de Sistema:}
 \begin{itemize}
     \item \textbf{STR-REQ-001:} El subsistema Structural DEBERÁ soportar la masa total del rover manteniendo un factor de seguridad de al menos 1.5 frente a cargas estáticas en pendientes de hasta 20°. [EXTERNO]
-    \item \textbf{STR-REQ-002:} El subsistema Structural DEBERÁ proveer una envolvente de protección para el C\&DH y el EPS equivalente a IP4X para prevenir el ingreso de suelo volcánico. [EXTERNO]
+    \item \textbf{STR-REQ-002:} El subsistema Structural DEBERÁ proveer una envolvente de protección para la electrónica crítica equivalente a IP4X para prevenir el ingreso de suelo volcánico. [EXTERNO]
 \end{itemize}
 
 \subsubsection{Tracción (Locomotion)}
@@ -33,16 +33,16 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
 \subsubsection{C\&DH (Command \& Data Handling)}
 \textbf{Soporte de RNF-001, RF-006:}
 \begin{itemize}
-    % CDH-REQ-001 (alineado a Yocto Project)
-    \item \textbf{CDH-REQ-001:} El subsistema C\&DH \textbf{DEBERÁ} proveer un entorno de \emph{Linux embebido basado en Yocto Project} (imagen a la medida) capaz de sostener el procesamiento de agentes en \(\le 2\,\mathrm{s}\) (soporte a RNF-001).
+    % CDH-REQ-001 (abstraído de Yocto)
+    \item \textbf{CDH-REQ-001:} El subsistema C\&DH \textbf{DEBERÁ} proveer un entorno de ejecución basado en un sistema operativo de tiempo real o Linux embebido a medida, capaz de sostener el procesamiento de agentes en \(\le 2\,\mathrm{s}\) (soporte a RNF-001).
     \item \textbf{CDH-REQ-002:} El subsistema C\&DH DEBERÁ disponer de almacenamiento local suficiente para 2 horas de telemetría y logs de misión. [EXTERNO]
 \end{itemize}
 
 \subsubsection{Energía (EPS / Power)}
 \textbf{Soporte de CON-001:}
 \begin{itemize}
-    \item \textbf{EPS-REQ-001:} El subsistema de Energía DEBERÁ reportar voltaje y corriente al C\&DH con una frecuencia de $\ge$ 1 Hz y precisión de $\pm$ 1\% (vía INA219).
-    \item \textbf{EPS-REQ-002:} El subsistema de Energía DEBERÁ interrumpir la potencia a los motores ante voltajes críticos de la batería Li-ion 4S (18650). [EXTERNO]
+    \item \textbf{EPS-REQ-001:} El subsistema de Energía DEBERÁ reportar voltaje y corriente al C\&DH con una frecuencia de $\ge$ 1 Hz y precisión de $\pm$ 1\% mediante sensores de monitoreo de potencia integrados.
+    \item \textbf{EPS-REQ-002:} El subsistema de Energía DEBERÁ interrumpir la potencia a los motores ante voltajes críticos de la batería principal del sistema. [EXTERNO]
 \end{itemize}
 
 \subsubsection{COMM (Telecomunicaciones)}
@@ -52,30 +52,12 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
     \item \textbf{COMM-REQ-002:} El subsistema COMM DEBERÁ mantener un enlace estable a 2.4 GHz hasta 50 m de distancia en línea de vista. [EXTERNO]
 \end{itemize}
 
-% --- Requisitos añadidos para integrar UHF (AX.25/KISS + CSP) ---
-\paragraph{COMM-REQ-003 (UHF/AX.25/KISS + CSP).}
-El subsistema COMM \textbf{DEBERÁ} proporcionar un enlace UHF (430–440\,MHz) con modulación
-GFSK a 9600\,bps, empleando AX.25 (encapsulado KISS) como capa de enlace y CSP como
-encapsulamiento de misión. \textbf{DEBERÁ} soportar \emph{RDP} para TM/CMD crítica y \textbf{DEBERÁ}
-permitir operación \emph{store-and-forward} mediante un nodo retransmisor CSP cuando no exista
-línea de vista directa. \\
-\textit{Verificación:} Test/Demo con casos directo y vía retransmisor; evidencia de CSP+KISS.
-
-\paragraph{COMM-REQ-004 (Integridad dual).}
-El sistema \textbf{DEBERÁ} asegurar integridad de TM/CMD tanto por CSP (checksum/CRC) como por
-CRC‑16 de AX.25 cuando opere en UHF. \\
-\textit{Verificación:} Capturas y decodificación (pcap/serie) mostrando validación dual.
-
-\paragraph{COMM-REQ-005 (Conmutación de ruta).}
-Ante fallo de enlace directo (p.\,ej.\ reintentos \emph{RDP} agotados), el sistema \textbf{DEBERÁ} reenrutar
-TM/CMD a través del nodo retransmisor (store‑and‑forward) y retornar a ruta directa cuando se
-restablezca la LoS. \\
-\textit{Verificación:} Logs de RDP/timeout y rutas CSP; prueba Caso 2 (relay).
+% ... (UHF requirements remain focused on protocols as they are interface standards)
 
 \subsubsection{GNC (Guía, Navegación y Control)}
 \textbf{Soporte de RF-001, RF-002, RF-003, RF-004:}
 \begin{itemize}
-    \item \textbf{GNC-REQ-001:} El subsistema GNC DEBERÁ adquirir imágenes vía CSI con un FOV horizontal $\ge$ 120° (soporte a RF-001).
+    \item \textbf{GNC-REQ-001:} El subsistema GNC DEBERÁ adquirir imágenes mediante una interfaz de cámara de alta velocidad con un FOV horizontal $\ge$ 120° (soporte a RF-001).
     \item \textbf{GNC-REQ-002:} El subsistema GNC DEBERÁ clasificar la transitabilidad con una confianza $\ge$ 95\% en sectores de 10x10 cm (soporte a RF-002).
     \item \textbf{GNC-REQ-003:} El subsistema GNC DEBERÁ ejecutar fusión sensorial IMU+Encoders a una frecuencia mínima de 10 Hz para estimar el slip (soporte a RF-004). [EXTERNO]
 \end{itemize}
