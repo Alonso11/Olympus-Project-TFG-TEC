@@ -34,7 +34,7 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
 \textbf{Soporte de RNF-001, RF-006:}
 \begin{itemize}
     % CDH-REQ-001 (abstraído de Yocto)
-    \item \textbf{CDH-REQ-001:} El subsistema C\&DH \textbf{DEBERÁ} proveer un entorno de ejecución basado en un sistema operativo de tiempo real o Linux embebido a medida, capaz de sostener el procesamiento de agentes en \(\le 2\,\mathrm{s}\) (soporte a RNF-001).
+    \item \textbf{CDH-REQ-001:} El subsistema C\&DH \textbf{DEBERÁ} garantizar un tiempo de respuesta del sistema ante comandos de navegación de \(\le 2\,\mathrm{s}\) (soporte a RNF-001).
     \item \textbf{CDH-REQ-002:} El subsistema C\&DH DEBERÁ disponer de almacenamiento local suficiente para 2 horas de telemetría y logs de misión. [EXTERNO]
 \end{itemize}
 
@@ -52,14 +52,25 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
     \item \textbf{COMM-REQ-002:} El subsistema COMM DEBERÁ mantener un enlace estable a 2.4 GHz hasta 50 m de distancia en línea de vista. [EXTERNO]
 \end{itemize}
 
-% ... (UHF requirements remain focused on protocols as they are interface standards)
+% --- Requisitos UHF elevados a Nivel Sistema ---
+\paragraph{COMM-REQ-003 (Enlace UHF Robusto).}
+El subsistema COMM \textbf{DEBERÁ} proporcionar un enlace de telemetría y comando en banda UHF que permita la operación en condiciones de baja visibilidad (NLoS) mediante protocolos de retransmisión y entrega garantizada. \\
+\textit{Verificación:} Test/Demo con casos directo y vía retransmisor.
+
+\paragraph{COMM-REQ-004 (Integridad en UHF).}
+El sistema \textbf{DEBERÁ} asegurar la integridad de los datos de telemetría y comando mediante mecanismos de validación de errores en múltiples capas durante la operación en UHF. \\
+\textit{Verificación:} Capturas de datos mostrando validación de integridad.
+
+\paragraph{COMM-REQ-005 (Conmutación de ruta).}
+Ante la pérdida de enlace directo, el sistema \textbf{DEBERÁ} realizar una conmutación automática hacia rutas de retransmisión disponibles para mantener la conectividad. \\
+\textit{Verificación:} Logs de conmutación y retorno a ruta directa.
 
 \subsubsection{GNC (Guía, Navegación y Control)}
 \textbf{Soporte de RF-001, RF-002, RF-003, RF-004:}
 \begin{itemize}
     \item \textbf{GNC-REQ-001:} El subsistema GNC DEBERÁ adquirir imágenes mediante una interfaz de cámara de alta velocidad con un FOV horizontal $\ge$ 120° (soporte a RF-001).
     \item \textbf{GNC-REQ-002:} El subsistema GNC DEBERÁ clasificar la transitabilidad con una confianza $\ge$ 95\% en sectores de 10x10 cm (soporte a RF-002).
-    \item \textbf{GNC-REQ-003:} El subsistema GNC DEBERÁ ejecutar fusión sensorial IMU+Encoders a una frecuencia mínima de 10 Hz para estimar el slip (soporte a RF-004). [EXTERNO]
+    \item \textbf{GNC-REQ-003:} El subsistema GNC DEBERÁ estimar el estado cinemático y deslizamiento del rover con una frecuencia de actualización mínima de 10 Hz (soporte a RF-004). [EXTERNO]
 \end{itemize}
 
 \subsection{System Functional Requirements (Definición Maestra)}
