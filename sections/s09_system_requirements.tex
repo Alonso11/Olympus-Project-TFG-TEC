@@ -74,11 +74,22 @@ Ante la pérdida de enlace directo, el sistema \textbf{DEBERÁ} realizar una con
 \end{itemize}
 
 \subsection{System Functional Requirements (Definición Maestra)}
-\textbf{RF-001: Percepción Visual (CSI)} \\
-El sistema DEBERÁ adquirir percepción visual mediante cámara CSI frontal. Ver GNC-REQ-001.
 
-\textbf{RF-002: Clasificación de Transitabilidad} \\
-El sistema DEBERÁ clasificar la transitabilidad del terreno para navegación autónoma. Ver GNC-REQ-002.
+\begin{reqblock}{RF-001}{Percepción Visual}
+    \ReqShall{El sistema DEBERÁ adquirir percepción visual del entorno frontal para navegación autónoma. Ver GNC-REQ-001.}
+    \item[\textbf{Prioridad:}] CRÍTICO
+    \ReqTrace{ConOps UC-01; §7.3.1}
+    \item[\textbf{Racional:}] Base fundamental para la detección de obstáculos y planificación de trayectorias.
+    \ReqAccept{Demonstration (Visualización en GCS)}
+\end{reqblock}
+
+\begin{reqblock}{RF-002}{Clasificación de Transitabilidad}
+    \ReqShall{El sistema DEBERÁ clasificar la transitabilidad del terreno para navegación autónoma. Ver GNC-REQ-002.}
+    \item[\textbf{Prioridad:}] CRÍTICO
+    \ReqTrace{ConOps UC-01; §7.3.2}
+    \item[\textbf{Racional:}] Permite al agente ELANav distinguir zonas seguras de zonas de riesgo (alto slip o colisión).
+    \ReqAccept{Analysis / Test (Confianza $\ge$ 95\%)}
+\end{reqblock}
 
 \textbf{RF-003: Evitación Reactiva de Obstáculos} \\
 El sistema DEBERÁ evitar obstáculos $\ge$ 20 cm. Ver GNC-REQ-002 y TRAC-REQ-002.
