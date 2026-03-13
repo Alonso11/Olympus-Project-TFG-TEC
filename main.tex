@@ -80,14 +80,32 @@
     skipbelow=10pt
 ]{reqbox}
 
+% ---------- Requisitos Estandarizados (ISO 29148) ----------
+\providecommand{\ReqID}[1]{\item[\textbf{ID:}] #1}
+\providecommand{\ReqShall}[1]{\item[\textbf{Enunciado:}] #1}
+\providecommand{\ReqMetric}[1]{\item[\textbf{Criterio cuantitativo:}] #1}
+\providecommand{\ReqCond}[1]{\item[\textbf{Condición de aplicación:}] #1}
+\providecommand{\ReqAccept}[1]{\item[\textbf{Criterio de aceptación:}] #1}
+\providecommand{\ReqTrace}[1]{\item[\textbf{Trazabilidad:}] #1}
+
+\newenvironment{reqblock}{%
+    \vspace{0.5em}
+    \begin{mdframed}[linecolor=AgencyBlue, linewidth=1pt, roundcorner=5pt, backgroundcolor=gray!5, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=10pt, innerbottommargin=10pt]
+    \begin{description}[style=multiline, leftmargin=3.5cm, font=\small\bfseries]
+}{%
+    \end{description}
+    \end{mdframed}
+    \vspace{0.5em}
+}
+
 \newcommand{\sysreq}[5]{
-    \begin{reqbox}
-        \noindent\textbf{#1: #2} \hfill \textit{Prioridad: #3} \\
-        \rule{\textwidth}{0.4pt} \\
-        \small
-        \textbf{Fuente:} #4 \\
-        \textbf{Verificación:} #5
-    \end{reqbox}
+    \begin{reqblock}
+        \ReqID{#1}
+        \item[\textbf{Título:}] #2
+        \item[\textbf{Prioridad:}] #3
+        \item[\textbf{Fuente:}] #4
+        \ReqShall{#5}
+    \end{reqblock}
 }
 
 % --- Document Info ---
