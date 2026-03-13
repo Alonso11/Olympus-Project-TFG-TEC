@@ -6,6 +6,32 @@
 Esta sección agrupa anexos de apoyo para el SyRS/SRS final del Rover Olympus. Incluye (i) un glosario consolidado (sinónimos/abreviaturas y términos de dominio) y (ii) un resumen de historial de revisiones, depurando inconsistencias entre los borradores main/main1/main3 y dejando un criterio claro de baseline para el documento final. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
 Los anexos se mantienen concisos: el propósito es facilitar lectura y auditoría académica, sin duplicar contenido ``maestro'' que ya está en secciones 1--13 (requisitos, V\&V, trazabilidad, arquitectura). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
 
+\subsection{Traceability Matrix (SyRS $\rightarrow$ Subsystem $\rightarrow$ V\&V)}
+La siguiente tabla resume la trazabilidad de los requerimientos de sistema (SyRS) hacia sus derivados por subsistema y el método de verificación primaria (Test, Analysis, Demonstration, Inspection).
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{} l p{5.5cm} l l @{}}
+\toprule
+\textbf{ID SyRS} & \textbf{Descripción Resumida} & \textbf{Derivado (Hijo)} & \textbf{Método V\&V} \\ \midrule
+RF-001 & Percepción Visual & GNC-REQ-001 & Demonstration \\
+RF-002 & Clasificación de Terreno & GNC-REQ-002 & Analysis \\
+RF-003 & Evitación de Obstáculos & TRAC-REQ-001, GNC-REQ-002 & Test \\
+RF-004 & Compensación de Slip & GNC-REQ-003 & Test \\
+RF-005 & Fault Stop Seguro & PROP-REQ-002 & Demonstration \\
+RF-006 & Integridad de Datos & COMM-REQ-001, 004 & Analysis \\
+RNF-001 & Latencia de Procesamiento $\le$ 2s & CDH-REQ-001 & Test \\
+RNF-002 & Resiliencia de Recuperación & ConOps/SW-logic & Demonstration \\
+USA-REQ-002 & Despliegue Operativo $\le$ 15 min & PKG-REQ-001 & Demonstration \\
+SEC-REQ-001 & Autenticación de Comandos & COMM-REQ-001 & Analysis \\
+INF-REQ-001 & Persistencia de Logs & CDH-REQ-002 & Inspection \\
+PHY-REQ-001 & Dimensiones 480x340x320 mm & STR-REQ-001 & Inspection \\
+\bottomrule
+\end{tabularx}
+\caption{Matriz de Trazabilidad Maestra del Rover Olympus.}
+\end{table}
+
 \subsection{Glossary}
 
 Este glosario consolida términos y abreviaturas utilizados en el SyRS/SRS final. Para evitar redundancias, se considera complementario a la Sección 3 (Terms, Definitions, Acronyms), que contiene las definiciones operativas principales. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
