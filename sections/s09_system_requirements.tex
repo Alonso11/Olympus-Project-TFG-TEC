@@ -161,6 +161,81 @@ Conforme a la identificación de vacíos en la auditoría técnica, se establece
     \item \textbf{SYS-FUN-051:} El sistema DEBERÁ asegurar que los actuadores se encuentran en una configuración estable (parking) antes de la desactivación final.
 \end{itemize}
 
+\subsection{System Operational Modes}\label{subsec:op_modes}
+
+Esta subsección define formalmente los modos operacionales del Rover Olympus conforme a ISO/IEC/IEEE 29148 §9.4.16 y ECSS-E-ST-70-11C. Los modos STB/EXP/AVD/RET/FLT/SAFE están implementados en \texttt{state\_machine/mod.rs} (LLC) y el agente MSM (HLC); esta tabla los eleva a requisito de sistema, constituyendo el baseline de trazabilidad para cambios de diseño. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}
+
+\begin{landscape}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.4}
+\begin{longtable}{| l | l | p{3.2cm} | p{3.0cm} | p{3.2cm} | c | c | l |}
+\caption{Modos operacionales del sistema Rover Olympus (ISO 29148 §9.4.16).}\label{tab:op_modes}\\
+\hline
+\textbf{ID} & \textbf{Modo} & \textbf{Condición de Entrada} & \textbf{Condición de Salida} & \textbf{Capacidades Habilitadas} & \textbf{Actuadores} & \textbf{Telemetría} & \textbf{Req.} \\ \hline
+\endfirsthead
+\hline
+\textbf{ID} & \textbf{Modo} & \textbf{Condición de Entrada} & \textbf{Condición de Salida} & \textbf{Capacidades Habilitadas} & \textbf{Actuadores} & \textbf{Telemetría} & \textbf{Req.} \\ \hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+
+MODE-001 & \textbf{STB} \newline Standby &
+Boot completo del sistema; fin de misión nominal; reset desde FLT o SAFE por operador &
+Comando START del operador vía GCS $\rightarrow$ EXP &
+Telemetría activa; subsistemas monitoreados; motores desenergizados &
+Desactivados &
+Full &
+SYS-FUN-050 \newline SYS-FUN-051 \\ \hline
+
+MODE-002 & \textbf{EXP} \newline Exploration &
+Comando START recibido en STB &
+Obstáculo detectado $\rightarrow$ AVD; slip$>$25\% $\rightarrow$ FLT; link lost$>$10\,s $\rightarrow$ RET; voltaje$<$12\,V $\rightarrow$ SAFE &
+Percepción visual (RF-001); clasificación terreno (RF-002); evitación (RF-003); odometría encoders; telemetría continua &
+Activos &
+Full &
+RF-001..003 \newline RF-004-R1 \newline RNF-001 \\ \hline
+
+MODE-003 & \textbf{AVD} \newline Avoidance &
+Obstáculo $\ge$20\,cm detectado durante EXP &
+Camino libre confirmado $\rightarrow$ EXP; timeout sin resolución $\rightarrow$ FLT &
+Maniobra reactiva de evitación; percepción activa; velocidad reducida &
+Activos \newline (velocidad reducida) &
+Full &
+RF-003 \newline SYS-FUN-030 \\ \hline
+
+MODE-004 & \textbf{RET} \newline Retreat &
+Pérdida de enlace $>$10\,s o slip persistente $>$25\% durante EXP &
+Link restaurado + confirmación operador $\rightarrow$ EXP; llegada a safe waypoint $\rightarrow$ STB &
+Homing hacia últimos 5 waypoints seguros; percepción activa; sin recepción de nuevos objetivos &
+Activos &
+Full &
+SYS-FUN-020 \newline SYS-FUN-021 \\ \hline
+
+MODE-005 & \textbf{FLT} \newline Fault &
+Slip$>$25\% sin recuperación en AVD; timeout AVD; LLC heartbeat ausente &
+Reset manual por operador vía GCS $\rightarrow$ STB &
+Solo telemetría de diagnóstico; motores detenidos; FDIR activo &
+Detenidos \newline (freno activo) &
+Health only &
+RF-005 \newline SYS-FUN-040b \\ \hline
+
+MODE-006 & \textbf{SAFE} \newline Safe Mode &
+Voltaje batería $<$12\,V (SYS-FUN-040a) o latencia HLC $>$5\,s (SYS-FUN-040b) &
+Reset manual por operador tras resolución de la condición $\rightarrow$ STB &
+Solo telemetría de salud (EPS, térmica); actuadores desenergizados; logs persistidos &
+Desenergizados &
+Health only &
+SYS-FUN-040a \newline SYS-FUN-040b \newline SYS-FUN-041 \\ \hline
+
+\end{longtable}
+\end{landscape}
+
+\textbf{Regla de prioridad de transiciones:} SAFE tiene prioridad sobre cualquier otro modo. FLT tiene prioridad sobre EXP y AVD. Las transiciones no listadas en esta tabla son inválidas y deberán ser rechazadas por la MSM con log de error. \cite{nasa_cm, segoldmine_ppi}
+
 \subsection{Performance and Non-Functional Requirements}
 \sysreq{RNF-001}{Latencia de Procesamiento}{CRÍTICO}{ELANav}{$\le$ 2 s por ciclo.}
 \sysreq{RNF-002}{Resiliencia de Recuperación}{ALTO}{ConOps}{Éxito $\ge$ 90\% en rescates.}
