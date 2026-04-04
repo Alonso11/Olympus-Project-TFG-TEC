@@ -341,7 +341,7 @@ Distancia $d$                          & 50      & m    & COMM-REQ-001 (máx. Lo
 Potencia transmisión $P_t$             & +20     & dBm  & Límite legal WiFi ISM (típico 100\,mW) \\ \hline
 Ganancia antena TX $G_t$               & +2      & dBi  & Antena dipolo integrada (RPi5) \\ \hline
 Ganancia antena RX $G_r$               & +2      & dBi  & Antena dipolo integrada (GCS laptop) \\ \hline
-FSPL a 50\,m, 2.4\,GHz                & 74.2    & dB   & $\text{FSPL}=20\log_{10}(d)+20\log_{10}(f)+20\log_{10}(\tfrac{4\pi}{c})$ \cite{friis_1946} \\ \hline
+FSPL a 50\,m, 2.4\,GHz                & 74.2    & dB   & $\text{FSPL}=20\log_{10}(d)+20\log_{10}(f)$\newline${}+20\log_{10}(\tfrac{4\pi}{c})$ \cite{friis_1946} \\ \hline
 Pérdidas adicionales $L_{misc}$        & +5      & dB   & Margen de desvanecimiento, conectores \\ \hline
 \hline
 \textbf{Potencia recibida} $P_r$       & \textbf{$-$55.2}  & dBm  & $P_r = P_t + G_t + G_r - \text{FSPL} - L_{misc}$ \\ \hline
@@ -370,7 +370,7 @@ Este glosario consolida términos y abreviaturas utilizados en el SyRS/SRS final
     \item \textbf{Slip ratio / deslizamiento:} Indicador de diferencia entre avance teórico y real; usado como disparador de contingencia con umbral slip $>$ 20\%. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
     \item \textbf{GCS / Estación terrena:} Sistema externo operado por Rover Planner para uplink/downlink. \cite{nasa_cm, segoldmine_ppi}  
     \item \textbf{CSP:} CubeSat Space Protocol (encapsulamiento TM/CMD). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-    \item \textbf{V\&V:} Verification \& Validation, con métodos T/A/D/I (Test/Analysis/Demonstration/Inspection). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+    \item \textbf{V\&V:} Verification \& Validation, con métodos T/A/D/I (Test/\allowbreak Analysis/\allowbreak Demonstration/\allowbreak Inspection). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}
     \item \textbf{BDD/IBD/PBS/N2/ASM:} Artefactos de arquitectura (SysML y descomposición física) usados para trazabilidad y soporte de integración. \cite{omg_sysml_mbse, segoldmine_ppi}  
 \end{itemize}
 
