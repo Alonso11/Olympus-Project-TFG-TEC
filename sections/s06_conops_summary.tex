@@ -300,7 +300,18 @@ El estado compuesto \textit{Exploración activa} incluye un pseudoestado de \tex
 \end{itemize}
 
 \textbf{Eventos y guardas (visión general):}
-Las transiciones se disparan por \textbf{eventos} (p.ej., \texttt{cmd\_start\_exploration}, \texttt{link\_lost}, \texttt{waypoint\_reached}) y pueden estar condicionadas por \textbf{guardas} (p.ej., \texttt{[severity\_allows\_retreat]}, \texttt{[last\_safe\_waypoint\_known]}, \texttt{[has\_data\_to\_send]}). Las guardas representan condiciones booleanas evaluables; cuando aún no existen requisitos cuantificados, dichas condiciones se mantienen como \textbf{TBD} para evitar suposiciones no verificables. \cite{UMLStateMachinesConcepts2,UMLStateMachinesConcepts1}
+Las transiciones se disparan por \textbf{eventos} (p.ej.,
+\texttt{cmd\_\allowbreak start\_\allowbreak exploration},
+\texttt{link\_\allowbreak lost},
+\texttt{waypoint\_\allowbreak reached})
+y pueden estar condicionadas por \textbf{guardas} (p.ej.,
+\texttt{[severity\_\allowbreak allows\_\allowbreak retreat]},
+\texttt{[last\_\allowbreak safe\_\allowbreak waypoint\_\allowbreak known]},
+\texttt{[has\_\allowbreak data\_\allowbreak to\_\allowbreak send]}).
+Las guardas representan condiciones booleanas evaluables; cuando aún no existen
+requisitos cuantificados, dichas condiciones se mantienen como \textbf{TBD}
+para evitar suposiciones no verificables.
+\cite{UMLStateMachinesConcepts2,UMLStateMachinesConcepts1}
 
 \paragraph{Diccionario de eventos (formal)}\label{para:uc01_events}
 Este diccionario define un \textbf{subconjunto inicial} de los eventos (triggers) utilizados por la máquina de estados del Rover Olympus para el caso de uso \textit{Exploración de superficie}. 
