@@ -247,16 +247,32 @@ Este apéndice establece los presupuestos de ingeniería (potencia, masa y enlac
 \subsubsection{Power Budget (Bus 12 V — 4S LiPo)}
 % ------------------------------------------------------------
 
-\begin{table}[H]
+\begin{landscape}
 \centering
 \scriptsize
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.3}
-\begin{tabularx}{\textwidth}{| l | l | c | r | r | r | r | r | c |}
+\begin{longtable}{| p{2.0cm} | p{4.5cm} | c | r | r | r | r | r | c |}
+\caption{Presupuesto de potencia del Rover Olympus (modo traversal, bus 12\,V, 4S LiPo).
+  Valores [TBM] requieren banco de motores con corriente medida por INA226. Criterio RNF-007: energía total $\ge$89.4\,Wh
+  $\Rightarrow$ batería mínima 4S ($\approx$14.8\,V) $\ge$5\,400\,mAh ($\ge$80\,Wh con 10\,\% derating).}
+\label{tab:power_budget}\\
 \hline
 \textbf{Subsistema} & \textbf{Componente} & \textbf{V\textsubscript{bus}} &
 \textbf{I\textsubscript{idle} (A)} & \textbf{P\textsubscript{idle} (W)} &
 \textbf{I\textsubscript{peak} (A)} & \textbf{P\textsubscript{peak} (W)} &
 \textbf{E\textsubscript{2h} (Wh)} & \textbf{Fuente} \\ \hline
+\endfirsthead
+\hline
+\textbf{Subsistema} & \textbf{Componente} & \textbf{V\textsubscript{bus}} &
+\textbf{I\textsubscript{idle} (A)} & \textbf{P\textsubscript{idle} (W)} &
+\textbf{I\textsubscript{peak} (A)} & \textbf{P\textsubscript{peak} (W)} &
+\textbf{E\textsubscript{2h} (Wh)} & \textbf{Fuente} \\ \hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
 
 C\&DH  & RPi5 (OBC/HLC)         & 5\,V  & 0.636 & 3.18  & 1.506 & 7.53  & 6.36  & [DS] \cite{rpi5_brief} \\ \hline
 C\&DH  & Arduino Mega (LLC)      & 5\,V  & 0.050 & 0.25  & 0.050 & 0.25  & 0.50  & [DS] \cite{arduino_mega_ds} \\ \hline
@@ -268,12 +284,9 @@ COMM   & WiFi 802.11n (RPi5 integ.) & incl. & -- & -- & -- & $\le$1.0 & $\le$2.0
 \hline
 \multicolumn{2}{|l|}{\textbf{Total estimado — modo traversal (nominal)}}
   & --    & --    & $\approx$18   & --    & $\approx$44.7 & $\approx$89.4 & [EST] \\ \hline
-\end{tabularx}
-\caption{Presupuesto de potencia del Rover Olympus (modo traversal, bus 12\,V, 4S LiPo).
-  Valores [TBM] requieren banco de motores con corriente medida por INA226. Criterio RNF-007: energía total $\ge$89.4\,Wh
-  $\Rightarrow$ batería mínima 4S ($\approx$14.8\,V) $\ge$5\,400\,mAh ($\ge$80\,Wh con 10\,\% derating).}
-\label{tab:power_budget}
-\end{table}
+
+\end{longtable}
+\end{landscape}
 
 % ------------------------------------------------------------
 \subsubsection{Mass Budget}
