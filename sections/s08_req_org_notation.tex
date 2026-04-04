@@ -58,7 +58,7 @@ Para asegurar trazabilidad, gestión y verificabilidad, cada requisito (RF/RNF/C
 
 \subsection{Software Criticality Classification}\label{subsec:sw_criticality}
 
-Esta subsección clasifica los componentes de software del Rover Olympus por nivel de criticidad, conforme a una equivalencia simplificada de NASA-STD-8739.8B (Software Assurance and Safety Standard). La clasificación determina el rigor mínimo de V\&V requerido y justifica el esfuerzo de verificación documentado en §11. \cite{nasa_cm, segoldmine_ppi}
+Esta subsección clasifica los componentes de software del Rover Olympus por nivel de criticidad, conforme a una equivalencia simplificada de NASA-STD-8739.8B (Software Assurance and Safety Standard). La clasificación determina el rigor mínimo de V\&V requerido y justifica el esfuerzo de verificación documentado en §11. \cite{nasa_std_8739_8, nasa_cm, segoldmine_ppi}
 
 \textbf{Clases de criticidad adoptadas:}
 \begin{itemize}
@@ -84,7 +84,7 @@ Toma decisiones de navegación (percepción, clasificación, planificación). Un
 Integration tests dry-run; smoke test post-flash; V\&V en campo UC-01 ($\ge$1 run completo); \texttt{cycle\_warn\_ms} watchdog activo \\ \hline
 
 \end{tabularx}
-\caption{Clasificación de criticidad de software del Rover Olympus (NASA-STD-8739.8B, simplificado).}
+\caption{Clasificación de criticidad de software del Rover Olympus \cite{nasa_std_8739_8} (equivalencia simplificada).}
 \label{tab:sw_criticality}
 \end{table}
 

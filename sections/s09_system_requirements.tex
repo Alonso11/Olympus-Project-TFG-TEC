@@ -276,7 +276,7 @@ SYS-FUN-040a \newline SYS-FUN-040b \newline SYS-FUN-041 \\ \hline
 
 \subsubsection{Environmental Requirements (ISO 29148 §9.5.9)}\label{subsubsec:env_req}
 
-Esta subsección consolida los requisitos ambientales operacionales y de transporte del Rover Olympus conforme a ISO/IEC/IEEE 29148 §9.5.9 y ECSS-E-ST-10-06C §5.4. Los requisitos RNF-004 (temperatura máxima), RNF-005 (EMC cualitativo) y STR-REQ-002 (IP4X) se complementan con los ENV-REQ definidos aquí, que cierran las brechas de cota inferior, humedad, método de test y EMC cuantitativo. \cite{nasa_cm, segoldmine_ppi}
+Esta subsección consolida los requisitos ambientales operacionales y de transporte del Rover Olympus conforme a ISO/IEC/IEEE 29148 §9.5.9 \cite{ieee_29148} y ECSS-E-ST-10-06C §5.4 \cite{ecss_e_st_10_06c}. Los requisitos RNF-004 (temperatura máxima), RNF-005 (EMC cualitativo) y STR-REQ-002 (IP4X) se complementan con los ENV-REQ definidos aquí, que cierran las brechas de cota inferior, humedad, método de test y EMC cuantitativo. \cite{nasa_cm, segoldmine_ppi}
 
 \begin{itemize}
     \item \textbf{ENV-REQ-001 (Temperatura operacional mínima):} El sistema DEBERÁ operar correctamente con una temperatura ambiente mínima de $+$5\,°C, conforme a los límites operacionales de los componentes COTS críticos (RPi5: 0–50\,°C; Arduino Mega: $-$40–85\,°C; celdas LiPo: 0–45\,°C en descarga). El límite operacional del sistema queda fijado en $+$5\,°C por la restricción de las celdas LiPo. \\
@@ -306,7 +306,8 @@ Esta subsección consolida los requisitos ambientales operacionales y de transpo
 
 \subsubsection{Usability (ISO 29148 9.5.6)}
 \begin{itemize}
-    \item \textbf{USA-REQ-001:} La interfaz de la Estación de Control Terreno (GCS) DEBERÁ ser legible bajo condiciones de luz solar directa (entorno análogo).
+    \item \textbf{USA-REQ-001:} La interfaz de la Estación de Control Terreno (GCS) DEBERÁ ser legible bajo condiciones de luz solar directa en el sitio análogo, definidas como iluminancia ambiental $\ge$50{,}000\,lux. La pantalla del dispositivo GCS DEBERÁ tener una luminancia mínima de 1{,}000\,cd/m$^2$ (nits) para satisfacer este requisito. \cite{display_brightness_outdoor} \\
+    \textit{Verificación:} Inspection (confirmar especificación de luminancia $\ge$1{,}000\,cd/m$^2$ en datasheet del dispositivo GCS utilizado en campaña).
     \item \textbf{USA-REQ-002:} El sistema DEBERÁ permitir el despliegue operativo (desde transporte hasta inicio de misión) en un tiempo $\le$ 15 minutos.
     \item \textbf{USA-REQ-003:} El sistema DEBERÁ proporcionar alertas visuales/auditivas claras ante eventos críticos de \emph{Fault Stop}.
 \end{itemize}

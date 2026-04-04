@@ -134,7 +134,7 @@ CR-001 \\ \hline
 
 Este análisis identifica los modos de falla relevantes de los componentes y funciones críticas del Rover Olympus, sus efectos sobre la misión UC‑01, y las mitigaciones ya implementadas en el software de vuelo (LLC/HLC). El objetivo es demostrar que el diseño considera el comportamiento ante falla (\textit{fail-safe}) y que los requisitos RF‑005, RNF‑002 y SYS‑FUN‑040 están respaldados por mecanismos concretos. \cite{nasa_cm, segoldmine_ppi}
 
-\textbf{Escalas conforme a ECSS-Q-ST-30-02C:}
+\textbf{Escalas conforme a ECSS-Q-ST-30C} \cite{ecss_q_st_30}\textbf{:}
 \begin{itemize}
     \item \textbf{Severidad:} \textit{Critical} = pérdida de misión o daño al sistema; \textit{Major} = degradación significativa, misión comprometida; \textit{Minor} = función degradada, misión continúa; \textit{Negligible} = sin impacto operacional.
     \item \textbf{Ocurrencia:} \textit{Frecuente} ($>$1/h); \textit{Probable} (1/h–1/día); \textit{Ocasional} (1/día–1/campaña); \textit{Remota} (1/campaña–1/año); \textit{Improbable} ($<$1/año).
@@ -235,7 +235,7 @@ RF-005 \newline SyRS-060 \\ \hline
 \end{longtable}
 \end{landscape}
 
-\textbf{Nota:} Todos los modos de falla Critical/Major convergen en SafeMode (SYS‑FUN‑040) o FAULT en la MSM. No se identificaron modos de falla sin mitigación en los componentes de vuelo actuales. Clasificación de severidad y ocurrencia conforme a ECSS-Q-ST-30-02C. \cite{nasa_cm, segoldmine_ppi}
+\textbf{Nota:} Todos los modos de falla Critical/Major convergen en SafeMode (SYS‑FUN‑040) o FAULT en la MSM. No se identificaron modos de falla sin mitigación en los componentes de vuelo actuales. Clasificación de severidad y ocurrencia conforme a ECSS-Q-ST-30C. \cite{ecss_q_st_30, nasa_cm, segoldmine_ppi}
 
 \subsection{Glossary}
 
