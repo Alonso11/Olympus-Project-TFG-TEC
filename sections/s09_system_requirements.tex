@@ -188,6 +188,14 @@ Conforme a la identificación de vacíos en la auditoría técnica, se establece
     \ReqAccept{Analysis (Logs de EPS)}
 \end{reqblock}
 
+\begin{reqblock}{RNF-007}{Confiabilidad Operacional (MTBF)}
+    \ReqShall{El sistema DEBERÁ operar de forma continua sin fallo de misión durante al menos 2 horas en condiciones nominales de campaña (UC-01 activo, telemetría habilitada, navegación autónoma).}
+    \item[\textbf{Prioridad:}] ALTO
+    \ReqTrace{CDH-REQ-002; ConOps Fase 4}
+    \item[\textbf{Racional:}] Alinea la confiabilidad operacional con la capacidad de almacenamiento de telemetría (CDH-REQ-002: 2 horas de logs) y con la duración mínima esperada de una campaña de validación UC-01. Un fallo de misión se define como cualquier transición no planificada a SafeMode o FAULT que detenga la navegación autónoma.
+    \ReqAccept{Demonstration (Ejecución continua UC-01 $\ge$ 2 h sin transición no planificada a SafeMode/FAULT)}
+\end{reqblock}
+
 \subsubsection{Physical Characteristics (ISO 29148 9.5.11)}
 \begin{itemize}
     \item \textbf{PHY-REQ-001 (Dimensiones):} El rover DEBERÁ tener unas dimensiones nominales de envolvente de 480 x 340 x 320 mm ($\pm$ 10\%).

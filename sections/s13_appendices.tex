@@ -18,7 +18,8 @@ La siguiente tabla resume la trazabilidad de los requerimientos de sistema (SyRS
 RF-001 & Percepción Visual & GNC-REQ-001 & Demonstration \\
 RF-002 & Clasificación de Terreno & GNC-REQ-002 & Analysis \\
 RF-003 & Evitación de Obstáculos & TRAC-REQ-001, GNC-REQ-002 & Test \\
-RF-004 & Compensación de Slip & GNC-REQ-003 & Test \\
+RF-004 & Compensación de Slip \textit{[SUPERSEDED — RF-004-R1]} & GNC-REQ-003 & -- \\
+RF-004-R1 & Compensación de Slip (Encoder) & GNC-REQ-003; CR-002 & Analysis/Test \\
 RF-005 & Fault Stop Seguro & PROP-REQ-002 & Demonstration \\
 RF-006 & Integridad de Datos & COMM-REQ-001, 004 & Analysis \\
 RNF-001 & Latencia de Procesamiento $\le$ 2s & CDH-REQ-001 & Test \\
@@ -26,6 +27,7 @@ RNF-002 & Resiliencia de Recuperación & ConOps/SW-logic & Demonstration \\
 USA-REQ-002 & Despliegue Operativo $\le$ 15 min & PKG-REQ-001 & Demonstration \\
 SEC-REQ-001 & Autenticación de Comandos & COMM-REQ-001 & Analysis \\
 INF-REQ-001 & Persistencia de Logs & CDH-REQ-002 & Inspection \\
+RNF-007 & Confiabilidad Operacional MTBF $\ge$ 2 h & CDH-REQ-002 & Demonstration \\
 PHY-REQ-001 & Dimensiones 480x340x320 mm & STR-REQ-001 & Inspection \\
 \bottomrule
 \end{tabularx}
