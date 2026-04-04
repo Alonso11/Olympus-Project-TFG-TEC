@@ -207,6 +207,23 @@ En lugar de repetir descripciones detalladas de cada conector, esta sección se 
   \item COMMS(UHF) $\leftrightarrow$ Estación/Relay: [RF] enlace externo (UHF).
 \end{itemize}
 
+% === ICD Registry ===
+\paragraph{ICD Registry — Documentos de Control de Interfaz registrados.}
+Los siguientes ICDs son artefactos activos del proyecto (CI-ICD conforme a §13.4) y especifican el detalle cuantitativo (pines, protocolos, tramas) de las celdas de la Tabla~\ref{tab:n2_fisica} indicadas:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{| l | l | X | l |}
+\hline
+\textbf{ID ICD} & \textbf{Interfaz} & \textbf{Scope (celdas N2)} & \textbf{Estado} \\ \hline
+ICD-LLC-001 & C\&DH (RPi 5) $\leftrightarrow$ GNC (Arduino Mega) & N2: C\&DH$\leftrightarrow$GNC — UART 115200\,bps; frame LLC; comandos de movilidad y telemetría de encoders & ACTIVO \\ \hline
+ICD-COMMS-001 & C\&DH $\leftrightarrow$ COMMS (Wi-Fi / UHF) & N2: C\&DH$\leftrightarrow$COMMS — CSP sobre UDP/IP y AX.25/KISS; formatos TM/CMD & ACTIVO \\ \hline
+\end{tabularx}
+\caption{Registro de ICDs activos del Rover Olympus.}
+\label{tab:icd_registry}
+\end{table}
+
 % === Inclusión del ICD de COMMS ===
 \input{icd/icd_comms.tex}
 
