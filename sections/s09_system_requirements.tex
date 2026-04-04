@@ -273,6 +273,27 @@ SYS-FUN-040a \newline SYS-FUN-040b \newline SYS-FUN-041 \\ \hline
     \ReqAccept{Demonstration (Ejecución continua UC-01 $\ge$ 2 h sin transición no planificada a SafeMode/FAULT)}
 \end{reqblock}
 
+\subsubsection{Environmental Requirements (ISO 29148 §9.5.9)}\label{subsubsec:env_req}
+
+Esta subsección consolida los requisitos ambientales operacionales y de transporte del Rover Olympus conforme a ISO/IEC/IEEE 29148 §9.5.9 y ECSS-E-ST-10-06C §5.4. Los requisitos RNF-004 (temperatura máxima), RNF-005 (EMC cualitativo) y STR-REQ-002 (IP4X) se complementan con los ENV-REQ definidos aquí, que cierran las brechas de cota inferior, humedad, método de test y EMC cuantitativo. \cite{nasa_cm, segoldmine_ppi}
+
+\begin{itemize}
+    \item \textbf{ENV-REQ-001 (Temperatura operacional mínima):} El sistema DEBERÁ operar correctamente con una temperatura ambiente mínima de $+$5\,°C, conforme a los límites operacionales de los componentes COTS críticos (RPi5: 0–50\,°C; Arduino Mega: $-$40–85\,°C; celdas LiPo: 0–45\,°C en descarga). El límite operacional del sistema queda fijado en $+$5\,°C por la restricción de las celdas LiPo. \\
+    \textit{Verificación:} Analysis (hojas de datos COTS; confirmar rango en datasheet de cada componente crítico).
+
+    \item \textbf{ENV-REQ-002 (Humedad relativa):} El sistema DEBERÁ operar en un rango de humedad relativa de 20\,\% a 90\,\% sin condensación. Las PCBs expuestas DEBERÁN estar revestidas con barniz conformal o equivalente. \\
+    \textit{Verificación:} Inspection (verificación visual de revestimiento conformal en PCBs; análisis de datasheet para componentes sensibles).
+
+    \item \textbf{ENV-REQ-003 (Protección antipartículas — IP4X con método):} El subsistema STR DEBERÁ proveer protección equivalente a IP4X (IEC 60529) para la electrónica crítica. Método de test aceptado: exposición al flujo de aire con polvo volcánico simulado ($\le$1\,mm de diámetro) durante 30\,min a caudal moderado, seguida de inspección visual de ausencia de partículas en PCBs. Complementa STR-REQ-002. \\
+    \textit{Verificación:} Test (blow test con polvo simulado + inspección post-exposición).
+
+    \item \textbf{ENV-REQ-004 (Shock de transporte):} El sistema DEBERÁ sobrevivir sin pérdida de funcionalidad a una caída libre de 0.5\,m sobre superficie firme en su contenedor de transporte (PKG-REQ-001), simulando condiciones de traslado al sitio análogo. \\
+    \textit{Verificación:} Test (drop test desde 0.5\,m; verificar boot completo y ausencia de daños estructurales post-caída).
+
+    \item \textbf{ENV-REQ-005 (EMC cuantitativo):} La interferencia electromagnética generada por los actuadores de potencia NO DEBERÁ causar errores de lectura ($>$5\,\% fuera de rango nominal) en los sensores de navegación con interfaz I$^2$C o GPIO a distancias de cableado $\ge$10\,cm con blindaje aplicado. Complementa y cuantifica RNF-005. \\
+    \textit{Verificación:} Test (lectura INA226 y HC-SR04 con motores a plena carga; verificar que las lecturas estén dentro del $\pm$5\,\% del valor de referencia sin motores).
+\end{itemize}
+
 \subsubsection{Physical Characteristics (ISO 29148 9.5.11)}
 \begin{itemize}
     \item \textbf{PHY-REQ-001 (Dimensiones):} El rover DEBERÁ tener unas dimensiones nominales de envolvente de 480 x 340 x 320 mm ($\pm$ 10\%).
