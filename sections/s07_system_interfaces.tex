@@ -39,9 +39,14 @@ El enlace de misión con la Estación Terrena (GCS) se utiliza para el intercamb
     inyección 0--5\,s (CON‑002). Alcance objetivo: $\ge 50$\,m en LoS.
 
     \item \textbf{b) UHF + AX.25/\allowbreak KISS + CSP (añadido).}
-    Capa de enlace AX.25 (KISS por USB/\allowbreak UART), GFSK 9600\,bps y CSP. Soporta
-    \emph{RDP} para entrega fiable y operación \emph{store-and-forward}
-    mediante nodo retransmisor CSP cuando la LoS está degradada.
+    Capa de enlace AX.25 con modulación \textbf{GFSK 9600\,bps} sobre RF (430–440\,MHz);
+    encapsulamiento KISS sobre enlace serie USB/\allowbreak UART entre OBC y TNC
+    (\textbf{115200\,bps}, recomendado; TBD en campaña).
+    Encapsulamiento de misión CSP. Soporta \emph{RDP} para entrega fiable
+    y operación \emph{store-and-forward} mediante nodo retransmisor CSP
+    cuando la LoS está degradada.
+    \emph{Nota: 9600\,bps es la velocidad de modulación RF; el enlace serie
+    OBC$\leftrightarrow$TNC opera a 115200\,bps.}
 \end{itemize}
 
 Los detalles de formato de paquete, direccionamiento lógico, códigos de servicio y definición completa de mensajes TM/CMD se mantienen en el ICD de comunicaciones del proyecto y en la implementación del stack CSP, evitando duplicar especificaciones en este SyRS. \cite{segoldmine_ppi, omg_sysml_mbse}
