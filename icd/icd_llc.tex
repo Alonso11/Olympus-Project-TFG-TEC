@@ -4,11 +4,10 @@
 % =========================================================
 % ICD LLC — Interfaz Arduino Mega 2560 ↔ Raspberry Pi 5
 % =========================================================
-\section*{ICD LLC (Interfaz Arduino Mega\,2560\,R3 -- Raspberry Pi\,5)}
-\addcontentsline{toc}{section}{ICD LLC (Interfaz Arduino Mega -- Raspberry Pi 5)}
+\subsection{ICD LLC (Interfaz Arduino Mega\,2560\,R3 -- Raspberry Pi\,5)}
 \label{sec:icd_llc}
 
-\subsection*{Alcance}
+\subsubsection{Alcance}
 Este ICD define la interfaz \textbf{interna} serie entre el Nodo~B
 (MCU -- Arduino Mega\,2560\,R3, bajo nivel) y el Nodo~A
 (OBC -- Raspberry Pi\,5, alto nivel) del Rover Olympus.
@@ -35,7 +34,7 @@ PROP\-REQ\-002 (parada de motores $\leq 500$\,ms),
 RF‑005 (Fault Stop) y RNF‑001 ($\leq 2$\,s por ciclo de agente).
 
 % ---------------------------------------------------------
-\subsection*{Entidades y roles}
+\subsubsection{Entidades y roles}
 \begin{itemize}
   \item \textbf{RPi\,5 (Maestro / Iniciador):}
         genera todos los comandos CMD; lee y procesa las respuestas RSP.
@@ -45,7 +44,7 @@ RF‑005 (Fault Stop) y RNF‑001 ($\leq 2$\,s por ciclo de agente).
 \end{itemize}
 
 % ---------------------------------------------------------
-\subsection*{Interfaz física}
+\subsubsection{Interfaz física}
 
 \paragraph{IF-LLC-UART (Arduino Mega $\leftrightarrow$ RPi\,5).}
 \begin{itemize}
@@ -61,7 +60,7 @@ RF‑005 (Fault Stop) y RNF‑001 ($\leq 2$\,s por ciclo de agente).
 (\emph{Ref. SyRS §7.3 hardware interfaces, ASM-042})
 
 % ---------------------------------------------------------
-\subsection*{Protocolo de comunicación}
+\subsubsection{Protocolo de comunicación}
 
 Todos los mensajes son cadenas ASCII terminadas en \verb|\n| (0x0A).
 Se tolera \verb|\r\n| en la recepción; el emisor \textbf{siempre} termina
@@ -88,7 +87,7 @@ Ring RX (ISR)    & 64 bytes & Buffer circular llenado por ISR USART\_RX \\
 \end{center}
 
 % ---------------------------------------------------------
-\subsection*{Diccionario de comandos (RPi\,5 $\rightarrow$ Arduino)}
+\subsubsection{Diccionario de comandos (RPi\,5 $\rightarrow$ Arduino)}
 
 \begin{center}
 \small
@@ -133,7 +132,7 @@ Ring RX (ISR)    & 64 bytes & Buffer circular llenado por ISR USART\_RX \\
 (\emph{Ref. firmware LLC \texttt{state\_machine/mod.rs}: \texttt{parse\_command()}, \texttt{Command} enum})
 
 % ---------------------------------------------------------
-\subsection*{Diccionario de respuestas (Arduino $\rightarrow$ RPi\,5)}
+\subsubsection{Diccionario de respuestas (Arduino $\rightarrow$ RPi\,5)}
 
 \begin{center}
 \small
@@ -179,7 +178,7 @@ Ring RX (ISR)    & 64 bytes & Buffer circular llenado por ISR USART\_RX \\
 (\emph{Ref. firmware LLC \texttt{state\_machine/mod.rs}: \texttt{format\_response()}, \texttt{Response} enum})
 
 % ---------------------------------------------------------
-\subsection*{Frame de telemetría extendida (TLM)}
+\subsubsection{Frame de telemetría extendida (TLM)}
 \label{ssec:icd_llc_tlm}
 
 Formato completo (máx. $\approx 140$ bytes + \verb|\n|):
@@ -251,7 +250,7 @@ TLM:NORMAL:000000:12340ms:11800mV:2350mA:
 (\emph{Ref. firmware LLC \texttt{state\_machine/mod.rs}: \texttt{format\_tlm()}, \texttt{SensorFrame} struct})
 
 % ---------------------------------------------------------
-\subsection*{Máquina de estados y comandos permitidos}
+\subsubsection{Máquina de estados y comandos permitidos}
 
 La MSM del Nodo\,B define los estados operativos y las transiciones
 permitidas. Los comandos en \textbf{negrita} son los que causan
@@ -297,7 +296,7 @@ Transiciones autónomas (sin CMD externo):
 (\emph{Ref. firmware LLC \texttt{main.rs} v2.8, \texttt{state\_machine/mod.rs}})
 
 % ---------------------------------------------------------
-\subsection*{Temporización}
+\subsubsection{Temporización}
 
 \begin{center}
 \small
@@ -324,7 +323,7 @@ el tiempo restante corresponde al presupuesto de detección
 y comando en el Nodo\,A (RPi\,5).
 
 % ---------------------------------------------------------
-\subsection*{Asignación de pines (resumen)}
+\subsubsection{Asignación de pines (resumen)}
 
 \begin{center}
 \small
@@ -348,7 +347,7 @@ A7–A12               & NTC temperatura baterías   & EPS \\
 (\emph{Ref. firmware LLC \texttt{main.rs} v2.8 §Asignación de pines})
 
 % ---------------------------------------------------------
-\subsection*{Mapeo PBS/ASM}
+\subsubsection{Mapeo PBS/ASM}
 
 \begin{itemize}
   \item \textbf{ASM-042} (MCU Arduino Mega 2560 R3):
@@ -361,7 +360,7 @@ A7–A12               & NTC temperatura baterías   & EPS \\
 \end{itemize}
 
 % ---------------------------------------------------------
-\subsection*{Verificación de la interfaz (ICD checks)}
+\subsubsection{Verificación de la interfaz (ICD checks)}
 
 \begin{enumerate}
   \item \textbf{Enlace físico}: conectar RPi\,5 al Arduino Mega por USB;
@@ -382,7 +381,7 @@ A7–A12               & NTC temperatura baterías   & EPS \\
 (\emph{Ref. SyRS V\&V-PROP-002; firmware LLC \texttt{read\_serial.py}})
 
 % ---------------------------------------------------------
-\subsection*{Cumplimiento con SyRS}
+\subsubsection{Cumplimiento con SyRS}
 
 Este ICD satisface:
 SyRS~§7.3 (UART, GPIO, PWM), §7.4 (interfaces internas),
