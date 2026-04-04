@@ -69,7 +69,8 @@ Ante la pérdida de enlace directo, el sistema \textbf{DEBERÁ} realizar una con
 \textbf{Soporte de RF-001, RF-002, RF-003, RF-004:}
 \begin{itemize}
     \item \textbf{GNC-REQ-001:} El subsistema GNC DEBERÁ adquirir imágenes mediante una interfaz de cámara de alta velocidad con un FOV horizontal $\ge$ 120° (soporte a RF-001).
-    \item \textbf{GNC-REQ-002:} El subsistema GNC DEBERÁ clasificar la transitabilidad con una confianza $\ge$ 95\% en sectores de 10x10 cm (soporte a RF-002).
+    \item \textbf{GNC-REQ-002:} El subsistema GNC DEBERÁ clasificar la transitabilidad con una confianza $\ge$ 95\% en sectores de 10x10 cm (soporte a RF-002). \\
+    \textit{Protocolo de test mínimo:} dataset $\ge$200 frames anotados con ground truth de terreno análogo; métrica = traversable-recall con IoU$\ge$0.5; criterio de aceptación = recall $\ge$95\% sobre el conjunto de test.
     \item \textbf{GNC-REQ-003:} El subsistema GNC DEBERÁ estimar el estado cinemático y deslizamiento del rover con una frecuencia de actualización mínima de 10 Hz (soporte a RF-004). [EXTERNO]
 \end{itemize}
 
@@ -237,9 +238,9 @@ SYS-FUN-040a \newline SYS-FUN-040b \newline SYS-FUN-041 \\ \hline
 \textbf{Regla de prioridad de transiciones:} SAFE tiene prioridad sobre cualquier otro modo. FLT tiene prioridad sobre EXP y AVD. Las transiciones no listadas en esta tabla son inválidas y deberán ser rechazadas por la MSM con log de error. \cite{nasa_cm, segoldmine_ppi}
 
 \subsection{Performance and Non-Functional Requirements}
-\sysreq{RNF-001}{Latencia de Procesamiento}{CRÍTICO}{ELANav}{$\le$ 2 s por ciclo.}
+\sysreq{RNF-001}{Latencia de Procesamiento}{CRÍTICO}{ELANav}{$\le$ 2 s por ciclo bajo carga nominal máxima (YOLOv8n activo + TM streaming + encoders a 10\,Hz).}
 \sysreq{RNF-002}{Resiliencia de Recuperación}{ALTO}{ConOps}{Éxito $\ge$ 90\% en rescates.}
-\sysreq{RNF-003}{Precisión de Navegación}{ALTO}{ConOps}{Error $<$ 5\% dist. total.}
+\sysreq{RNF-003}{Precisión de Navegación}{ALTO}{ConOps}{Error $<$ 5\% dist. total bajo operación nominal (encoders activos + MSM en estado EXP).}
 
 \begin{reqblock}{RNF-004}{Límite Térmico Estructural}
     \ReqShall{El sistema DEBERÁ operar en un entorno cuya temperatura ambiente no exceda los 45 °C, garantizando que el chasis no supere los 60 °C.}
