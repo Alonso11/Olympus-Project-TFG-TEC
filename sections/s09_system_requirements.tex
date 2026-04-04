@@ -149,7 +149,9 @@ Conforme a la identificación de vacíos en la auditoría técnica, se establece
 
 \subsubsection{UC-04: Safe Mode}
 \begin{itemize}
-    \item \textbf{SYS-FUN-040:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltajes de batería críticos ($<$ 12V) o fallos de latencia en el C\&DH $>$ 5 s.
+    \item \textbf{SYS-FUN-040:} \textit{[\textbf{SUPERSEDED} por SYS-FUN-040a y SYS-FUN-040b. Texto original preservado para trazabilidad.]} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltajes de batería críticos ($<$ 12V) o fallos de latencia en el C\&DH $>$ 5 s.
+    \item \textbf{SYS-FUN-040a:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltaje de batería crítico ($<$ 12V), detectado por el monitor EPS (INA226).
+    \item \textbf{SYS-FUN-040b:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante fallos de latencia en el C\&DH superiores a 5\,s sin respuesta del ciclo de agente HLC.
     \item \textbf{SYS-FUN-041:} En \emph{Safe Mode}, el sistema DEBERÁ priorizar la telemetría de salud y desenergizar los actuadores de tracción.
 \end{itemize}
 
@@ -188,11 +190,11 @@ Conforme a la identificación de vacíos en la auditoría técnica, se establece
     \ReqAccept{Analysis (Logs de EPS)}
 \end{reqblock}
 
-\begin{reqblock}{RNF-007}{Confiabilidad Operacional (MTBF)}
+\begin{reqblock}{RNF-007}{Duración Operacional Mínima (MOD)}
     \ReqShall{El sistema DEBERÁ operar de forma continua sin fallo de misión durante al menos 2 horas en condiciones nominales de campaña (UC-01 activo, telemetría habilitada, navegación autónoma).}
     \item[\textbf{Prioridad:}] ALTO
     \ReqTrace{CDH-REQ-002; ConOps Fase 4}
-    \item[\textbf{Racional:}] Alinea la confiabilidad operacional con la capacidad de almacenamiento de telemetría (CDH-REQ-002: 2 horas de logs) y con la duración mínima esperada de una campaña de validación UC-01. Un fallo de misión se define como cualquier transición no planificada a SafeMode o FAULT que detenga la navegación autónoma.
+    \item[\textbf{Racional:}] Define la duración mínima de operación ininterrumpida para una campaña UC-01, alineada con la capacidad de almacenamiento de telemetría (CDH-REQ-002: 2 horas). Un fallo de misión se define como cualquier transición no planificada a SafeMode o FAULT que detenga la navegación autónoma. \textit{Nota: esta métrica define una duración operacional mínima (MOD), no un MTBF estadístico; la estimación de MTBF queda diferida a análisis post-campaña con múltiples runs.}
     \ReqAccept{Demonstration (Ejecución continua UC-01 $\ge$ 2 h sin transición no planificada a SafeMode/FAULT)}
 \end{reqblock}
 

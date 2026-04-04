@@ -27,7 +27,7 @@ RNF-002 & Resiliencia de Recuperación & ConOps/SW-logic & Demonstration \\
 USA-REQ-002 & Despliegue Operativo $\le$ 15 min & PKG-REQ-001 & Demonstration \\
 SEC-REQ-001 & Autenticación de Comandos & COMM-REQ-001 & Analysis \\
 INF-REQ-001 & Persistencia de Logs & CDH-REQ-002 & Inspection \\
-RNF-007 & Confiabilidad Operacional MTBF $\ge$ 2 h & CDH-REQ-002 & Demonstration \\
+RNF-007 & Duración Operacional Mínima (MOD) $\ge$ 2 h & CDH-REQ-002 & Demonstration \\
 PHY-REQ-001 & Dimensiones 480x340x320 mm & STR-REQ-001 & Inspection \\
 \bottomrule
 \end{tabularx}
@@ -154,7 +154,7 @@ Batería sin monitoreo; riesgo sobrecarga &
 Major & Remota &
 Lectura I$^2$C inválida o fuera de rango físico &
 Valor inválido $\rightarrow$ alerta HLC; voltaje $<$12\,V $\rightarrow$ SafeMode &
-EPS-REQ-001 \newline SYS-FUN-040 \\ \hline
+EPS-REQ-001 \newline SYS-FUN-040a \\ \hline
 
 LM335 / NTC \newline (sensores térmicos) &
 Lectura errónea / desconexión &
@@ -186,7 +186,7 @@ Sin actuación de motores; rover inmovilizado &
 Critical & Remota &
 Heartbeat ausente $>N$ ciclos &
 Heartbeat LLC$\rightarrow$HLC; ausencia $\rightarrow$ FAULT en MSM &
-RF-005 \newline SYS-FUN-040 \\ \hline
+RF-005 \newline SYS-FUN-040b \\ \hline
 
 MSM \newline (state machine) &
 Transición de estado inválida &
