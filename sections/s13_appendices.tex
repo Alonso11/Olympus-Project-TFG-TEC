@@ -98,85 +98,108 @@ CR-001 \\ \hline
 
 Este análisis identifica los modos de falla relevantes de los componentes y funciones críticas del Rover Olympus, sus efectos sobre la misión UC‑01, y las mitigaciones ya implementadas en el software de vuelo (LLC/HLC). El objetivo es demostrar que el diseño considera el comportamiento ante falla (\textit{fail-safe}) y que los requisitos RF‑005, RNF‑002 y SYS‑FUN‑040 están respaldados por mecanismos concretos. \cite{nasa_cm, segoldmine_ppi}
 
-\textbf{Escala de severidad:} \textit{Crítico} = detención o pérdida de misión; \textit{Alto} = degradación significativa de función; \textit{Medio} = función degradada pero misión continúa.
+\textbf{Escalas conforme a ECSS-Q-ST-30-02C:}
+\begin{itemize}
+    \item \textbf{Severidad:} \textit{Critical} = pérdida de misión o daño al sistema; \textit{Major} = degradación significativa, misión comprometida; \textit{Minor} = función degradada, misión continúa; \textit{Negligible} = sin impacto operacional.
+    \item \textbf{Ocurrencia:} \textit{Frecuente} ($>$1/h); \textit{Probable} (1/h–1/día); \textit{Ocasional} (1/día–1/campaña); \textit{Remota} (1/campaña–1/año); \textit{Improbable} ($<$1/año).
+    \item \textbf{Detección:} mecanismo por el cual la falla se detecta antes de causar el efecto indicado.
+\end{itemize}
 
-\begin{table}[H]
+\begin{landscape}
 \centering
 \scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\textwidth}{| l | p{2.8cm} | p{3.0cm} | c | p{4.2cm} | l |}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{| l | p{2.4cm} | p{2.8cm} | c | c | p{2.6cm} | p{3.8cm} | l |}
+\caption{FMEA del Rover Olympus — modos de falla, severidad, ocurrencia y mitigaciones (ECSS-Q-ST-30-02C).}
+\label{tab:fmea}\\
 \hline
-\textbf{Componente} & \textbf{Modo de Falla} & \textbf{Efecto en Misión} & \textbf{Sev.} & \textbf{Mitigación Implementada} & \textbf{Req.} \\ \hline
+\textbf{Componente} & \textbf{Modo de Falla} & \textbf{Efecto en Misión} & \textbf{Clase} & \textbf{Ocurr.} & \textbf{Detección} & \textbf{Mitigación Implementada} & \textbf{Req.} \\ \hline
+\endfirsthead
+\hline
+\textbf{Componente} & \textbf{Modo de Falla} & \textbf{Efecto en Misión} & \textbf{Clase} & \textbf{Ocurr.} & \textbf{Detección} & \textbf{Mitigación Implementada} & \textbf{Req.} \\ \hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
 
 Cámara CSI \newline (VisionSource) &
 Timeout sin frame ($>$2\,s) &
 Percepción ciega; rover no puede clasificar terreno &
-Crítico &
+Critical & Ocasional &
+Timeout counter en VisionSource &
 Timeout $\rightarrow$ MSM transición a AVOIDANCE / FAULT &
 RF-001 \newline RF-005 \\ \hline
 
 Encoders ($\times$6) &
 Señal perdida o pulsos fuera de rango &
 Odometría inválida; slip no detectable &
-Alto &
-Stall detection LLC en 6 encoders $\rightarrow$ SafeMode &
-RF-004 \newline RF-005 \\ \hline
+Major & Remota &
+Stall counter LLC por rueda &
+Stall detection en 6 encoders $\rightarrow$ SafeMode &
+RF-004-R1 \newline RF-005 \\ \hline
 
 Sensor HC-SR04 &
 Sin eco / lectura saturada &
 Obstáculo no detectado; riesgo colisión &
-Crítico &
-Lectura fuera de rango $\rightarrow$ obstáculo presente (\textit{fail-safe}) &
+Critical & Ocasional &
+Valor fuera de rango {[}0–400{]}\,cm &
+Lectura inválida $\rightarrow$ obstáculo presente (\textit{fail-safe}) &
 RF-003 \\ \hline
 
 INA226 \newline (monitor EPS) &
 Fallo I$^2$C / lectura inválida &
 Batería sin monitoreo; riesgo sobrecarga &
-Alto &
+Major & Remota &
+Lectura I$^2$C inválida o fuera de rango físico &
 Valor inválido $\rightarrow$ alerta HLC; voltaje $<$12\,V $\rightarrow$ SafeMode &
 EPS-REQ-001 \newline SYS-FUN-040 \\ \hline
 
 LM335 / NTC \newline (sensores térmicos) &
 Lectura errónea / desconexión &
 Temperatura no monitoreada &
-Medio &
+Minor & Remota &
+Valor fuera de rango físico esperado &
 ThermalMonitor registra anomalía en log; umbral $>$45\,°C $\rightarrow$ alerta &
 RNF-004 \\ \hline
 
 Enlace CSP \newline (TM/CMD) &
 Paquete con CRC inválido &
 Comando descartado; posible pérdida de telemetría &
-Crítico &
-CRC-32 drop en \texttt{unpack()}; no-ACK $\rightarrow$ retransmisión &
+Critical & Ocasional &
+CRC-32 mismatch en \texttt{unpack()} &
+CRC-32 drop; no-ACK $\rightarrow$ retransmisión &
 RF-006 \newline COMM-REQ-001 \\ \hline
 
 OBC RPi5 \newline (ciclo HLC) &
 Ciclo $>$2\,s (\texttt{cycle\_warn\_ms}) &
 Latencia excedida; respuesta tardía a contingencias &
-Alto &
-\texttt{cycle\_warn\_ms=1500} watchdog HLC; log + alerta GCS &
+Major & Ocasional &
+Timer \texttt{cycle\_warn\_ms} excedido &
+\texttt{cycle\_warn\_ms=1500} watchdog; log + alerta GCS &
 RNF-001 \newline CDH-REQ-001 \\ \hline
 
 LLC Arduino Mega &
 UART timeout / desconexión &
 Sin actuación de motores; rover inmovilizado &
-Crítico &
-Heartbeat LLC$\rightarrow$HLC; ausencia $>N$ ciclos $\rightarrow$ FAULT en MSM &
+Critical & Remota &
+Heartbeat ausente $>N$ ciclos &
+Heartbeat LLC$\rightarrow$HLC; ausencia $\rightarrow$ FAULT en MSM &
 RF-005 \newline SYS-FUN-040 \\ \hline
 
 MSM \newline (state machine) &
 Transición de estado inválida &
 Comportamiento impredecible del sistema &
-Crítico &
-Validación de transiciones en \texttt{state\_machine/mod.rs}; \textit{default safe} $\rightarrow$ STB &
+Critical & Improbable &
+Transición rechazada por guard en Rust &
+Validación en \texttt{state\_machine/mod.rs}; \textit{default safe} $\rightarrow$ STB &
 RF-005 \newline SyRS-060 \\ \hline
 
-\end{tabularx}
-\caption{FMEA del Rover Olympus — modos de falla críticos y mitigaciones implementadas.}
-\label{tab:fmea}
-\end{table}
+\end{longtable}
+\end{landscape}
 
-\textbf{Nota:} Todos los modos de falla críticos convergen en SafeMode (SYS‑FUN‑040) o FAULT en la MSM, garantizando un comportamiento seguro por defecto. No se identificaron modos de falla sin mitigación en los componentes de vuelo actuales.
+\textbf{Nota:} Todos los modos de falla Critical/Major convergen en SafeMode (SYS‑FUN‑040) o FAULT en la MSM. No se identificaron modos de falla sin mitigación en los componentes de vuelo actuales. Clasificación de severidad y ocurrencia conforme a ECSS-Q-ST-30-02C. \cite{nasa_cm, segoldmine_ppi}
 
 \subsection{Glossary}
 
