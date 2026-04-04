@@ -117,22 +117,22 @@
   \item \TCTrace{UC-01 (Evitar obstáculos); RF-003; EVT-MOB001.}
 \end{tcblock}
 
-\paragraph{SyRS-013 — Compensación de slip (mejora $\ge$30\%)}
+\paragraph{SyRS-013 — Compensación de slip (encoders vs. ground truth) \textit{[actualizado — CR-002]}}
 \begin{tcblock}
   \item \TCID{VT-SyRS-013}
   \item \TCMethod{A/T}
-  \item \TCObj{Cuantificar mejora $\ge$30\% en error usando EKF vs baseline.}
-  \item \TCPre{Definición de baseline sin EKF o configuración alternativa (TBD si no existe).}
-  \item \TCSetup{Recorrido replicable con transiciones; registro de estimación (con EKF y baseline); referencia (TBD).}
+  \item \TCObj{Verificar que la odometría encoder mantiene error $<$ 5\% respecto a distancia real medida en recorrido de referencia.}
+  \item \TCPre{Ground truth físico disponible (cinta métrica o marca en suelo); encoders calibrados en LLC.}
+  \item \TCSetup{Recorrido recto de longitud conocida ($\ge$ 2 m); registro de distancia estimada por encoders; referencia: medición física.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Ejecutar recorrido en modo baseline; registrar error/métrica.
-      \item Ejecutar el mismo recorrido con EKF; registrar error/métrica.
-      \item Calcular porcentaje de mejora.
+      \item Ejecutar recorrido de longitud conocida; registrar distancia estimada por odometría encoder.
+      \item Medir distancia real recorrida (ground truth físico).
+      \item Calcular error relativo: $\frac{|d_{encoder} - d_{real}|}{d_{real}} \times 100\%$.
     \end{enumerate}
-  \item \TCData{Series temporales; cálculo de error; comparación y mejora.}
-  \item \TCAccept{Mejora $\ge$30\% respecto a baseline definido.}
-  \item \TCTrace{UC-01; RF-004.}
+  \item \TCData{Distancia estimada encoder; distancia real; cálculo de error relativo (\%).}
+  \item \TCAccept{Error $<$ 5\% en al menos 3 recorridos consecutivos.}
+  \item \TCTrace{UC-01; RF-004-R1; CR-002.}
 \end{tcblock}
 
 \paragraph{SyRS-014 — Fault Stop por slip >20\% en <5 s}

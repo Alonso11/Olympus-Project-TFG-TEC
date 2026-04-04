@@ -70,10 +70,10 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
 \begin{reqblock}
   \item \ReqID{SyRS-013}
   \item \ReqShall{El sistema deberá compensar dinámicamente el deslizamiento (slip) durante la navegación.}
-  \item \ReqMetric{Reducción de error $\ge$ 30\% mediante fusión/estimación (EKF) respecto a la línea base.}
+  \item \ReqMetric{Error de odometría $<$ 5\% respecto a ground truth (distancia real) mediante encoders (6 ruedas). Reemplaza criterio EKF — ver CR-002.}
   \item \ReqCond{UC-01 en terreno con transiciones/pendientes.}
-  \item \ReqAccept{Análisis comparativo (baseline vs EKF) que evidencie mejora $\ge$ 30\%.}
-  \item \ReqTrace{CU: UC-01; Req: RF-004; Interfaces internas SW condicionadas por desempeño.}
+  \item \ReqAccept{Análisis comparativo (encoders vs. ground truth) con error $<$ 5\% en recorrido de referencia.}
+  \item \ReqTrace{CU: UC-01; Req: RF-004-R1; CR-002; Interfaces internas SW condicionadas por desempeño.}
 \end{reqblock}
 
 \begin{reqblock}

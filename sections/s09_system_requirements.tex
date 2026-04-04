@@ -100,11 +100,20 @@ Ante la pérdida de enlace directo, el sistema \textbf{DEBERÁ} realizar una con
 \end{reqblock}
 
 \begin{reqblock}{RF-004}{Compensación de Slip}
+    \textit{[\textbf{SUPERSEDED} por RF-004-R1 — CR-002. Texto original preservado para trazabilidad histórica del baseline.]}
     \ReqShall{El sistema DEBERÁ estimar y compensar dinámicamente el deslizamiento (slip) en pendientes volcánicas. Ver GNC-REQ-003.}
     \item[\textbf{Prioridad:}] ALTO
     \ReqTrace{ConOps UC-01; §7.3.4}
     \item[\textbf{Racional:}] Garantizar la fidelidad de la odometría y evitar la deriva del rover en superficies no consolidadas.
     \ReqAccept{Analysis (Comparación vs Ground Truth)}
+\end{reqblock}
+
+\begin{reqblock}{RF-004-R1}{Compensación de Slip (Encoder-Based)}
+    \ReqShall{El sistema DEBERÁ estimar y compensar dinámicamente el deslizamiento (slip) en pendientes volcánicas mediante odometría de encoders (6 ruedas), actualizando el estado cinemático a $\ge$ 10 Hz. Reemplaza RF-004. Ver CR-002.}
+    \item[\textbf{Prioridad:}] ALTO
+    \ReqTrace{ConOps UC-01; §7.3.4; CR-002}
+    \item[\textbf{Racional:}] EKF descartado del scope actual del TFG. La compensación se implementa mediante lectura de encoders en LLC (Arduino Mega), validando slip por comparación de velocidad angular estimada vs. velocidad real medida. La métrica de aceptación se define contra ground truth físico en sitio análogo.
+    \ReqAccept{Analysis/Test (Encoders vs. Ground Truth — distancia estimada vs. medida real)}
 \end{reqblock}
 
 \begin{reqblock}{RF-005}{Fault Stop Resiliente}

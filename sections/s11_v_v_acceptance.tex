@@ -42,7 +42,7 @@ Se adoptan los métodos de verificación estándar indicados en los borradores:
     \item \textbf{RF‑001 (Percepción Visual CSI):} T/D para demostrar adquisición y cobertura (FOV $\ge$ 120°). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
     \item \textbf{RF‑002 (Clasificación de Transitabilidad):} T/A para medir rendimiento ($\ge$ 95\% sectores). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
     \item \textbf{RF‑003 (Evitación Reactiva):} D/T para demostrar cero colisiones con obstáculos $\ge$ 20 cm. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-    \item \textbf{RF‑004 (Compensación de Slip):} A/T para cuantificar reducción de error $\ge$ 30\% mediante EKF. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+    \item \textbf{RF‑004-R1 (Compensación de Slip — Encoder):} A/T para cuantificar error de odometría mediante encoders vs. ground truth (distancia real medida). Ver CR-002. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}
     \item \textbf{RF‑005 (Fault Stop):} T/D para confirmar activación ante slip $>$ 20\% en $<$ 5 s. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
     \item \textbf{RF‑006 (Integridad TM/CSP):} I/T para validar encapsulamiento CSP e integridad (p. ej., CRC‑32 válido). \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
     \item \textbf{RNF‑001 (Latencia):} T/A para medir $\le$ 2 s por ciclo de agente. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
@@ -77,7 +77,7 @@ Se considera que el Rover Olympus es ``aceptado'' para el propósito de este SyR
         \item \textbf{RF‑001:} Se demuestra percepción visual CSI con FOV $\ge$ 120°. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
         \item \textbf{RF‑002:} Se demuestra clasificación de transitabilidad correcta en $\ge$ 95\% de sectores. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
         \item \textbf{RF‑003:} Se demuestra evitación reactiva con 0 colisiones con obstáculos $\ge$ 20 cm. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-        \item \textbf{RF‑004:} Se demuestra compensación de slip con reducción de error $\ge$ 30\% mediante EKF. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+        \item \textbf{RF‑004-R1:} Se demuestra compensación de slip mediante encoders con error de odometría $<$ 5\% respecto a ground truth en recorrido de referencia. Ver CR-002. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}
         \item \textbf{RF‑005:} Se demuestra fault stop ante slip $>$ 20\% en $<$ 5 s. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
         \item \textbf{RF‑006:} Se demuestra integridad de telemetría (CSP) con paquetes válidos. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
     \end{itemize}
