@@ -191,7 +191,7 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
 \begin{reqblock}
   \item \ReqID{SyRS-060}
   \item \ReqShall{El sistema deberá soportar los modos Standby, Exploración activa, HomingRetreat, SafeMode y Final, y transicionar entre ellos por eventos definidos.}
-  \item \ReqMetric{Transiciones disparadas por al menos: cmd\_start\_exploration, cmd\_pause\_exploration, cmd\_homing\_retreat, sw\_fault\_critical, power\_anomaly\_detected, cmd\_end\_mission.}
+  \item \ReqMetric{Transiciones disparadas por al menos: cmd\_\allowbreak start\_\allowbreak exploration, cmd\_\allowbreak pause\_\allowbreak exploration, cmd\_\allowbreak homing\_\allowbreak retreat, sw\_\allowbreak fault\_\allowbreak critical, power\_\allowbreak anomaly\_\allowbreak detected, cmd\_\allowbreak end\_\allowbreak mission.}
   \item \ReqCond{Operación UC-01 y contingencias.}
   \item \ReqAccept{Evidencia de ejecución de la máquina de estados (logs evento/estado) conforme a las tablas de transición.}
   \item \ReqTrace{Modelo de estados y tablas: §7.3.8; CU: UC-01.}
@@ -201,7 +201,7 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
   \item \ReqID{SyRS-061}
   \item \ReqShall{El sistema deberá ejecutar HomingRetreat al último waypoint seguro cuando se detecten condiciones adversas y la política lo permita.}
   \item \ReqMetric{Registro de selección de lastSafeWaypoint y navegación hacia él tras conditions\_adverse\_detected.}
-  \item \ReqCond{UC-01; evento conditions\_adverse\_detected con guarda severity\_allows\_retreat (TBD si no está cuantificada).}
+  \item \ReqCond{UC-01; evento conditions\_\allowbreak adverse\_\allowbreak detected con guarda severity\_\allowbreak allows\_\allowbreak retreat (TBD si no está cuantificada).}
   \item \ReqAccept{Logs de transición a HomingRetreat + llegada safe\_waypoint\_reached.}
   \item \ReqTrace{Modelo de estados: §7.3.8; CU: UC-01.}
 \end{reqblock}
@@ -220,7 +220,7 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
 \begin{reqblock}
   \item \ReqID{SyRS-080}
   \item \ReqShall{El sistema deberá entrar a SafeMode ante falla lógica crítica o anomalía de potencia detectada.}
-  \item \ReqMetric{Transición Any $\rightarrow$ SafeMode ante sw\_fault\_critical o power\_anomaly\_detected.}
+  \item \ReqMetric{Transición Any $\rightarrow$ SafeMode ante sw\_\allowbreak fault\_\allowbreak critical o power\_\allowbreak anomaly\_\allowbreak detected.}
   \item \ReqCond{Cualquier modo.}
   \item \ReqAccept{Logs de evento y transición; evidencia de acciones de preservación definidas en el procedimiento.}
   \item \ReqTrace{Eventos: EVT-CDH-010, EVT-EPS-005; Modelo de estados: §7.3.8; CU: UC-01.}
@@ -229,7 +229,7 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
 \begin{reqblock}
   \item \ReqID{SyRS-081}
   \item \ReqShall{El sistema deberá implementar mecanismos de protección eléctrica ante condiciones anómalas mediante EPS (BMS y protecciones asociadas).}
-  \item \ReqMetric{Presencia de mecanismos de protección definidos en EPS (BMS/protecciones/distribución) y verificación funcional según procedimiento.}
+  \item \ReqMetric{Presencia de mecanismos de protección definidos en EPS (BMS/\allowbreak protecciones/\allowbreak distribución) y verificación funcional según procedimiento.}
   \item \ReqCond{Integración del subsistema EPS.}
   \item \ReqAccept{Inspección física + verificación funcional de disparo/aislamiento conforme a procedimiento de prueba.}
   \item \ReqTrace{Arquitectura EPS/N2: §8.2.1.7 y Cuadro N2 (potencia/protecciones).}
