@@ -35,6 +35,62 @@ En el contexto de este proyecto, el ``usuario'' principal del sistema es un oper
     \item \textbf{Características:} Acceso físico al rover; requiere trazabilidad clara entre requisitos y criterios de prueba. \cite{nasa_cm, segoldmine_ppi} 
 \end{itemize}
 
+\subsection{Stakeholder Needs Register}\label{subsec:stakeholder_needs}
+
+Este registro formaliza las necesidades de cada stakeholder y su derivación hacia requisitos del sistema, conforme a ISO/IEC/IEEE 29148 §9.3 (StRS layer). Cada necesidad tiene un identificador único (SN-xxx), stakeholder fuente, prioridad MoSCoW y los requisitos SyRS/SRS que la satisfacen. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{| l | l | X | c | p{3.8cm} |}
+\hline
+\textbf{SN-ID} & \textbf{Stakeholder} & \textbf{Necesidad} & \textbf{MoSCoW} & \textbf{Requisito(s) derivado(s)} \\ \hline
+
+SN-001 & SETEC Lab / TEC &
+Validar ELANav en terreno análogo con navegación autónoma real, percepción visual y clasificación de transitabilidad &
+Must &
+RF-001, RF-002, RF-003, UC-01 \\ \hline
+
+SN-002 & SETEC Lab / TEC &
+Demostrar resiliencia del sistema ante fallos de tracción, energía y comunicación sin intervención humana &
+Must &
+RF-005, SYS-FUN-040a/b, SYS-FUN-041, MODE-005, MODE-006 \\ \hline
+
+SN-003 & Investigador Principal &
+Trazabilidad completa desde necesidades operacionales hasta evidencia de V\&V, sin brechas en el digital thread del proyecto &
+Must &
+§12 Traceability, RTM (Tab.~\ref{tab:rtm}), §13 CR Register \\ \hline
+
+SN-004 & Investigador Principal &
+Odometría verificable en campo con error cuantificable respecto a ground truth físico &
+Must &
+RF-004-R1, RNF-003, GNC-REQ-003, CR-002 \\ \hline
+
+SN-005 & Equipo I\&T &
+Sistema desplegable en el sitio análogo en tiempo operacionalmente aceptable para campañas de campo &
+Should &
+USA-REQ-002, PKG-REQ-001, LCS-REQ-001 \\ \hline
+
+SN-006 & Equipo I\&T &
+Telemetría y logs de misión persistentes y accesibles para análisis post-campaña &
+Must &
+CDH-REQ-002, INF-REQ-001, INF-REQ-002, RNF-007 \\ \hline
+
+SN-007 & Evaluadores / Comité &
+Documentación reproducible con evidencia objetiva y trazable para defensa académica del TFG &
+Must &
+§11 V\&V, §13 FMEA (Tab.~\ref{tab:fmea}), RTM (Tab.~\ref{tab:rtm}) \\ \hline
+
+SN-008 & Evaluadores / Comité &
+Integridad de datos de misión verificable mediante mecanismos de validación documentados &
+Should &
+RF-006, COMM-REQ-001, COMM-REQ-004 \\ \hline
+
+\end{tabularx}
+\caption{Registro de necesidades de stakeholders (StRS layer — ISO 29148 §9.3).}
+\label{tab:sn_register}
+\end{table}
+
 \subsection{Actors and External Systems}\label{subsec:actors_systems}
 
 \textbf{Actores principales (interacción directa):}
