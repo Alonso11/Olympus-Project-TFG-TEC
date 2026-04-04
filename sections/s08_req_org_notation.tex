@@ -53,5 +53,39 @@ Para asegurar trazabilidad, gestión y verificabilidad, cada requisito (RF/RNF/C
         \item \textbf{Dentro de interfaces:} externas (GCS/enlace) y internas (buses, N2/PBS). \cite{omg_sysml_mbse, segoldmine_ppi}  
     \end{itemize}
 
-    \item \textbf{Enfoque UC‑01 como eje transversal:} Cada grupo debe mantener trazabilidad explícita hacia UC‑01 (y donde aplique, UC‑02/UC‑04/UC‑05) para que la matriz de V\&V y el plan de pruebas puedan organizarse por escenarios operacionales. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Enfoque UC‑01 como eje transversal:} Cada grupo debe mantener trazabilidad explícita hacia UC‑01 (y donde aplique, UC‑02/UC‑04/UC‑05) para que la matriz de V\&V y el plan de pruebas puedan organizarse por escenarios operacionales. \cite{nasa_cm, segoldmine_ppi}
 \end{enumerate}
+
+\subsection{Software Criticality Classification}\label{subsec:sw_criticality}
+
+Esta subsección clasifica los componentes de software del Rover Olympus por nivel de criticidad, conforme a una equivalencia simplificada de NASA-STD-8739.8B (Software Assurance and Safety Standard). La clasificación determina el rigor mínimo de V\&V requerido y justifica el esfuerzo de verificación documentado en §11. \cite{nasa_cm, segoldmine_ppi}
+
+\textbf{Clases de criticidad adoptadas:}
+\begin{itemize}
+    \item \textbf{Mission-Critical (Class B equiv.):} Un fallo en el software puede causar pérdida de misión, daño estructural al rover o riesgo para el entorno. Requiere unit tests, code review de lógica de seguridad e integration test con hardware.
+    \item \textbf{Mission-Essential (Class B/C equiv.):} Un fallo degrada la misión pero existe un mecanismo de protección de nivel inferior (LLC) que actúa como safety net. Requiere integration tests y V\&V en campo.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{| l | c | X | p{4.0cm} |}
+\hline
+\textbf{Componente SW} & \textbf{Clase} & \textbf{Justificación} & \textbf{V\&V mínimo requerido} \\ \hline
+
+LLC \newline (Arduino Mega) \newline \texttt{state\_machine/mod.rs} \newline control motores, watchdog, \newline stall detection, fault stop &
+Mission-Critical &
+Controla actuadores físicos en tiempo real. Un fallo puede causar colisión, sobrepar o daño estructural. Implementa el fault stop (RF-005) y stall detection que protegen la integridad del sistema. No existe capa inferior de protección. &
+Unit tests Rust ($\ge$64 casos); code review de transiciones de estado; integration test con hardware real (motores + encoders); V\&V campo RF-005 \\ \hline
+
+HLC \newline (RPi5 / Yocto) \newline ELANav, MSM, monitors, \newline CSP stack, OlympusLogger &
+Mission-Essential &
+Toma decisiones de navegación (percepción, clasificación, planificación). Un fallo es interceptable por LLC antes de causar daño físico: LLC actúa como safety net para comandos inválidos. Fallo degrada misión pero no causa pérdida directa de integridad física. &
+Integration tests dry-run; smoke test post-flash; V\&V en campo UC-01 ($\ge$1 run completo); \texttt{cycle\_warn\_ms} watchdog activo \\ \hline
+
+\end{tabularx}
+\caption{Clasificación de criticidad de software del Rover Olympus (NASA-STD-8739.8B, simplificado).}
+\label{tab:sw_criticality}
+\end{table}
+
+\textbf{Implicación para V\&V:} La separación LLC (Mission-Critical) / HLC (Mission-Essential) justifica que la LLC disponga de una suite de unit tests en Rust y que los cambios a \texttt{state\_machine/mod.rs} requieran code review antes de integración. La HLC se valida principalmente mediante integration tests y campañas de campo. \cite{nasa_cm, segoldmine_ppi}
