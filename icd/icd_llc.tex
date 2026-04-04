@@ -381,6 +381,156 @@ A7–A12               & NTC temperatura baterías   & EPS \\
 (\emph{Ref. SyRS V\&V-PROP-002; firmware LLC \texttt{read\_serial.py}})
 
 % ---------------------------------------------------------
+\subsubsection{Constantes de calibración y odometría}
+\label{sssec:icd_llc_calib}
+
+El Nodo~B acumula pulsos de encoder y reporta los contadores brutos
+(\texttt{I0}–\texttt{I5}) en cada trama TLM.
+La conversión a distancia lineal y orientación la realiza el Nodo~A (HLC)
+usando las constantes físicas de la Tabla~\ref{tab:icd_llc_odo_const}.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{llp{5.5cm}}
+\toprule
+\textbf{Constante} & \textbf{Valor por defecto} & \textbf{Procedimiento de calibración} \\
+\midrule
+\texttt{TICKS\_PER\_REV}  & 20 (\textbf{TBD}) &
+  Elevar rover, girar una rueda una vuelta completa y contar pulsos con
+  \texttt{test\_encoders}. Repetir 5 veces y promediar. \\
+\texttt{WHEEL\_RADIUS\_MM} & 50\,mm (\textbf{TBD}) &
+  Medir diámetro de la rueda con calibrador y dividir entre dos. \\
+\texttt{WHEEL\_BASE\_MM}  & 280\,mm (\textbf{TBD}) &
+  Medir separación entre centros de contacto de ruedas izquierda y
+  derecha sobre terreno llano. \\
+\bottomrule
+\end{tabular}
+\caption{Constantes de odometría pendientes de calibración en campo.}
+\label{tab:icd_llc_odo_const}
+\end{table}
+
+\noindent\textbf{Nota:} los valores por defecto permiten verificar el flujo
+completo LLC\,$\rightarrow$\,TLM\,$\rightarrow$\,HLC sin hardware real.
+La precisión requerida por RNF-003 ($<5\%$ de error) no puede validarse
+hasta completar la calibración con hardware en campo.
+(\emph{Ref. RNF-003; tesis §Constantes de calibración})
+
+% ---------------------------------------------------------
+\subsubsection{Monitores de seguridad HLC}
+\label{sssec:icd_llc_monitors}
+
+El Nodo~A (HLC) implementa seis monitores que operan sobre cada trama TLM
+y aplican la política de seguridad multicapa (RF-005, SyRS-080).
+Cada monitor expone \texttt{update(tlm)} y retorna un nivel de severidad;
+el \texttt{HlcEngine} los consulta en orden de prioridad decreciente
+antes de despachar el comando de la fuente activa.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{3.8cm} l p{6.5cm}}
+\toprule
+\textbf{Monitor} & \textbf{Requisito} & \textbf{Umbrales / lógica} \\
+\midrule
+\texttt{EnergyMonitor} & EPS-REQ-001 &
+  \texttt{BATT\_WARN\_MV}\,=\,14\,000\,mV (3.5\,V/celda 4S);\newline
+  \texttt{BATT\_CRITICAL\_MV}\,=\,12\,800\,mV (3.2\,V/celda).\newline
+  \texttt{CRITICAL} activa \texttt{SafeMode}; solo \texttt{RST}
+  con condición resuelta lo desactiva. Lecturas 0\,mV descartadas. \\
+\texttt{ThermalMonitor} & RNF-004 &
+  \texttt{TEMP\_WARN\_C}\,=\,45\,°C;\newline
+  \texttt{TEMP\_CRIT\_C}\,=\,60\,°C.\newline
+  Umbral crítico activa \texttt{SafeMode}. Lecturas 0\,°C descartadas. \\
+\texttt{SlipMonitor} & RF-004 &
+  \texttt{SLIP\_STALL\_FRAMES}\,=\,2 ciclos EXP consecutivos con
+  \texttt{stall\_mask}\,$\neq$\,\texttt{000000}. Al superarlo, emite
+  \texttt{RET}. Contador se reinicia al salir de EXP o con stall\_mask=0. \\
+\texttt{WaypointTracker} & SYS-FUN-020 &
+  Cola FIFO de hasta \texttt{MAX\_WAYPOINTS}\,=\,5 posiciones seguras
+  (solo registra en EXP con \texttt{safety=NORMAL}).\newline
+  \texttt{RETREAT\_DIST\_MM}\,=\,300\,mm: emite \texttt{RET} proactivo
+  antes del umbral hardware LLC (200\,mm). \\
+\texttt{SafeMode} & RF-005, SYS-FUN-040 &
+  Se activa por: batería crítica \textbf{o} \texttt{safety=FAULT} en TLM
+  \textbf{o} temperatura crítica.\newline
+  Bloquea todo comando excepto \texttt{STB}, \texttt{PING}, \texttt{RST}.\newline
+  Exclusivo del HLC (no confundir con watchdog hardware del LLC). \\
+\texttt{CommLinkMonitor} & SyRS-051, SRS-013 &
+  Estados: \textit{COMUNICAR}\,/\,\textit{GESTION\_ENLACE}.\newline
+  \texttt{GCS\_LINK\_LOST\_S}\,=\,10\,s sin trama GCS válida → transición.\newline
+  \texttt{GCS\_MAX\_RETRIES}\,=\,3 intentos con
+  \texttt{GCS\_RETRY\_INTERVAL\_S}\,=\,5\,s.\newline
+  Sin respuesta → activa \texttt{SafeMode}. \\
+\bottomrule
+\end{tabular}
+\caption{Monitores de seguridad HLC y sus umbrales operacionales.}
+\label{tab:icd_llc_monitors}
+\end{table}
+
+(\emph{Ref. RF-005, SyRS-080, EPS-REQ-001, RNF-004, RF-004; tesis §Monitores de seguridad})
+
+% ---------------------------------------------------------
+\subsubsection{Pipeline de percepción reactiva (VisionSource)}
+\label{sssec:icd_llc_vision}
+
+Durante el estado \texttt{EXP}, el Nodo~A puede operar en modo autónomo
+guiado por \texttt{VisionSource}, que adquiere un fotograma CSI,
+ejecuta inferencia con YOLOv8n(-seg) y mapea el resultado a un
+comando LLC (\texttt{EXP}, \texttt{AVD:L}, \texttt{AVD:R} o \texttt{RET}).
+
+\paragraph{Parámetros configurables (\texttt{olympus\_controller.yaml}).}
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parámetro} & \textbf{Valor por defecto} & \textbf{Descripción} \\
+\midrule
+\texttt{VISION\_MODE}      & \texttt{bbox}  & \texttt{bbox} (YOLOv8n) o \texttt{segmentation} (YOLOv8n-seg) \\
+\texttt{VISION\_CONF\_MIN} & 0.50           & Confianza mínima de detección (bbox) \\
+\texttt{VISION\_AREA\_MIN} & 0.05           & Fracción mínima de área de frame (bbox) \\
+\texttt{SEG\_CONF\_MIN}    & 0.50           & Confianza mínima (seg) \\
+\texttt{SEG\_AREA\_MIN}    & 0.03           & Fracción mínima de área (seg) \\
+\texttt{SEG\_ZONE\_MIN}    & 0.05           & Cobertura mínima para emitir avoidance \\
+\texttt{SEG\_ROI\_TOP}     & 0.50           & Fracción superior del frame excluida del ROI \\
+\texttt{ZONE\_LEFT\_END}   & 0.33           & Límite derecho de zona izquierda (normalizado) \\
+\texttt{ZONE\_RIGHT\_START} & 0.67          & Límite izquierdo de zona derecha (normalizado) \\
+\texttt{EXP\_SPEED\_L/R}   & 40             & Velocidad de exploración (\%) \\
+\bottomrule
+\end{tabular}
+\caption{Parámetros configurables de \texttt{VisionSource}.}
+\label{tab:icd_llc_vision_params}
+\end{table}
+
+\paragraph{Mapeo zona\,$\rightarrow$\,comando LLC.}
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{4.2cm} p{2.8cm} p{2.8cm} l}
+\toprule
+\textbf{Condición} & \textbf{Modo bbox} & \textbf{Modo seg} & \textbf{Comando} \\
+\midrule
+Sin detección / cov.\,$<$\,umbral & $c_x =$ ninguno & $\text{cov}_\text{max} <$ \texttt{SEG\_ZONE\_MIN} & \texttt{EXP:40:40} \\
+Detección zona izquierda          & $c_x < 0.33$    & $\text{cov}_\text{izq}$ máxima              & \texttt{AVD:R} \\
+Detección zona central            & $0.33 \le c_x \le 0.67$ & $\text{cov}_\text{centro}$ máxima  & \texttt{RET} \\
+Detección zona derecha            & $c_x > 0.67$    & $\text{cov}_\text{der}$ máxima              & \texttt{AVD:L} \\
+\bottomrule
+\end{tabular}
+\caption{Mapeo zona\,$\rightarrow$\,comando MSM en \texttt{VisionSource}.}
+\label{tab:icd_llc_vision_cmd}
+\end{table}
+
+\noindent\textbf{Nota:} en modo \texttt{segmentation}, si el archivo
+\texttt{yolov8n-seg.onnx} no existe en la ruta configurada, el sistema
+cae automáticamente a modo \texttt{bbox} con aviso en log.
+(\emph{Ref. GNC-REQ-001, GNC-REQ-002, RF-001; tesis §Pipeline de visión})
+
+% ---------------------------------------------------------
 \subsubsection{Cumplimiento con SyRS}
 
 Este ICD satisface:
