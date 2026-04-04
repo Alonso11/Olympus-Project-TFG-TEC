@@ -73,8 +73,12 @@ La \textbf{política de ruta} se implementa en la tabla de enrutamiento CSP y la
   \item \textbf{Conmutación a Relay}: si se \emph{agotan reintentos/timeout RDP}, se enruta Rover$\rightarrow$Relay$\rightarrow$GCS.
   \item \textbf{Retorno a directo}: al detectar \texttt{link\_restored}, se vuelve a la ruta directa.
 \end{enumerate}
-Parámetros \textbf{TBD} (\emph{RECOMENDADO} para caracterización inicial, según TFG): \emph{timeout\_RDP=500\,ms}, \emph{retries=3}.%
-(\emph{Ref. TFG: lógica y ejemplo de reintentos; SyRS §7.3.8 eventos \texttt{link\_lost/link\_restored}}).%
+\begin{sloppypar}
+Parámetros \textbf{TBD} (\emph{RECOMENDADO} para caracterización inicial, según TFG):
+\emph{timeout\_\allowbreak RDP=500\,ms}, \emph{retries=3}.
+(\emph{Ref.\ TFG: lógica y ejemplo de reintentos; SyRS §7.3.8 eventos
+\texttt{link\_lost/\allowbreak link\_restored}}).
+\end{sloppypar}
 
 \subsection*{Temporización y ventanas}
 \paragraph{Wi-Fi (UDP/IP).}
