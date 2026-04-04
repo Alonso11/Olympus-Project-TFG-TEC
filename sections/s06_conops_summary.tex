@@ -355,12 +355,12 @@ Las guardas basadas en severidad (p.\,ej., \texttt{severity\_allows\_retreat}, \
 \endlastfoot
 
 % ---- Modo/Operación ----
-EVT-CMD-001 & cmd\_start\_exploration & Command & Operator/COMMS/C\&DH & C\&DH, GNC, COMMS, EPS & 
+EVT-CMD-001 & cmd\_start\_exploration & Command & Operator/\allowbreak COMMS/\allowbreak C\&DH & C\&DH, GNC, COMMS, EPS & 
 Inicia Exploración de superficie. Efecto: Standby $\rightarrow$ ExploracionActiva. 
 Payload: mission\_phase, area\_of\_interest\_id, policy\_id(\textbf{TBD}), constraints\_ref(\textbf{TBD}). \\
 \hline
 
-EVT-CMD-002 & cmd\_pause\_exploration & Command & Operator/COMMS/C\&DH & C\&DH, GNC &
+EVT-CMD-002 & cmd\_pause\_exploration & Command & Operator/\allowbreak COMMS/\allowbreak C\&DH & C\&DH, GNC &
 Pausa exploración (no SafeMode). Efecto: ExploracionActiva $\rightarrow$ Standby (o Paused opcional). 
 Payload: reason\_code, resume\_policy(\textbf{TBD}). \\
 \hline
