@@ -17,6 +17,18 @@ Especifica el medio físico, el protocolo ASCII delimitado por
 (comandos CMD y respuestas RSP) tal como están implementados
 en el firmware LLC (Rust, v2.8).
 
+\textbf{Mapeo con subsistemas SyRS:}
+\begin{itemize}
+  \item \textbf{Nodo A (RPi\,5)} = C\&DH/OBC; aloja además la lógica GNC
+        (ELANav: percepción, planificación, navegación) y la capa COMMS (CSP/HLC).
+  \item \textbf{Nodo B (Arduino Mega)} = control de bajo nivel para PROP
+        (motores PWM), TRAC (encoders Hall) y adquisición de sensores
+        (HC-SR04, VL53L0X, INA226, NTC).
+  \item \textbf{Fuera de scope de este ICD:} interfaz CSI-2 de la cámara
+        IMX219 (conectada directamente a RPi\,5); lógica de percepción/navegación
+        (GNC); stack COMMS (CSP/UHF/Wi-Fi). Ver ICD-CAM-001 e ICD-COMMS-001.
+\end{itemize}
+
 Las responsabilidades y requisitos de sistema a los que este ICD da
 cumplimiento son: SyRS~§7.4 (UART), §8 (arquitectura Nodo\,A/B),
 PROP\-REQ\-002 (parada de motores $\leq 500$\,ms),
