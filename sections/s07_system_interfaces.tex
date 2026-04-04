@@ -38,8 +38,8 @@ El enlace de misión con la Estación Terrena (GCS) se utiliza para el intercamb
     Transporte UDP/IP y encapsulamiento CSP. La latencia operacional se emula con
     inyección 0--5\,s (CON‑002). Alcance objetivo: $\ge 50$\,m en LoS.
 
-    \item \textbf{b) UHF + AX.25/KISS + CSP (añadido).}
-    Capa de enlace AX.25 (KISS por USB/UART), GFSK 9600\,bps y CSP. Soporta
+    \item \textbf{b) UHF + AX.25/\allowbreak KISS + CSP (añadido).}
+    Capa de enlace AX.25 (KISS por USB/\allowbreak UART), GFSK 9600\,bps y CSP. Soporta
     \emph{RDP} para entrega fiable y operación \emph{store-and-forward}
     mediante nodo retransmisor CSP cuando la LoS está degradada.
 \end{itemize}
@@ -78,7 +78,7 @@ Las interfaces de hardware internas definen cómo C\&DH, GNC, EPS, PROP, TRAC, C
     \item \textbf{I2C:} Bus principal para sensores y módulos de monitoreo (p.\ ej., INA219 para medición de voltaje/corriente en EPS), conectando EPS y C\&DH, y, cuando aplica, sensores de GNC. \cite{nasa_cm, segoldmine_ppi}
     \item \textbf{GPIO:} Líneas digitales para señales discretas de control, triggers y sensores específicos (p.\ ej., Trigger/Echo para el HC-SR04), conectando la MCU con el hardware de bajo nivel. \cite{omg_sysml_mbse, nasa_cm}
     \item \textbf{CSI‑2:} Interfaz de cámara utilizada por GNC/C\&DH para adquirir percepción visual desde la cámara frontal y soportar RF‑001 (Percepción Visual). \cite{segoldmine_ppi, omg_sysml_mbse}
-    \item \textbf{PWM:} Señales de modulación de ancho de pulso generadas por GNC/Arduino (según diseño final) hacia drivers de PROP para el control de velocidad/torque de los motores, implementando la cadena de movilidad en soporte de RF‑003 y RF‑005. \cite{nasa_cm, segoldmine_ppi}
+    \item \textbf{PWM:} Señales de modulación de ancho de pulso generadas por el MCU Arduino Mega (según comandos de C\&DH vía LLC) hacia drivers de PROP para el control de velocidad/torque de los motores, implementando la cadena de movilidad en soporte de RF‑003 y RF‑005. \cite{nasa_cm, segoldmine_ppi}
     \item \textbf{UART:} Enlaces serie para comunicación entre la OBC (Raspberry Pi) y la MCU (Arduino Mega), así como para módulos de comunicación o periféricos (p.\ ej., radio), típicamente entre C\&DH, COMMS y otros sensores/actuadores según la definición del PBS/ASM. \cite{omg_sysml_mbse, nasa_cm}
     \item \textbf{USB:} Interfaz principal para la conexión entre la OBC y el TNC (KISS), permitiendo un canal de datos robusto para el enlace UHF.
     \item \textbf{Distribución de potencia DC:} Canales dedicados desde EPS hacia C\&DH, GNC, PROP, TRAC y COMMS, con niveles de tensión definidos (p.\ ej., 4S Li‑ion/LiFePO$_4$ a convertidores DC‑DC 5\,V/12\,V), protecciones asociadas (BMS, fusibles) y mecanismos de aislamiento. \cite{segoldmine_ppi, nasa_cm}
@@ -217,7 +217,7 @@ Los siguientes ICDs son artefactos activos del proyecto (CI-ICD conforme a §13.
 \begin{tabularx}{\textwidth}{| l | l | X | l |}
 \hline
 \textbf{ID ICD} & \textbf{Interfaz} & \textbf{Scope (celdas N2)} & \textbf{Estado} \\ \hline
-ICD-LLC-001 & C\&DH (RPi 5) $\leftrightarrow$ GNC (Arduino Mega) & N2: C\&DH$\leftrightarrow$GNC — UART 115200\,bps; frame LLC; comandos de movilidad y telemetría de encoders & ACTIVO \\ \hline
+ICD-LLC-001 & C\&DH/OBC (RPi\,5) $\leftrightarrow$ MCU (Arduino Mega\,2560) & N2: C\&DH$\leftrightarrow$PROP/\allowbreak TRAC/\allowbreak Sensores — UART 115200\,bps; frame LLC; comandos de movilidad y telemetría de bajo nivel & ACTIVO \\ \hline
 ICD-COMMS-001 & C\&DH $\leftrightarrow$ COMMS (Wi-Fi / UHF) & N2: C\&DH$\leftrightarrow$COMMS — CSP sobre UDP/IP y AX.25/KISS; formatos TM/CMD & ACTIVO \\ \hline
 \end{tabularx}
 \caption{Registro de ICDs activos del Rover Olympus.}
