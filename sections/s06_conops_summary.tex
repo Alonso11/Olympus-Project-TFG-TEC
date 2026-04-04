@@ -273,7 +273,14 @@ A partir de este punto, el flujo principal puede describirse de la siguiente man
 Esta máquina de estados modela el comportamiento del \textit{Rover Olympus} durante el caso de uso \textit{Exploración de superficie}, describiendo cómo el sistema transita entre \textbf{modos de operación} en respuesta a \textbf{eventos} (triggers) y, cuando aplica, \textbf{guardas} (condiciones booleanas). \cite{UMLStateMachinesConcepts1,UMLStateMachinesConcepts2}
 
 \paragraph{Descripción de la máquina de estados}\label{para:uc01_states_desc}
-El objetivo del diagrama es representar el ciclo de exploración autónoma (percepción--planificación--desplazamiento--adquisición/gestión de datos--comunicaciones) y los desvíos ante condiciones adversas (retreat) o fallas críticas (safing). \cite{UMLStateMachinesConcepts1,UMLStateMachinesConcepts2}
+\begin{sloppypar}
+El objetivo del diagrama es representar el ciclo de exploración autónoma
+(percepción\allowbreak --\allowbreak planificación\allowbreak --\allowbreak
+desplazamiento\allowbreak --\allowbreak adquisición/\allowbreak gestión de
+datos\allowbreak --\allowbreak comunicaciones) y los desvíos ante condiciones
+adversas (retreat) o fallas críticas (safing).
+\cite{UMLStateMachinesConcepts1,UMLStateMachinesConcepts2}
+\end{sloppypar}
 
 \textbf{Principio de modelado:}
 A diferencia de un diagrama de actividades, una máquina de estados enfatiza los \textbf{estados como condiciones/modos relativamente estables} y las \textbf{transiciones disparadas por eventos}; las acciones internas se expresan como \texttt{entry/} y \texttt{do/} dentro del estado, en lugar de modelarse como estados secuenciales equivalentes a “pasos”. \cite{UMLStateMachinesConcepts1,UMLStateMachinesConcepts2}
