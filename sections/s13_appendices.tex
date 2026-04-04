@@ -237,6 +237,113 @@ RF-005 \newline SyRS-060 \\ \hline
 
 \textbf{Nota:} Todos los modos de falla Critical/Major convergen en SafeMode (SYS‑FUN‑040) o FAULT en la MSM. No se identificaron modos de falla sin mitigación en los componentes de vuelo actuales. Clasificación de severidad y ocurrencia conforme a ECSS-Q-ST-30C. \cite{ecss_q_st_30, nasa_cm, segoldmine_ppi}
 
+% ============================================================
+\subsection{Engineering Budgets}\label{subsec:eng_budgets}
+% ============================================================
+
+Este apéndice establece los presupuestos de ingeniería (potencia, masa y enlace RF) del Rover Olympus con valores derivados de hojas de datos del fabricante (\textbf{[DS]}), estimaciones de ingeniería (\textbf{[EST]}) y parámetros pendientes de medición en hardware real (\textbf{[TBM]}). Los valores [TBM] deben resolverse antes del cierre de la campaña V\&V para cerrar los requisitos RNF-007 (MOD $\ge$2\,h) y EPS-REQ-001 (monitoreo INA226). \cite{nasa_cm, segoldmine_ppi, rpi5_brief, arduino_mega_ds, imx219_ds}
+
+% ------------------------------------------------------------
+\subsubsection{Power Budget (Bus 12 V — 4S LiPo)}
+% ------------------------------------------------------------
+
+\begin{table}[H]
+\centering
+\scriptsize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{| l | l | c | r | r | r | r | r | c |}
+\hline
+\textbf{Subsistema} & \textbf{Componente} & \textbf{V\textsubscript{bus}} &
+\textbf{I\textsubscript{idle} (A)} & \textbf{P\textsubscript{idle} (W)} &
+\textbf{I\textsubscript{peak} (A)} & \textbf{P\textsubscript{peak} (W)} &
+\textbf{E\textsubscript{2h} (Wh)} & \textbf{Fuente} \\ \hline
+
+C\&DH  & RPi5 (OBC/HLC)         & 5\,V  & 0.636 & 3.18  & 1.506 & 7.53  & 6.36  & [DS] \cite{rpi5_brief} \\ \hline
+C\&DH  & Arduino Mega (LLC)      & 5\,V  & 0.050 & 0.25  & 0.050 & 0.25  & 0.50  & [DS] \cite{arduino_mega_ds} \\ \hline
+GNC    & Cámara IMX219           & 3.3\,V & 0.150 & 0.50  & 0.150 & 0.50  & 1.00  & [DS] \cite{imx219_ds} \\ \hline
+GNC    & HC-SR04 ($\times$1)     & 5\,V  & 0.003 & 0.015 & 0.003 & 0.015 & 0.03  & [DS] \\ \hline
+EPS    & INA226 (monitor)        & 3.3\,V & 0.001 & 0.003 & 0.001 & 0.003 & 0.01  & [DS] \\ \hline
+PROP   & 6$\times$ Motor NFP-5840 & 12\,V & {[TBM]} & {[TBM]} & {[TBM]} & $\approx$14.4 & {[TBM]} & [EST] \\ \hline
+COMM   & WiFi 802.11n (RPi5 integ.) & incl. & -- & -- & -- & $\le$1.0 & $\le$2.0 & [EST] \\ \hline
+\hline
+\multicolumn{2}{|l|}{\textbf{Total estimado — modo traversal (nominal)}}
+  & --    & --    & $\approx$18   & --    & $\approx$44.7 & $\approx$89.4 & [EST] \\ \hline
+\end{tabularx}
+\caption{Presupuesto de potencia del Rover Olympus (modo traversal, bus 12\,V, 4S LiPo).
+  Valores [TBM] requieren banco de motores con corriente medida por INA226. Criterio RNF-007: energía total $\ge$89.4\,Wh
+  $\Rightarrow$ batería mínima 4S ($\approx$14.8\,V) $\ge$5\,400\,mAh ($\ge$80\,Wh con 10\,\% derating).}
+\label{tab:power_budget}
+\end{table}
+
+% ------------------------------------------------------------
+\subsubsection{Mass Budget}
+% ------------------------------------------------------------
+
+\begin{table}[H]
+\centering
+\scriptsize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{| l | l | r | c | X |}
+\hline
+\textbf{Subsistema} & \textbf{Componente} & \textbf{Masa (g)} & \textbf{Fuente} & \textbf{Notas} \\ \hline
+
+C\&DH  & RPi5 (SBC)                & 45    & [DS]  & PCB sin carcasa \\ \hline
+C\&DH  & Arduino Mega 2560         & 37    & [DS]  & PCB sin carcasa \\ \hline
+C\&DH  & microSD 64\,GB (clase 10) & 2     & [DS]  & \\ \hline
+GNC    & Cámara IMX219             & 6     & [DS]  & módulo + lente wide-angle \\ \hline
+GNC    & HC-SR04                   & 8     & [DS]  & \\ \hline
+EPS    & INA226 breakout           & 3     & [DS]  & \\ \hline
+EPS    & LM335 + NTC ($\times$2)   & 5     & [EST] & sensores térmicos \\ \hline
+PROP   & 6$\times$ Motor NFP-5840  & 2\,160 & [EST] & $\approx$360\,g/motor (estimado) \\ \hline
+PROP   & Controladores de motor    & 120   & [EST] & 6$\times$ driver \\ \hline
+COMM   & Módulo WiFi integrado     & --    & [DS]  & incluido en RPi5 \\ \hline
+STR    & Chasis / estructura       & {[TBM]} & [TBM] & Medición directa con balanza \\ \hline
+STR    & Ruedas ($\times$6)        & {[TBM]} & [TBM] & \\ \hline
+STR    & Arnés / cableado          & {[TBM]} & [TBM] & Estimado $\approx$200\,g \\ \hline
+EPS    & Batería 4S LiPo           & {[TBM]} & [TBM] & $\approx$500--700\,g típico \\ \hline
+\hline
+\multicolumn{2}{|l|}{\textbf{Electrónica conocida (excl. estructura)}} & $\approx$2\,386 & [DS/EST] & sin arnés ni batería \\ \hline
+\multicolumn{2}{|l|}{\textbf{Total estimado (sistema completo)}}       & 5\,000--7\,000 & [EST] & pendiente medición estructura \\ \hline
+\end{tabularx}
+\caption{Presupuesto de masa del Rover Olympus. Componentes [TBM] deben medirse con balanza de precisión antes de campaña.}
+\label{tab:mass_budget}
+\end{table}
+
+% ------------------------------------------------------------
+\subsubsection{RF Link Budget (2.4\,GHz, 50\,m LoS)}
+% ------------------------------------------------------------
+
+La siguiente tabla aplica la ecuación de Friis \cite{friis_1946} para verificar el cierre del enlace WiFi 802.11n \cite{ieee_802_11n} en la distancia operacional máxima declarada en COMM-REQ-001 (50\,m, LoS). \cite{omg_sysml_mbse, segoldmine_ppi}
+
+\begin{table}[H]
+\centering
+\scriptsize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{| l | r | c | X |}
+\hline
+\textbf{Parámetro} & \textbf{Valor} & \textbf{Unidad} & \textbf{Fuente / Notas} \\ \hline
+
+Frecuencia $f$                         & 2\,400  & MHz  & Canal 1--11 WiFi 802.11n \\ \hline
+Distancia $d$                          & 50      & m    & COMM-REQ-001 (máx. LoS) \\ \hline
+Potencia transmisión $P_t$             & +20     & dBm  & Límite legal WiFi ISM (típico 100\,mW) \\ \hline
+Ganancia antena TX $G_t$               & +2      & dBi  & Antena dipolo integrada (RPi5) \\ \hline
+Ganancia antena RX $G_r$               & +2      & dBi  & Antena dipolo integrada (GCS laptop) \\ \hline
+FSPL a 50\,m, 2.4\,GHz                & 74.2    & dB   & $\text{FSPL}=20\log_{10}(d)+20\log_{10}(f)+20\log_{10}(\tfrac{4\pi}{c})$ \cite{friis_1946} \\ \hline
+Pérdidas adicionales $L_{misc}$        & +5      & dB   & Margen de desvanecimiento, conectores \\ \hline
+\hline
+\textbf{Potencia recibida} $P_r$       & \textbf{$-$55.2}  & dBm  & $P_r = P_t + G_t + G_r - \text{FSPL} - L_{misc}$ \\ \hline
+Sensibilidad del receptor              & $-91$   & dBm  & IEEE 802.11n MCS0 (6\,Mbps) \cite{ieee_802_11n} \\ \hline
+\textbf{Margen de enlace}              & \textbf{$+$35.8} & dB   & $M = P_r - S_{min}$; criterio aceptable $\ge$10\,dB \\ \hline
+\textbf{Estado}                        & \multicolumn{2}{c|}{\textbf{CERRADO}} & Margen holgado; COMM-REQ-001 satisfecho en LoS \\ \hline
+\end{tabularx}
+\caption{Presupuesto de enlace RF WiFi 2.4\,GHz a 50\,m (ecuación de Friis). El margen de $+$35.8\,dB permite
+  absorber obstáculos parciales sin degradar el enlace por debajo de la sensibilidad del receptor. El enlace UHF
+  (COMM-REQ-002/003) está diferido a Fase-2 (CR-001).}
+\label{tab:rf_link_budget}
+\end{table}
+
+\textbf{Nota sobre [TBM]:} Los valores de corriente de motores (banco de pruebas), masa de estructura/ruedas y RSSI Wi-Fi en sitio análogo deben medirse durante la campaña de integración y hardware (§11 V\&V). Estos cierres completan los requisitos EPS-REQ-001, STR-REQ-001 y COMM-REQ-001 respectivamente.
+
 \subsection{Glossary}
 
 Este glosario consolida términos y abreviaturas utilizados en el SyRS/SRS final. Para evitar redundancias, se considera complementario a la Sección 3 (Terms, Definitions, Acronyms), que contiene las definiciones operativas principales. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
