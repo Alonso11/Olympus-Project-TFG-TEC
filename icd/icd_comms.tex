@@ -66,12 +66,60 @@ del TFG ELANav Comms (KISS/\allowbreak AX.25, GFSK 9600, CSP/\allowbreak RDP y r
 \end{itemize}
 (\emph{Ref. TFG: ejemplo de direcciones CSP})%
 
+\subsubsection{Nivel de implementación CSP y plan de migración}
+\label{sssec:icd_comms_csp_level}
+
+La implementación CSP del Rover Olympus se organiza en tres niveles de madurez.
+La campaña del TFG opera en \textbf{Nivel~1}; los niveles superiores son trabajo futuro
+cuando se integre el canal UHF.
+
+\begin{sloppypar}
+\begin{description}
+  \item[Nivel~1 — empaquetado manual (implementado, campaña TFG)]
+    El módulo \texttt{olympus\_hlc/\allowbreak csp.py} implementa el encabezado CSP de 32~bits
+    mediante \texttt{struct.pack/\allowbreak unpack} de la biblioteca estándar de Python, sin
+    dependencias externas. El campo CRC-32 se calcula con \texttt{zlib.crc32}
+    (RF-006). La implementación cubre el canal Wi-Fi/UDP en campo cercano
+    (COMM-REQ-001/002): envío de CMD (puerto~11), recepción de TM (puerto~10)
+    y probe de reconexión \texttt{HB\_\allowbreak REQ} (puerto~1). \textbf{No soporta RDP ni
+    routing multi-interfaz} — ambos innecesarios sobre WiFi local donde la
+    pérdida de paquetes es despreciable.
+
+  \item[Nivel~2 — libcsp con bindings Python (trabajo futuro, pre-UHF)]
+    Migración de \texttt{csp.py} a \texttt{ctypes}/bindings oficiales sobre
+    \texttt{libcsp.so}, compilado para RPi~5 con Yocto
+    (\texttt{-{}-enable-python-\allowbreak bindings -\allowbreak-with-os=posix}).
+    Habilita \textbf{RDP} (retransmisión con ACK) y tabla de rutas multi-interfaz.
+    Requerido antes de integrar el canal UHF (COMM-REQ-003/004/005) porque RDP
+    es la única capa que garantiza entrega sobre un enlace con pérdidas.
+    El header CSP de 32~bits es idéntico al del Nivel~1;
+    \texttt{GCSSource} y \texttt{gcs\_mock.py} no requieren cambios de lógica.
+
+  \item[Nivel~3 — stack completo dual-homing (trabajo futuro, post-UHF)]
+    Tabla de rutas libcsp con dos interfaces registradas:
+    \texttt{CSP-UDP} (Wi-Fi, campo cercano) y
+    \texttt{CSP-KISS} (UHF, operación robusta).
+    La conmutación se produce automáticamente según disponibilidad del enlace
+    y política RDP (\texttt{timeout\_\allowbreak RDP} / \texttt{max\_\allowbreak retries}).
+\end{description}
+\end{sloppypar}
+
+\begin{sloppypar}
+\textbf{Decisión de diseño:} permanecer en Nivel~1 durante el TFG minimiza
+la deuda técnica de compilación cruzada en Yocto antes de completar la
+validación del loop HLC$\leftrightarrow$LLC en hardware. La arquitectura es
+extensible: agregar libcsp requiere portar únicamente \texttt{csp.py}
+(90~líneas) sin tocar \texttt{GCSSource}, \texttt{HlcEngine} ni los monitores.
+(\emph{Ref. COMM-REQ-001/002 cubiertos en Nivel~1; COMM-REQ-003/\allowbreak 004/\allowbreak 005 requieren Nivel~2+})
+\end{sloppypar}
+
 \subsubsection{Selección y conmutación de ruta}
 La aplicación en C\&DH mantiene \textbf{dos interfaces CSP} activas: \emph{if\_udp} (Wi-Fi) y \emph{if\_kiss} (UHF).
 La \textbf{política de ruta} se implementa en la tabla de enrutamiento CSP y la gestión de reintentos de \textbf{RDP}:
 \begin{enumerate}
   \item \textbf{Ruta directa preferida}: Rover$\leftrightarrow$GCS (Wi-Fi o UHF directo).
-  \item \textbf{Conmutación a Relay}: si se \emph{agotan reintentos/timeout RDP}, se enruta Rover$\rightarrow$Relay$\rightarrow$GCS.
+  \item \textbf{Conmutación a Relay}: si se \emph{agotan reintentos/\allowbreak timeout RDP},
+        se enruta Rover$\rightarrow$Relay$\rightarrow$GCS.
   \item \textbf{Retorno a directo}: al detectar \texttt{link\_restored}, se vuelve a la ruta directa.
 \end{enumerate}
 \begin{sloppypar}
@@ -130,9 +178,15 @@ como en el TFG de referencia para provocar conmutación a Relay en pérdida de L
 \subsubsection{Asignación de puertos/recursos (propuesta inicial)}
 \paragraph{Wi-Fi / UDP.}
 \begin{itemize}
-  \item \texttt{CSP\_UDP\_PORT\_GCS}: \textbf{TBD} (\emph{RECOMENDADO: 8760}).
-  \item \texttt{CSP\_UDP\_PORT\_ROVER}: \textbf{TBD} (\emph{RECOMENDADO: 8761}).
-  \item \texttt{IP\_ROVER / IP\_GCS}: \textbf{TBD} (DHCP o estática). 
+  \item \texttt{GCS\_LISTEN\_PORT} (RPi\,5 escucha CMD): \textbf{9000}
+        (\emph{resuelto en \texttt{config.py}}).
+  \item \texttt{GCS\_REPLY\_PORT} (GCS escucha TM): \textbf{9001}
+        (\emph{resuelto en \texttt{config.py}}).
+  \item \texttt{IP\_ROVER / IP\_GCS}: \textbf{TBD} (DHCP o estática).
+  \item Puertos CSP de servicio: CMD=11, TM=10, HB=1
+        (\emph{resuelto en \texttt{config.py}: \texttt{CSP\_PORT\_CMD/TM/HB}}).
+  \item Direcciones CSP de nodo: GCS=1, HLC=2
+        (\emph{resuelto en \texttt{config.py}: \texttt{CSP\_ADDR\_GCS/HLC}}).
 \end{itemize}
 
 \paragraph{KISS / TNC.}
@@ -159,14 +213,15 @@ Correspondencia con la matriz N2 y PBS/ASM:
 \end{enumerate}
 (\emph{Ref. V\&V-COMMS-01/02 del SyRS})%
 
-\subsubsection{Parámetros a cerrar (TBD) y valores recomendados}
+\subsubsection{Parámetros a cerrar (TBD) y valores resueltos}
 \begin{itemize}
-  \item \textbf{Puertos UDP CSP} (GCS/ROVER): \textbf{TBD} (\emph{rec.: 8760/8761}).
-  \item \textbf{Direcciones IP} (GCS/ROVER): \textbf{TBD}.
-  \item \textbf{Baudios KISS}: \textbf{TBD} (\emph{rec.: 115200}).
-  \item \textbf{timeout\_RDP / max\_retries}: \textbf{TBD} (\emph{rec.: 500\,ms / 3}).
-  \item \textbf{IDs CSP} (nodo/puertos de servicio): \textbf{TBD} (\emph{ejemplo TFG: 10/20/30}).
-  \item \textbf{Cableado RF/PTT/audio}: conectores/coax exactos \textbf{TBD} según radio/antena definitivos.
+  \item \textbf{Puertos UDP} CMD/TM: \textbf{9000/9001} (\emph{resuelto — \texttt{config.py}}).
+  \item \textbf{Puertos CSP} de servicio CMD/TM/HB: \textbf{11/10/1} (\emph{resuelto — \texttt{config.py}}).
+  \item \textbf{IDs CSP de nodo} GCS/HLC: \textbf{1/2} (\emph{resuelto — \texttt{config.py}}).
+  \item \textbf{Direcciones IP} (GCS/ROVER): \textbf{TBD} (asignar en run card de campaña).
+  \item \textbf{Baudios KISS} (OBC$\leftrightarrow$TNC): \textbf{TBD} (\emph{rec.: 115200}) — aplica solo en Nivel~3.
+  \item \textbf{timeout\_RDP / max\_retries}: \textbf{TBD} (\emph{rec.: 500\,ms / 3}) — aplica solo en Nivel~2+.
+  \item \textbf{Cableado RF/PTT/audio}: \textbf{TBD} según radio/antena definitivos — aplica solo en Nivel~3.
 \end{itemize}
 
 \subsubsection{Notas}
