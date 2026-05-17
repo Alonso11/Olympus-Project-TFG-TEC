@@ -97,7 +97,7 @@ Durante la exploración, el rover:
   \item analiza el terreno y el entorno inmediato,
   \item determina rutas seguras,
   \item navega evitando obstáculos,
-  \item recopila y procesa datos científicos y de navegación,
+  \item recopila y procesa datos de percepción y de navegación,
   \item almacena dichos datos para su análisis posterior,
   \item y se comunica periódicamente con el Operador para enviar información y recibir posibles actualizaciones.
 \end{itemize}
@@ -111,9 +111,7 @@ Los actores involucrados en este caso de uso se definen formalmente en §\ref{su
 
 \subsubsection{Objetivo del caso de uso}
 
-El objetivo de \textbf{Exploración de superficie} es permitir que el Rover Olympus explore una región determinada
-de la superficie del planeta de forma segura and eficiente, maximizando la cantidad y calidad de datos científicos
-recopilados, al mismo tiempo que se preserva la integridad del sistema y se respetan las restricciones de la misión.
+El objetivo de \textbf{Exploración de superficie} es permitir que el Rover Olympus explore una región objetivo del sitio análogo de forma segura y eficiente, maximizando la cantidad y calidad de datos de navegación y percepción recopilados, al mismo tiempo que se preserva la integridad del sistema y se respetan las restricciones de la misión.
 
 \subsubsection{Precondiciones y postcondiciones}
 
@@ -135,7 +133,7 @@ recopilados, al mismo tiempo que se preserva la integridad del sistema y se resp
 
 \subsubsection{Flujo principal de eventos}\label{subsec:uc01_flow}
 
- El flujo nominal de UC-01 consiste en un ciclo iterativo de (i) recepción de objetivo/parámetros (uplink), (ii) análisis de entorno, (iii) planificación/selección de ruta segura, (iv) navegación con adquisición y gestión de datos, y (v) comunicación periódica de telemetría/datos (downlink), repitiéndose mientras las condiciones sean aceptables. Las decisiones y bifurcaciones (p. ej., ruta no segura, contingencias y salida a modos de seguridad/Homing) se detallan en el diagrama de actividad y su explicación en §\ref{subsec:uc01_activity}.
+El flujo nominal de UC-01 consiste en un ciclo iterativo de (i) recepción de objetivo/parámetros (uplink), (ii) análisis de entorno, (iii) planificación/selección de ruta segura, (iv) navegación con adquisición y gestión de datos, y (v) comunicación periódica de telemetría/datos (downlink), repitiéndose mientras las condiciones sean aceptables. Las decisiones y bifurcaciones (p.\,ej., ruta no segura, contingencias y salida a modos de seguridad/Homing) se detallan en el diagrama de actividad y su explicación en \S\ref{subsec:uc01_activity}, y se ejecutan en \emph{runtime} por el \emph{Master State Machine} (MSM) del LLC, cuya definición formal aparece en \S\ref{subsec:uc01_states}.
 
 \subsubsection{Descomposición funcional del caso de uso}
 
@@ -143,13 +141,11 @@ La complejidad de \textbf{Exploración de superficie} se refleja en su descompos
 o funciones internas (ver Figura~\ref{fig:usecase_uc01_det}), que se modelan mediante relaciones \texttt{\textless\textless include\textgreater\textgreater} en el diagrama de casos de uso:
 
 \begin{description}
-  \item[\textbf{Analizar el terreno}] 
-  El rover utiliza sus sensores (cámaras, lidar, etc.) para caracterizar el entorno inmediato, 
-  identificando pendientes, rocas, obstáculos y posibles zonas de interés científico.
+  \item[\textbf{Analizar el terreno}]
+  El rover utiliza sus sensores (cámara OV5647, LiDAR de largo alcance TF02, ToF VL53L0X, ultrasónico HC-SR04 e IMU MPU-6050) para caracterizar el entorno inmediato, identificando pendientes, rocas, obstáculos y zonas transitables.
 
-  \item[\textbf{Recopilar datos del entorno}] 
-  Incluye la adquisición de datos científicos (imágenes, espectros, medidas ambientales) 
-  y datos de navegación (posición, velocidad, inclinación, etc.).
+  \item[\textbf{Recopilar datos del entorno}]
+  Incluye la adquisición de datos de percepción (imágenes RGB de la cámara OV5647 y medidas de distancia de los sensores ToF/ultrasónicos/LiDAR) y datos de navegación (posición y velocidad estimadas por encoders, inclinación de la IMU MPU-6050).
 
   \item[\textbf{Procesar la información}] 
   El rover filtra y procesa los datos recopilados para extraer información relevante, 
@@ -167,13 +163,8 @@ o funciones internas (ver Figura~\ref{fig:usecase_uc01_det}), que se modelan med
   Función especializada que detecta obstáculos en la trayectoria prevista 
   y ejecuta maniobras de evasión manteniendo la seguridad del rover.
 
-    \item[\textbf{Monitorizar estado del rover}] 
-  Supervisión continua de variables internas (batería, temperatura, estado de actuadores, integridad de sensores, etc.) 
-  para detectar condiciones de riesgo que puedan requerir la activación de un modo seguro o el cambio a otro caso de uso
-  (por ejemplo, \textit{Modo regreso a casa}).
-  
-  \item[\textbf{UC-05: Desactivación segura / Pasivación (Decommission)}] 
-  En el caso extremo de fallo crítico o al final de la vida útil de la misión, el rover podrá ejecutar una secuencia de desactivación segura y pasivación, que reduzca a un nivel mínimo los riesgos para el entorno y evite interferencias con futuras misiones, de acuerdo con las consideraciones de protección planetaria aplicables al contexto análogo.
+    \item[\textbf{Monitorizar estado del rover}]
+  Supervisión continua de variables internas (batería, temperatura, estado de actuadores, integridad de sensores, etc.) para detectar condiciones de riesgo que puedan requerir la activación de un modo seguro o la transición a otro caso de uso (por ejemplo, UC-04 \emph{Homing} o, ante fallo crítico no recuperable, UC-05 \emph{Safe Deactivation / Passivation}; estas transiciones se modelan en el state machine de \S\ref{subsec:uc01_states}).
   \end{description}
   
 
@@ -231,7 +222,7 @@ A partir de este punto, el flujo principal puede describirse de la siguiente man
         la ruta planificada, avanzando por la superficie en dirección a la zona de interés.
 
   \item \textbf{Recopilar datos del entorno}: durante la navegación, el rover adquiere datos
-        científicos (imágenes, medidas ambientales, etc.) y datos de navegación (posición,
+        de percepción (imágenes, distancias) y datos de navegación (posición,
         velocidad, inclinación, entre otros).
 
   \item \textbf{Almacenar datos}: los datos obtenidos se procesan y almacenan en el sistema a bordo
@@ -258,7 +249,7 @@ A partir de este punto, el flujo principal puede describirse de la siguiente man
         forma iterativa.
 
   \item En caso de que se detecten \textbf{condiciones extremadamente adversas} (por ejemplo,
-        tormentas severas, terrenos demasiado peligrosos) o una \textbf{falla crítica} en el
+        condiciones ambientales adversas, terrenos demasiado peligrosos) o una \textbf{falla crítica} en el
         sistema, el flujo se desvía hacia la acción \textit{Activar modo espera o regreso a punto
         seguro (Homing)}, lo que implica abandonar el ciclo normal de exploración para pasar a un
         modo de seguridad. Este evento marca la finalización de la actividad de exploración de
