@@ -56,20 +56,20 @@ Conforme al contexto del sistema descrito en §\ref{sec:system_context}, los com
 A partir de la interacción de estos actores con el sistema, se han definido los siguientes casos de uso de alto nivel, los cuales se representan gráficamente en la Figura~\ref{fig:usecase_top}:
 
 \begin{description}
-  \item[\textbf{UC-01: Exploración de superficie}] 
- Permite que el rover recorra una región de la superficie de forma autónoma, analizando el terreno, navegando de manera segura y recopilando datos científicos y de navegación. Este caso de uso implica una alta autonomía y es el foco principal del presente trabajo.
+  \item[\textbf{UC-01: Exploración de superficie}]
+Permite que el rover recorra una región de la superficie de forma autónoma, analizando el terreno, navegando de manera segura y recopilando telemetría y datos de navegación. Este caso de uso implica una alta autonomía y es el foco principal del presente trabajo.
 
-  \item[\textbf{UC-02: Navegación dirigida}] 
+  \item[\textbf{UC-02: Navegación dirigida}]
 El rover recibe desde el Operador una orden para desplazarse hasta un punto específico de interés. El sistema calcula y ejecuta la trayectoria hacia ese objetivo, utilizando sus capacidades de navegación y evitación de obstáculos.
 
-  \item[\textbf{UC-03: Recolección de muestras}] 
- El rover recoge muestras del terreno (por ejemplo, suelo o roca), las prepara y las almacena para su análisis posterior, ya sea a bordo o en laboratorios en Tierra. Este caso de uso puede activarse durante la exploración o a partir de una orden directa del Operador.
+  \item[\textbf{UC-03: Recolección de muestras}] \emph{[Conceptual --- fuera del alcance del prototipo TFG; sin actuador de recolección en la configuración actual.]}
+El rover recoge muestras del terreno (por ejemplo, suelo o roca), las prepara y las almacena para su análisis posterior, ya sea a bordo o en laboratorios en Tierra. Este caso de uso puede activarse durante la exploración o a partir de una orden directa del Operador.
 
-  \item[\textbf{UC-04: Modo regreso a casa (Homing)}] 
- Permite que el rover regrese a un punto seguro predefinido (por ejemplo, la zona de aterrizaje o una región protegida) cuando se detectan condiciones de riesgo (batería baja, tormentas, pérdida de comunicación prolongada, etc.) o cuando el Operador lo ordena explícitamente.
+  \item[\textbf{UC-04: Modo regreso a casa (Homing)}]
+Permite que el rover regrese a un punto seguro predefinido (por ejemplo, el punto base de despliegue inicial o una región protegida previamente declarada) cuando se detectan condiciones de riesgo (batería baja, condiciones ambientales adversas, pérdida de comunicación prolongada, etc.) o cuando el Operador lo ordena explícitamente.
 
-  \item[\textbf{UC-05: Activar secuencia de autodestrucción (Decommission)}] 
-En el caso extremo de fallo crítico o al final de la vida útil de la misión, el rover puede ejecutar una secuencia de autodestrucción o desmantelamiento controlado con el fin de evitar contaminación del entorno o interferencias con futuras misiones.
+  \item[\textbf{UC-05: Safe Deactivation / Passivation}]
+Al final de la vida útil de la misión o ante un fallo crítico no recuperable, el rover ejecuta una secuencia controlada de \emph{passivation}: descarga segura de energía almacenada, desactivación de actuadores, persistencia del último estado en logs y entrada a un modo de mínima emisión. Esta práctica es coherente con las provisiones de \emph{Planetary Protection} para misiones robóticas \cite{nasa_planetary_protection} y reemplaza el concepto de ``autodestrucción'' (no aplicable a una plataforma terrestre de validación y desaconsejado para misiones espaciales por el riesgo de contaminación del sitio).
 \end{description}
 
 
@@ -81,9 +81,7 @@ En el caso extremo de fallo crítico o al final de la vida útil de la misión, 
 \end{figure}
 
 
-Aunque todos estos casos de uso son relevantes para la operación global del Rover Olympus, 
-en este documento nos centraremos en el caso de uso \textbf{Exploración de superficie}, 
-el cual se detalla a continuación y sirve como base para el modelado de los diagramas de comportamiento.
+Aunque todos estos casos de uso son relevantes para la operación global del Rover Olympus, en este documento nos centraremos en el caso de uso \textbf{Exploración de superficie} (UC-01), el cual se detalla a continuación y sirve como base para el modelado de los diagramas de comportamiento; los demás (UC-02 a UC-05) se mantienen a nivel conceptual conforme a la decisión de \emph{tailoring} declarada en \S\ref{sec:conops} (priorización del caso núcleo).
 
 %---------------------------------------------------------------
 \subsection{Caso de uso: Exploración de superficie}\label{sec:uc01}
