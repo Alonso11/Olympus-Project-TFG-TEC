@@ -3,41 +3,42 @@
 
 \section{Stakeholders, Users, and Actors}
 
-Esta sección identifica a las partes interesadas (stakeholders), clases de usuarios y actores externos relevantes para el Rover Olympus, con el objetivo de (i) asegurar que los requisitos RF/RNF/CON se derivan de necesidades reales, (ii) delimitar responsabilidades operacionales, y (iii) mantener coherencia entre ConOps, Casos de Uso y arquitectura MBSE/SysML. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-En el contexto de este proyecto, el ``usuario'' principal del sistema es un operador/planificador en Tierra (Rover Planner / Ground Operator) que configura metas de exploración, supervisa telemetría y evalúa resultados en campañas análogas, mientras que el sistema ejecuta UC‑01 de forma autónoma. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+Esta sección identifica a las partes interesadas (stakeholders), clases de usuarios y actores externos relevantes para el Rover Olympus, con el objetivo de (i) asegurar que los requisitos RF/RNF/CON se derivan de necesidades reales, (ii) delimitar responsabilidades operacionales, y (iii) mantener coherencia entre ConOps, Casos de Uso y arquitectura MBSE/SysML.
+En el contexto de este proyecto, el ``usuario'' principal del sistema es un operador/planificador en Tierra (Rover Planner / Ground Operator) que configura metas de exploración, supervisa telemetría y evalúa resultados en campañas análogas, mientras que el sistema ejecuta UC‑01 de forma autónoma.
 
 \subsection{Stakeholder Profiles}
 
 \textbf{Stakeholders primarios (directamente responsables del éxito del proyecto):}
 \begin{enumerate}
-    \item \textbf{SETEC Lab / Escuela de Ingeniería Electrónica (TEC):} Define el contexto académico, objetivos de validación, criterios de aceptación y restricciones de recursos. \cite{nasa_cm, segoldmine_ppi}  
-    \item \textbf{Investigador Principal / Responsable de Ingeniería de Sistemas:} Asegura la coherencia entre ConOps, requisitos, arquitectura y V\&V. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{SETEC Lab / Escuela de Ingeniería Electrónica (TEC):} Define el contexto académico, objetivos de validación, criterios de aceptación y restricciones de recursos.
+    \item \textbf{Investigador Principal / Responsable de Ingeniería de Sistemas:} Asegura la coherencia entre ConOps, requisitos, arquitectura y V\&V.
+    \item \textbf{Equipo del proyecto ELANav} (\emph{Biblioteca embebida para la navegación de sistemas espaciales de misión crítica}, TEC, 2025--2027; coordinador: Johan Carvajal Godínez): Usuario final de la validación que entrega Olympus; define los requisitos de la biblioteca embebida que el rover debe poder ejecutar y exponer mediante telemetría/comandos.
 \end{enumerate}
 
 \textbf{Stakeholders secundarios (impacto indirecto):}
 \begin{enumerate}[resume]
-    \item \textbf{Equipo de Integración y Pruebas (I\&T):} Responsable de la integración física, preparación de campañas y recolección de evidencia en terreno. \cite{segoldmine_ppi, nasa_cm}  
-    \item \textbf{Evaluadores académicos / Comité de revisión:} Requieren trazabilidad, consistencia documental y evidencia reproducible de validación. \cite{omg_sysml_mbse, segoldmine_ppi}  
+    \item \textbf{Equipo de Integración y Pruebas (I\&T):} Responsable de la integración física, preparación de campañas y recolección de evidencia en terreno.
+    \item \textbf{Evaluadores académicos / Comité de revisión:} Requieren trazabilidad, consistencia documental y evidencia reproducible de validación.
 \end{enumerate}
 
 \subsection{User Classes and Characteristics}
 
 \textbf{Clase de usuario U1 – Rover Planner / Operador en Tierra (Ground Operator):}
 \begin{itemize}
-    \item \textbf{Rol:} Define objetivos de alto nivel, selecciona escenarios, configura parámetros y supervisa telemetría. \cite{segoldmine_ppi, nasa_cm}  
-    \item \textbf{Características:} Usuario técnico familiarizado con navegación robótica; toma decisiones estratégicas sin teleoperación continua. \cite{nasa_cm, omg_sysml_mbse, segoldmine_ppi}  
-    \item \textbf{Necesidades:} Visibilidad del estado del sistema, evidencia de desempeño y capacidad de recuperación de datos. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Rol:} Define objetivos de alto nivel, selecciona escenarios, configura parámetros y supervisa telemetría.
+    \item \textbf{Características:} Usuario técnico familiarizado con navegación robótica; toma decisiones estratégicas sin teleoperación continua.
+    \item \textbf{Necesidades:} Visibilidad del estado del sistema, evidencia de desempeño y capacidad de recuperación de datos.
 \end{itemize}
 
 \textbf{Clase de usuario U2 – Integración y Pruebas (I\&T / Test Engineer):}
 \begin{itemize}
-    \item \textbf{Rol:} Prepara el sistema (calibraciones, interfaces), ejecuta pruebas T/A/D/I y documenta evidencias. \cite{segoldmine_ppi, nasa_cm}  
-    \item \textbf{Características:} Acceso físico al rover; requiere trazabilidad clara entre requisitos y criterios de prueba. \cite{nasa_cm, segoldmine_ppi} 
+    \item \textbf{Rol:} Prepara el sistema (calibraciones, interfaces), ejecuta pruebas T/A/D/I y documenta evidencias.
+    \item \textbf{Características:} Acceso físico al rover; requiere trazabilidad clara entre requisitos y criterios de prueba.
 \end{itemize}
 
 \subsection{Stakeholder Needs Register}\label{subsec:stakeholder_needs}
 
-Este registro formaliza las necesidades de cada stakeholder y su derivación hacia requisitos del sistema, conforme a ISO/IEC/IEEE 29148 §9.3 (StRS layer). Cada necesidad tiene un identificador único (SN-xxx), stakeholder fuente, prioridad MoSCoW y los requisitos SyRS/SRS que la satisfacen. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}
+Este registro formaliza las necesidades de cada stakeholder y su derivación hacia requisitos del sistema, conforme a ISO/IEC/IEEE 29148 §9.3 (StRS layer). Cada necesidad tiene un identificador único (SN-xxx), stakeholder fuente, prioridad MoSCoW y los requisitos SyRS/SRS que la satisfacen.
 
 \begin{table}[H]
 \centering
@@ -86,6 +87,11 @@ Integridad de datos de misión verificable mediante mecanismos de validación do
 Should &
 RF-006, COMM-REQ-001, COMM-REQ-004 \\ \hline
 
+SN-009 & Equipo ELANav &
+Plataforma rover capaz de hospedar y validar la biblioteca embebida basada en agentes, exponiendo interfaces de comandos/telemetría y captura de evidencia en sitio análogo &
+Must &
+UC-01, RF-001, RF-002, RF-003, RF-004-R1, RF-005, RF-006, COMM-REQ-001, GNC-REQ-001, GNC-REQ-002, GNC-REQ-003 \\ \hline
+
 \end{tabularx}
 \caption{Registro de necesidades de stakeholders (StRS layer — ISO 29148 §9.3).}
 \label{tab:sn_register}
@@ -95,12 +101,12 @@ RF-006, COMM-REQ-001, COMM-REQ-004 \\ \hline
 
 \textbf{Actores principales (interacción directa):}
 \begin{itemize}
-    \item \textbf{A1) Rover Planner / Estación Terrena (GCS):} Envía comandos (uplink) y recibe telemetría (downlink) soportando el ciclo diario operacional. \cite{segoldmine_ppi, omg_sysml_mbse, nasa_cm}  
-    \item \textbf{A2) Entorno (Environment / Terreno Análogo):} Provee condiciones físicas (pendientes, obstáculos) y contingencias (eventos de slip $>$ 20\%) que disparan comportamientos. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+    \item \textbf{A1) Rover Planner / Estación Terrena (GCS):} Envía comandos (uplink) y recibe telemetría (downlink) soportando el ciclo diario operacional.
+    \item \textbf{A2) Entorno (Environment / Terreno Análogo):} Provee condiciones físicas (pendientes, obstáculos) y contingencias (eventos de deslizamiento/stall de encoder) que disparan comportamientos definidos en \S\ref{sec:requirements}.
 \end{itemize}
 
 \textbf{Sistemas externos de soporte:}
 \begin{itemize}
-    \item \textbf{E1) Infraestructura de comunicaciones:} Soporta el intercambio TM/CMD y el encapsulamiento CSP; su desempeño afecta la latencia. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-    \item \textbf{E2) Instrumentación del sitio:} Provee mediciones auxiliares y soporte de registro durante las pruebas del UC‑01. \cite{segoldmine_ppi, omg_sysml_mbse} 
+    \item \textbf{E1) Infraestructura de comunicaciones:} Soporta el intercambio TM/CMD y el encapsulamiento CSP; su desempeño afecta la latencia.
+    \item \textbf{E2) Instrumentación del sitio:} Provee mediciones auxiliares y soporte de registro durante las pruebas del UC‑01.
 \end{itemize}
