@@ -3,12 +3,12 @@
 
 \section{Concept of Operations (ConOps) Summary}\label{sec:conops}
 
-Esta sección resume el Concepto de Operaciones (ConOps) del Rover Olympus y establece cómo se emplea el sistema en el ciclo de vida operativo, con foco en la ejecución del UC‑01 (Exploración de superficie) como caso núcleo de validación en entornos análogos. \cite{segoldmine_ppi, nasa_cm, omg_sysml_mbse}  
-El ConOps resume fases de misión, escenarios nominales y contingencias, así como el patrón de interacción Tierra–Rover durante campañas en sitio análogo. El ciclo diario operacional (uplink → ejecución autónoma → downlink → hibernación/idle) se define en §\ref{subsec:daily_ops}. El entorno operacional y las restricciones del sitio análogo se documentan en §\ref{subsec:operational_environment} y §\ref{subsec:operational_constraints}, respectivamente. \cite{segoldmine_ppi, omg_sysml_mbse, nasa_cm}  
-El ConOps se utiliza como fuente primaria de derivación y justificación de requisitos (RF/RNF/CON) y como base para la planificación de Verificación y Validación (V\&V) del sistema, manteniendo trazabilidad hacia UC‑01 y los demás Casos de Uso top‑level. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
+Esta sección resume el Concepto de Operaciones (ConOps) del Rover Olympus y establece cómo se emplea el sistema en el ciclo de vida operativo, con foco en la ejecución del UC‑01 (Exploración de superficie) como caso núcleo de validación en entornos análogos.
+El ConOps resume fases de misión, escenarios nominales y contingencias, así como el patrón de interacción Tierra–Rover durante campañas en sitio análogo. El ciclo diario operacional (uplink → ejecución autónoma → downlink → hibernación/idle) se define en §\ref{subsec:daily_ops}. El entorno operacional y las restricciones del sitio análogo se documentan en §\ref{subsec:operational_environment} y §\ref{subsec:operational_constraints}, respectivamente.
+El ConOps se utiliza como fuente primaria de derivación y justificación de requisitos (RF/RNF/CON) y como base para la planificación de Verificación y Validación (V\&V) del sistema, manteniendo trazabilidad hacia UC‑01 y los demás Casos de Uso top‑level.
 
 \subsection{Mission Phases (Fases de la Misión)}\label{subsec:mission_phases}
-El ciclo de vida operativo se divide en seis fases críticas, desde el aterrizaje hasta el fin de la misión (EOM).
+El ciclo de vida operativo se divide en seis fases críticas, desde la inicialización en sitio análogo hasta el fin de la misión (EOM).
 
 \begin{figure}[H]
     \centering
@@ -16,7 +16,7 @@ El ciclo de vida operativo se divide en seis fases críticas, desde el aterrizaj
         \tikzstyle{phase} = [rectangle, draw, fill=blue!10, rounded corners, text width=3.5cm, align=center, minimum height=1cm, line width=1pt]
         \tikzstyle{arrow} = [thick,->,>=stealth]
     
-        \node [phase] (landing)    at (0,0)     {Fase 1: Aterrizaje y Estabilización};
+        \node [phase] (landing)    at (0,0)     {Fase 1: Inicialización y Estabilización};
         \node [phase] (deploy)     at (6,0)   {Fase 2: Despliegue y Salida};
         \node [phase] (commission) at (12,0)    {Fase 3: Comisionamiento};
         \node [phase] (ops)        at (6,-3)  {Fase 4: Operación Nominal};
@@ -32,17 +32,18 @@ El ciclo de vida operativo se divide en seis fases críticas, desde el aterrizaj
         \draw [arrow] (survival.south) -- ++(0,-0.5) -| (eom.east);
     \end{tikzpicture}
     \caption{Ciclo de vida de la misión y transiciones de fase.}
+    \label{fig:mission_phases}
 \end{figure}
 
-El ciclo de vida operativo del Rover Olympus se estructura en fases que permiten organizar modos, responsabilidades y criterios de preparación para la validación del UC‑01 en sitio análogo. Las fases se expresan como transiciones lógicas (no como “fases de vuelo” reales), ya que Olympus es una plataforma terrestre de validación. \cite{segoldmine_ppi, nasa_cm, omg_sysml_mbse}  
+El ciclo de vida operativo del Rover Olympus se estructura en fases (Fig.~\ref{fig:mission_phases}) que permiten organizar modos, responsabilidades y criterios de preparación para la validación del UC-01 en sitio análogo. Las fases se expresan como transiciones lógicas (no como \emph{fases de vuelo} reales), ya que Olympus es una plataforma terrestre de validación que emula el ciclo de una misión lunar de referencia conforme al Objetivo Específico 1 del TFG.
 
 \begin{itemize}
-    \item \textbf{Fase 1: Aterrizaje y Estabilización (análoga / inicialización):} Establecer condición “en superficie” y estabilidad del sistema (energía, cómputo, comunicación). \cite{segoldmine_ppi, omg_sysml_mbse}  
-    \item \textbf{Fase 2: Despliegue y Salida:} Habilitar subsistemas críticos (TRAC, PROP, COMMS, GNC, C\&DH) y preparar al rover para iniciar actividades en el entorno análogo. \cite{segoldmine_ppi, nasa_cm}  
-    \item \textbf{Fase 3: Comisionamiento:} Calibraciones, chequeos funcionales, verificación de interfaces internas/externas y pruebas previas a operación nominal (pre‑V\&V). \cite{segoldmine_ppi, nasa_cm}  
-    \item \textbf{Fase 4: Operación Nominal:} Ejecutar campañas de operación (incluyendo UC‑01 como caso principal), recolectar telemetría y evidencias V\&V, y operar bajo latencia simulada cuando aplique. \cite{segoldmine_ppi, nasa_cm, omg_sysml_mbse}  
-    \item \textbf{Fase 5: Supervivencia / Modo Seguro:} Preservar integridad del sistema ante condiciones adversas (p. ej., degradación de enlace, restricciones de energía, condiciones ambientales del sitio) y permitir recuperación a operación nominal cuando sea viable. \cite{segoldmine_ppi, nasa_cm}  
-    \item \textbf{Fase 6: Fin de Misión (EOM / Decommissioning):} Cierre controlado de la campaña y transición a un estado final (ver UC‑05 adaptado en §6.2). \cite{segoldmine_ppi, nasa_cm}  
+    \item \textbf{Fase 1: Inicialización y Estabilización} (análoga al ``Aterrizaje y Estabilización'' de la misión lunar de referencia): Establecer condición ``en superficie'' del rover en el sitio análogo y estabilidad del sistema (energía, cómputo, comunicación).
+    \item \textbf{Fase 2: Despliegue y Salida:} Habilitar subsistemas críticos (TRAC, PROP, COMMS, GNC, C\&DH) y preparar al rover para iniciar actividades en el entorno análogo.
+    \item \textbf{Fase 3: Comisionamiento:} Calibraciones, chequeos funcionales, verificación de interfaces internas/externas y pruebas previas a operación nominal (pre‑V\&V).
+    \item \textbf{Fase 4: Operación Nominal:} Ejecutar campañas de operación (incluyendo UC‑01 como caso principal), recolectar telemetría y evidencias V\&V, y operar bajo latencia simulada cuando aplique.
+    \item \textbf{Fase 5: Supervivencia / Modo Seguro:} Preservar integridad del sistema ante condiciones adversas (p. ej., degradación de enlace, restricciones de energía, condiciones ambientales del sitio) y permitir recuperación a operación nominal cuando sea viable.
+    \item \textbf{Fase 6: Fin de Misión (EOM / Decommissioning):} Cierre controlado de la campaña y transición a un estado final (ver UC-05 \emph{Safe Deactivation / Passivation} en \S\ref{sec:use_cases}).
 \end{itemize}
 
 \section{System Use Cases}\label{sec:use_cases}
@@ -441,13 +442,13 @@ Payload: anomaly\_type(\textbf{TBD}), bus\_id(\textbf{TBD}), measured\_values(\t
 
 \subsubsection{Daily Operations Cycle (Ciclo Diario)}\label{subsec:daily_ops}
 
-El ciclo diario operacional describe el patrón típico de interacción entre GCS (operador) y el Rover Olympus durante campañas en sitio análogo. \cite{segoldmine_ppi, omg_sysml_mbse, nasa_cm}  
+El ciclo diario operacional describe el patrón típico de interacción entre GCS (operador) y el Rover Olympus durante campañas en sitio análogo.
 
 \begin{enumerate}
-    \item \textbf{Uplink (Planificación / Comandos):} El operador envía objetivos o comandos de alto nivel (p. ej., meta/área a explorar) y parámetros de ejecución. \cite{segoldmine_ppi, nasa_cm}  
-    \item \textbf{Ejecución autónoma (ELANav):} El rover ejecuta navigation autónoma local (percepción, clasificación de transitabilidad, evitación, compensación de slip) y gestiona contingencias (fault stop, retorno a comunicación). \cite{segoldmine_ppi, nasa_cm, omg_sysml_mbse}  
-    \item \textbf{Downlink (Telemetría / Datos):} El rover transmite telemetría y datos de desempeño (logs, estados, métricas relevantes) para análisis posterior. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
-    \item \textbf{Hibernación / Idle:} El rover entra en un modo de bajo consumo o reposo operativo entre ventanas de actividad o condiciones del sitio. \cite{segoldmine_ppi, nasa_cm}  
+    \item \textbf{Uplink (Planificación / Comandos):} El operador envía objetivos o comandos de alto nivel (p. ej., meta/área a explorar) y parámetros de ejecución.
+    \item \textbf{Ejecución autónoma (ELANav):} El rover ejecuta navigation autónoma local (percepción, clasificación de transitabilidad, evitación, compensación de slip) y gestiona contingencias (fault stop, retorno a comunicación).
+    \item \textbf{Downlink (Telemetría / Datos):} El rover transmite telemetría y datos de desempeño (logs, estados, métricas relevantes) para análisis posterior.
+    \item \textbf{Hibernación / Idle:} El rover entra en un modo de bajo consumo o reposo operativo entre ventanas de actividad o condiciones del sitio.
 \end{enumerate}
 
 \begin{figure}[H]
@@ -488,8 +489,8 @@ Las siguientes restricciones operacionales describen condiciones específicas de
 
 
 \begin{enumerate}
-    \item \textbf{Geometría y mecánica del terreno:} Pendientes de hasta 20° y transiciones de suelo con obstáculos;estas condiciones pueden inducir slip y atascos (ver caracterización del entorno en §\ref{subsec:operational_environment}).\cite{segoldmine_ppi, nasa_cm, omg_sysml_mbse}  
-    \item \textbf{Iluminación y visibilidad:} Presencia de zonas de sombra o baja iluminación que afecta percepción visual y clasificación de transitabilidad (ver §\ref{subsec:operational_environment}). \cite{omg_sysml_mbse, segoldmine_ppi}  
-    \item \textbf{Comunicaciones con latencia simulada (CON‑002):} Inyección de latencia 0–5 s en el enlace para emular retardo operacional (ver §\ref{subsec:operational_environment} y CON-002 en requisitos). \cite{nasa_cm, segoldmine_ppi}  
-    \item \textbf{Condiciones de campaña “lab‑only” (CON‑001):} Marco operativo controlado donde la restricción energética se simplifica respecto a una misión espacial real (ver CON-001 en requisitos).. \cite{nasa_cm, segoldmine_ppi}  
+    \item \textbf{Geometría y mecánica del terreno:} Pendientes de hasta 20° y transiciones de suelo con obstáculos;estas condiciones pueden inducir slip y atascos (ver caracterización del entorno en §\ref{subsec:operational_environment}).
+    \item \textbf{Iluminación y visibilidad:} Presencia de zonas de sombra o baja iluminación que afecta percepción visual y clasificación de transitabilidad (ver §\ref{subsec:operational_environment}).
+    \item \textbf{Comunicaciones con latencia simulada (CON‑002):} Inyección de latencia 0–5 s en el enlace para emular retardo operacional (ver §\ref{subsec:operational_environment} y CON-002 en requisitos).
+    \item \textbf{Condiciones de campaña “lab‑only” (CON‑001):} Marco operativo controlado donde la restricción energética se simplifica respecto a una misión espacial real (ver CON-001 en requisitos)..
 \end{enumerate}
