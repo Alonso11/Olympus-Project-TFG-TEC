@@ -441,10 +441,10 @@ Payload: anomaly\_type(\textbf{TBD}), bus\_id(\textbf{TBD}), measured\_values(\t
 El ciclo diario operacional describe el patrón típico de interacción entre GCS (operador) y el Rover Olympus durante campañas en sitio análogo.
 
 \begin{enumerate}
-    \item \textbf{Uplink (Planificación / Comandos):} El operador envía objetivos o comandos de alto nivel (p. ej., meta/área a explorar) y parámetros de ejecución.
-    \item \textbf{Ejecución autónoma (ELANav):} El rover ejecuta navigation autónoma local (percepción, clasificación de transitabilidad, evitación, compensación de slip) y gestiona contingencias (fault stop, retorno a comunicación).
+    \item \textbf{Uplink (Planificación / Comandos):} El operador envía objetivos o comandos de alto nivel (p.\,ej., meta/área a explorar) y parámetros de ejecución.
+    \item \textbf{Ejecución autónoma:} El rover ejecuta navegación autónoma local (percepción, clasificación de transitabilidad, evitación de obstáculos, detección de slip y retracción) y gestiona contingencias (fault stop, retorno a comunicación). En la configuración actual de validación el stack de navegación es el del HLC de Olympus; en la integración prevista con el proyecto matriz será ejecutado por la biblioteca ELANav.
     \item \textbf{Downlink (Telemetría / Datos):} El rover transmite telemetría y datos de desempeño (logs, estados, métricas relevantes) para análisis posterior.
-    \item \textbf{Hibernación / Idle:} El rover entra en un modo de bajo consumo o reposo operativo entre ventanas de actividad o condiciones del sitio.
+    \item \textbf{Hibernación / Idle} \emph{[Conceptual --- modo de bajo consumo no implementado en la configuración actual; el rover retorna a Standby entre ventanas]:} reposo operativo previsto entre ventanas de actividad o condiciones del sitio.
 \end{enumerate}
 
 \begin{figure}[H]
@@ -459,11 +459,12 @@ El ciclo diario operacional describe el patrón típico de interacción entre GC
         \draw [thick,->] (sl.north) -- ++(0,0.5) -| (up.north);
     \end{tikzpicture}
     \caption{Ciclo diario típico: Interacción Tierra-Rover.}
+    \label{fig:daily_cycle}
 \end{figure}
 
 \subsubsection{Operational Context Diagram (Contexto Operacional)}\label{subsec:operational_context}
 
- El contexto operacional para UC-01 consolida las entidades externas y las interfaces principales durante operación en sitio análogo. La frontera del sistema y entidades externas se definen en §\ref{subsec:system_boundary}, y los actores/sistemas externos se detallan en §\ref{subsec:actors_systems}. Este diagrama resume dichas relaciones para facilitar la lectura del UC-01 y su interacción TM/CMD. [6, 3, 7]
+El contexto operacional para UC-01 consolida las entidades externas y las interfaces principales durante operación en sitio análogo. La frontera del sistema y entidades externas se definen en \S\ref{subsec:system_boundary}, y los actores/sistemas externos se detallan en \S\ref{subsec:actors_systems}. La Figura~\ref{fig:operational_context} resume dichas relaciones para facilitar la lectura del UC-01 y su interacción TM/CMD.
 
 \begin{figure}[H]
     \centering
@@ -477,6 +478,7 @@ El ciclo diario operacional describe el patrón típico de interacción entre GC
       \draw[<->, thick] (rov.west) -- (com.east) node[midway, above] {Link};
     \end{tikzpicture}
     \caption{Diagrama de contexto: Entidades externas e interfaces de misión.}
+    \label{fig:operational_context}
 \end{figure}
 
 \subsubsection{Operational Constraints in Analog Sites}\label{subsec:operational_constraints}
@@ -485,8 +487,8 @@ Las siguientes restricciones operacionales describen condiciones específicas de
 
 
 \begin{enumerate}
-    \item \textbf{Geometría y mecánica del terreno:} Pendientes de hasta 20° y transiciones de suelo con obstáculos;estas condiciones pueden inducir slip y atascos (ver caracterización del entorno en §\ref{subsec:operational_environment}).
+    \item \textbf{Geometría y mecánica del terreno:} Pendientes de hasta 20° y transiciones de suelo con obstáculos; estas condiciones pueden inducir slip y atascos (ver caracterización del entorno en \S\ref{subsec:operational_environment}).
     \item \textbf{Iluminación y visibilidad:} Presencia de zonas de sombra o baja iluminación que afecta percepción visual y clasificación de transitabilidad (ver §\ref{subsec:operational_environment}).
     \item \textbf{Comunicaciones con latencia simulada (CON‑002):} Inyección de latencia 0–5 s en el enlace para emular retardo operacional (ver §\ref{subsec:operational_environment} y CON-002 en requisitos).
-    \item \textbf{Condiciones de campaña “lab‑only” (CON‑001):} Marco operativo controlado donde la restricción energética se simplifica respecto a una misión espacial real (ver CON-001 en requisitos)..
+    \item \textbf{Condiciones de campaña ``lab-only'' (CON-001):} Marco operativo controlado donde la restricción energética se simplifica respecto a una misión espacial real (ver CON-001 en requisitos).
 \end{enumerate}
