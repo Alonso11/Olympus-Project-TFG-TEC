@@ -287,21 +287,27 @@ El estado compuesto \textit{Exploración activa} incluye un pseudoestado de \tex
 \end{figure}
 \end{landscape}
 
-\textbf{Estados top-level (modos de operación):}
+\textbf{Estados top-level (modos de operación):} El \emph{Master State Machine} del LLC define los siguientes \texttt{RoverState} (notación de implementación entre paréntesis):
 \begin{itemize}
-  \item \textbf{Standby}: modo de espera operacional; el rover permanece disponible para recibir programación o comandos. Ejecuta \texttt{do/ esperar\_cmd\_o\_schedule()}. \cite{UMLStateMachinesConcepts1}
-  \item \textbf{Exploración activa} (estado compuesto): agrupa el ciclo interno de exploración mediante subestados (Evaluar, Planificar, etc.), reduciendo complejidad mediante jerarquía. \cite{CompositeStates1,UMLStateMachinesConcepts2}
-  \item \textbf{HomingRetreat}: modo de retirada corta al último waypoint seguro (retreat), usado como respuesta a condiciones adversas. Incluye \texttt{entry/ seleccionar\_lastSafeWaypoint()} y \texttt{do/ navegar\_a\_lastSafeWaypoint(); evitar\_peligros()}. \cite{UMLStateMachinesConcepts2,SafeModeContext1}
-  \item \textbf{SafeMode}: modo de preservación (safing), prioriza seguridad del sistema, minimiza actividad no esencial y favorece diagnósticos y comunicación mínima; incluye acciones de \texttt{entry/} y \texttt{do/}. \cite{SafeModeContext1,UMLStateMachinesConcepts2}
-  \item \textbf{Final}: término del comportamiento modelado (fin de misión/operación). \cite{UMLStateMachinesConcepts2}
+  \item \textbf{Standby} (\texttt{Standby}): modo de espera operacional; el rover permanece disponible para recibir programación o comandos. Ejecuta \texttt{do/ esperar\_cmd\_o\_schedule()}. \cite{UMLStateMachinesConcepts1}
+  \item \textbf{Exploración activa} (\texttt{Explore}; estado compuesto): agrupa el ciclo interno de exploración mediante subestados (Evaluar, Planificar, etc.), reduciendo complejidad mediante jerarquía. \cite{CompositeStates1,UMLStateMachinesConcepts2}
+  \item \textbf{EvitarObstaculo} (\texttt{Avoid}): subestado de evitación reactiva activado cuando un sensor de proximidad detecta un obstáculo dentro del umbral de emergencia (\texttt{HC\_EMERGENCY\_MM = 200\,mm} o \texttt{TOF\_EMERGENCY\_MM = 150\,mm} en el LLC); ejecuta hard-stop y maniobra de desviación antes de retomar el ciclo. \cite{UMLStateMachinesConcepts2}
+  \item \textbf{Escalada} (\texttt{Climb}): modo de superación de obstáculos con umbrales relajados de proximidad (\texttt{CLB\_HC\_EMERGENCY\_MM = 60\,mm}, \texttt{CLB\_TOF\_EMERGENCY\_MM = 50\,mm}, \texttt{CLB\_STALL\_THRESHOLD = 150} ciclos) para superar rampas o rocas cercanas; activado por comando \texttt{CLB} del operador. \cite{UMLStateMachinesConcepts1}
+  \item \textbf{HomingRetreat} (\texttt{Retreat}): modo de retirada corta al último waypoint seguro; activado por detección de slip persistente (RF-004-R1: \texttt{SLIP\_STALL\_FRAMES = 2} en el HLC) o por comando \texttt{cmd\_homing\_retreat} del operador. Incluye \texttt{entry/ seleccionar\_lastSafeWaypoint()} y \texttt{do/ navegar\_a\_lastSafeWaypoint(); evitar\_peligros()}. \cite{UMLStateMachinesConcepts2,SafeModeContext1}
+  \item \textbf{SafeMode} (\texttt{Safe}): modo de preservación (safing); prioriza seguridad del sistema, minimiza actividad no esencial y favorece diagnósticos y comunicación mínima. Activado por anomalía de batería (LLC \texttt{batt\_mv < 12\,V}), temperatura ambiente $>$ \texttt{AMBIENT\_SAFE\_C}, EMC u otro fallo recuperable. \cite{SafeModeContext1,UMLStateMachinesConcepts2}
+  \item \textbf{Fault} (\texttt{Fault}): estado de falla crítica no recuperable; el rover detiene actuadores y emite telemetría mínima hasta orden de \texttt{RST} y diagnóstico off-line. Equivale al pseudoestado \emph{Final} en UML cuando no se prevé recuperación dentro de la misma campaña. \cite{UMLStateMachinesConcepts2}
 \end{itemize}
 
+\textbf{Dimensión paralela --- SafetyState:} Independientemente del \texttt{RoverState}, el LLC mantiene un \texttt{SafetyState} de cuatro niveles --- \texttt{Normal}, \texttt{Warn}, \texttt{Limit}, \texttt{FaultStall} --- que modula los límites operacionales (velocidad máxima permitida, agresividad de las rampas) sin cambiar de \texttt{RoverState}. Esta separación permite degradar el desempeño de forma gradual (p.\,ej., reducir velocidad al detectar sobrecorriente en un motor) antes de invocar SafeMode o Fault.
+
+% TODO: regenerar la figura maquina_lista.drawio.png para reflejar los 7 estados RoverState + dimensión SafetyState. La versión actual del diagrama muestra solo 5 estados (Standby, Exploración activa, HomingRetreat, SafeMode, Final).
+
 \textbf{Eventos y guardas (visión general):}
-Las transiciones se disparan por \textbf{eventos} (p.ej.,
+Las transiciones se disparan por \textbf{eventos} (p.\,ej.,
 \texttt{cmd\_\allowbreak start\_\allowbreak exploration},
 \texttt{link\_\allowbreak lost},
 \texttt{waypoint\_\allowbreak reached})
-y pueden estar condicionadas por \textbf{guardas} (p.ej.,
+y pueden estar condicionadas por \textbf{guardas} (p.\,ej.,
 \texttt{[severity\_\allowbreak allows\_\allowbreak retreat]},
 \texttt{[last\_\allowbreak safe\_\allowbreak waypoint\_\allowbreak known]},
 \texttt{[has\_\allowbreak data\_\allowbreak to\_\allowbreak send]}).
@@ -311,8 +317,9 @@ para evitar suposiciones no verificables.
 \cite{UMLStateMachinesConcepts2,UMLStateMachinesConcepts1}
 
 \paragraph{Diccionario de eventos (formal)}\label{para:uc01_events}
-Este diccionario define un \textbf{subconjunto inicial} de los eventos (triggers) utilizados por la máquina de estados del Rover Olympus para el caso de uso \textit{Exploración de superficie}. 
-La información se deriva del BDD (funciones por subsistema). 
+Este diccionario define un \textbf{subconjunto inicial} de los eventos (triggers) utilizados por la máquina de estados del Rover Olympus para el caso de uso \textit{Exploración de superficie}.
+La información se deriva del BDD (funciones por subsistema).
+Los eventos conceptuales aquí descritos se realizan a nivel de implementación sobre el protocolo ASCII del ICD rover--GCS (comandos \texttt{EXP}, \texttt{CLB}, \texttt{STB}, \texttt{RST}, entre otros), definido en \S\ref{sec:system_interfaces}.
 Los eventos se especifican como \textit{Command, Signal, Status, Fault, Time}. 
 Las condiciones cuantitativas (umbrales, timeouts, políticas) se marcan como \textbf{TBD} hasta disponer de requisitos verificables.
 Este diccionario se ampliará para cubrir la totalidad de eventos del diagrama (incluyendo \texttt{cmd\_end\_mission}, \texttt{cmd\_enter\_safe\_mode}, \texttt{energy\_critical}, eventos internos y eventos de recuperación/gestión de enlace). 
