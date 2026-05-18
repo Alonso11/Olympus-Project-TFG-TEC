@@ -3,31 +3,31 @@
 
 \section{System Interfaces}\label{sec:system_interfaces}
 
-Esta sección identifica y describe las interfaces del Rover Olympus tanto con entidades externas (GCS, entorno físico, infraestructura de comunicaciones) como entre sus subsistemas internos (C\&DH, GNC, EPS, PROP, TRAC, COMMS y STR). El objetivo es proporcionar una vista integradora de las interfaces necesarias para ejecutar los Casos de Uso top‑level, con foco en UC‑01 (Exploración de superficie), sin duplicar descripciones ya establecidas en el contexto (§4), actores (§5) y arquitectura (§8). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}
+Esta sección identifica y describe las interfaces del Rover Olympus tanto con entidades externas (GCS, entorno físico, infraestructura de comunicaciones) como entre sus subsistemas internos (C\&DH, GNC, EPS, PROP, TRAC, COMMS y STR). El objetivo es proporcionar una vista integradora de las interfaces necesarias para ejecutar los Casos de Uso top‑level, con foco en UC‑01 (Exploración de superficie), sin duplicar descripciones ya establecidas en el contexto (§4), actores (§5) y arquitectura (§8).
 
 Las interfaces se definen de manera autoritativa en el modelo MBSE del proyecto, particularmente en:
 \begin{itemize}
-    \item El Internal Block Diagram (IBD) físico del Rover Olympus, que detalla puertos, conectores y flujos de potencia/datos por subsistema. \cite{segoldmine_ppi, nasa_cm}
-    \item La matriz N2 de conectividad física (Cuadro 5), que resume los enlaces entre STR, TRAC, PROP, C\&DH, GNC, COMMS y EPS, incluyendo rutas de control, potencia, datos y montaje mecánico. \cite{omg_sysml_mbse, nasa_cm}
+    \item El Internal Block Diagram (IBD) físico del Rover Olympus, que detalla puertos, conectores y flujos de potencia/datos por subsistema.
+    \item La matriz N2 de conectividad física (Tab.~\ref{tab:n2_fisica}), que resume los enlaces entre STR, TRAC, PROP, C\&DH, GNC, COMMS y EPS, incluyendo rutas de control, potencia, datos y montaje mecánico.
 \end{itemize}
 
 Desde la perspectiva de integración, las interfaces del sistema se agrupan en cuatro categorías principales:
 \begin{enumerate}
-    \item \textbf{Bus de datos y comandos:} C\&DH como hub de telemetría y comandos, enlazando GNC (UART), COMMS (USB/UART), PROP y TRAC. \cite{nasa_cm, segoldmine_ppi}
-    \item \textbf{Enlaces específicos de control y sensado:} conexiones dedicadas GNC$\rightarrow$PROP (actuación), PROP$\rightarrow$GNC (realimentación opcional) y TRAC$\rightarrow$GNC (encoders/odometría) para la cadena de movilidad y navegación. \cite{omg_sysml_mbse, nasa_cm}
-    \item \textbf{Distribución y gestión de potencia:} canales dedicados EPS$\rightarrow$subsystems (C\&DH, GNC, PROP, TRAC, COMMS) y enlace de gestión de potencia EPS$\leftrightarrow$C\&DH para comandos y telemetría eléctrica. \cite{segoldmine_ppi, nasa_cm}
-    \item \textbf{Interfaces mecánicas:} STR como estructura de soporte y referencia geométrica, proporcionando puntos de montaje para sensores, actuadores, electrónica y fuentes de energía. \cite{omg_sysml_mbse, segoldmine_ppi}
+    \item \textbf{Bus de datos y comandos:} C\&DH como hub de telemetría y comandos, enlazando GNC (UART), COMMS (USB/UART), PROP y TRAC.
+    \item \textbf{Enlaces específicos de control y sensado:} conexiones dedicadas GNC$\rightarrow$PROP (actuación), PROP$\rightarrow$GNC (realimentación opcional) y TRAC$\rightarrow$GNC (encoders/odometría) para la cadena de movilidad y navegación.
+    \item \textbf{Distribución y gestión de potencia:} canales dedicados EPS$\rightarrow$subsystems (C\&DH, GNC, PROP, TRAC, COMMS) y enlace de gestión de potencia EPS$\leftrightarrow$C\&DH para comandos y telemetría eléctrica.
+    \item \textbf{Interfaces mecánicas:} STR como estructura de soporte y referencia geométrica, proporcionando puntos de montaje para sensores, actuadores, electrónica y fuentes de energía.
 \end{enumerate}
 
-El detalle cuantitativo (p.\ ej., tensiones nominales, corrientes máximas, tipos de conectores, asignación de pines) se gestiona en el modelo y/o ICDs específicos del proyecto, evitando mantener múltiples definiciones textuales en el SyRS que puedan divergir del baseline de integración. \cite{nasa_cm, segoldmine_ppi}
+El detalle cuantitativo (p.\ ej., tensiones nominales, corrientes máximas, tipos de conectores, asignación de pines) se gestiona en el modelo y/o ICDs específicos del proyecto, evitando mantener múltiples definiciones textuales en el SyRS que puedan divergir del baseline de integración.
 
 \subsection{External Interfaces}\label{subsec:external_interfaces}
 
-Las interfaces externas del Rover Olympus describen cómo el sistema intercambia información y energía con su entorno operacional y con la Estación Terrena (GCS). Estas interfaces se basan en el contexto y las entidades externas definidos en §4.3--§4.4 y §5.3, por lo que esta subsección se limita a consolidar los ``contratos'' relevantes para integración y V\&V, sin repetir la caracterización del entorno ni el ConOps. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}
+Las interfaces externas del Rover Olympus describen cómo el sistema intercambia información y energía con su entorno operacional y con la Estación Terrena (GCS). Estas interfaces se basan en el contexto y las entidades externas definidos en §4.3--§4.4 y §5.3, por lo que esta subsección se limita a consolidar los ``contratos'' relevantes para integración y V\&V, sin repetir la caracterización del entorno ni el ConOps.
 
 \subsubsection{Enlace Rover--GCS (TM/CMD)}
 
-El enlace de misión con la Estación Terrena (GCS) se utiliza para el intercambio de telemetría y comandos (TM/CMD) en soporte de UC‑01, UC‑02 y UC‑04. \cite{segoldmine_ppi, nasa_cm} A nivel de interfaz, se establece lo siguiente:
+El enlace de misión con la Estación Terrena (GCS) se utiliza para el intercambio de telemetría y comandos (TM/CMD) en soporte de UC‑01, UC‑02 y UC‑04. A nivel de interfaz, se establece lo siguiente:
 
 \begin{itemize}
     \item \textbf{Medios soportados.} El sistema dispone de dos medios:
@@ -36,64 +36,63 @@ El enlace de misión con la Estación Terrena (GCS) se utiliza para el intercamb
 
     \item \textbf{a) Wi-Fi 2.4\,GHz + UDP/IP + CSP (inalterado).}
     Transporte UDP/IP y encapsulamiento CSP. La latencia operacional se emula con
-    inyección 0--5\,s (CON‑002). Alcance objetivo: $\ge 50$\,m en LoS.
+    inyección 0--5\,s (CON-002 --- mecanismo de inyección pendiente de implementación en \texttt{gcs\_drive.py} o middleware CSP). Alcance objetivo: $\ge 50$\,m en LoS.
 
     \item \textbf{b) UHF + AX.25/\allowbreak KISS + CSP (añadido).}
     Capa de enlace AX.25 con modulación \textbf{GFSK 9600\,bps} sobre RF (430–440\,MHz);
     encapsulamiento KISS sobre enlace serie USB/\allowbreak UART entre OBC y TNC
     (\textbf{115200\,bps}, recomendado; TBD en campaña).
-    Encapsulamiento de misión CSP. Soporta \emph{RDP} para entrega fiable
-    y operación \emph{store-and-forward} mediante nodo retransmisor CSP
-    cuando la LoS está degradada.
+    Encapsulamiento de misión CSP. Soporta \emph{RDP} (implementado en el HLC, commit \texttt{cc881fb}) para entrega fiable.
+    La operación \emph{store-and-forward} mediante nodo retransmisor CSP es \emph{conceptual}: el stack HLC actual usa \texttt{csp\_if\_udp} nativo sin nodo relé implementado.
     \emph{Nota: 9600\,bps es la velocidad de modulación RF; el enlace serie
     OBC$\leftrightarrow$TNC opera a 115200\,bps.}
 \end{itemize}
 
-Los detalles de formato de paquete, direccionamiento lógico, códigos de servicio y definición completa de mensajes TM/CMD se mantienen en el ICD de comunicaciones del proyecto y en la implementación del stack CSP, evitando duplicar especificaciones en este SyRS. \cite{segoldmine_ppi, omg_sysml_mbse}
+Los detalles de formato de paquete, direccionamiento lógico, códigos de servicio y definición completa de mensajes TM/CMD se mantienen en el ICD de comunicaciones del proyecto y en la implementación del stack CSP, evitando duplicar especificaciones en este SyRS.
 
 \subsubsection{Interfaz con el entorno físico}
 
-El entorno físico (terreno volcánico/regolito simulado, pendientes, obstáculos, iluminación variable) se caracteriza en §4.4 y en las restricciones operacionales de sitio análogo en §7.3.11. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse} Desde la perspectiva de interfaces:
+El entorno físico (terreno volcánico/regolito simulado, pendientes, obstáculos, iluminación variable) se caracteriza en §4.4 y en las restricciones operacionales de sitio análogo en §7.3.11. Desde la perspectiva de interfaces:
 
 \begin{itemize}
-    \item El subsistema \textbf{TRAC} interactúa mecánicamente con el terreno mediante el conjunto ruedas/suspensión, recibiendo fuerzas de reacción que afectan estabilidad, slip y capacidad de maniobra. \cite{segoldmine_ppi, nasa_cm}
-    \item El subsistema \textbf{GNC} recibe entradas sensoriales derivadas del entorno (imágenes, aceleraciones, inclinaciones) a través de cámaras, IMU y otros sensores, lo que condiciona la percepción y la clasificación de transitabilidad. \cite{omg_sysml_mbse, nasa_cm}
-    \item El subsistema \textbf{STR} recibe cargas estáticas y dinámicas debidas al contacto con el terreno y a las maniobras del rover, actuando como interfaz mecánica global con el entorno. \cite{segoldmine_ppi, omg_sysml_mbse}
+    \item El subsistema \textbf{TRAC} interactúa mecánicamente con el terreno mediante el conjunto ruedas/suspensión, recibiendo fuerzas de reacción que afectan estabilidad, slip y capacidad de maniobra.
+    \item El subsistema \textbf{GNC} recibe entradas sensoriales derivadas del entorno (imágenes, aceleraciones, inclinaciones) a través de cámaras, IMU y otros sensores, lo que condiciona la percepción y la clasificación de transitabilidad.
+    \item El subsistema \textbf{STR} recibe cargas estáticas y dinámicas debidas al contacto con el terreno y a las maniobras del rover, actuando como interfaz mecánica global con el entorno.
 \end{itemize}
 
-Estas interacciones no se modelan como ``conectores eléctricos o de datos'' en la matriz N2, sino como excitaciones externas sobre STR/TRAC/GNC que se consideran explícitamente al definir requisitos estructurales, de movilidad y de percepción. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}
+Estas interacciones no se modelan como ``conectores eléctricos o de datos'' en la matriz N2, sino como excitaciones externas sobre STR/TRAC/GNC que se consideran explícitamente al definir requisitos estructurales, de movilidad y de percepción.
 
 \subsection{User Interfaces}\label{subsec:user_interfaces}
 
-La interfaz de usuario del Rover Olympus se realiza de forma indirecta a través de la Estación Terrena (GCS), operada por la clase de usuario \textbf{U1 -- Rover Planner / Ground Operator} definida en §5.2. \cite{nasa_cm, segoldmine_ppi} Desde la perspectiva del sistema, el GCS se trata como un sistema externo que:
+La interfaz de usuario del Rover Olympus se realiza de forma indirecta a través de la Estación Terrena (GCS), operada por la clase de usuario \textbf{U1 -- Rover Planner / Ground Operator} definida en §5.2. Desde la perspectiva del sistema, el GCS se trata como un sistema externo que:
 
 \begin{itemize}
-    \item Permite al operador emitir comandos y objetivos de alto nivel (p.\ ej., iniciar/pausar UC‑01, definir zona objetivo, solicitar homing) que se traducen en TM/CMD encapsulados en CSP hacia COMM/C\&DH. \cite{segoldmine_ppi, nasa_cm}
-    \item Presenta al usuario telemetría de estado del rover (salud de subsistemas, modo operativo, conectividad) y productos de misión (datos científicos, logs de navegación) recibidos desde C\&DH vía enlace Rover–GCS. \cite{omg_sysml_mbse, nasa_cm}
-    \item Gestiona el registro y exportación de datos para análisis y soporte de V\&V, sin que la lógica interna de esta herramienta (p.\ ej., diseño GUI) forme parte del alcance funcional del Rover Olympus. \cite{nasa_cm, segoldmine_ppi}
+    \item Permite al operador emitir comandos y objetivos de alto nivel (p.\ ej., iniciar/pausar UC‑01, definir zona objetivo, solicitar homing) que se traducen en TM/CMD encapsulados en CSP hacia COMM/C\&DH.
+    \item Presenta al usuario telemetría de estado del rover (salud de subsistemas, modo operativo, conectividad) y productos de misión (datos científicos, logs de navegación) recibidos desde C\&DH vía enlace Rover–GCS.
+    \item Gestiona el registro y exportación de datos para análisis y soporte de V\&V, sin que la lógica interna de esta herramienta (p.\ ej., diseño GUI) forme parte del alcance funcional del Rover Olympus.
 \end{itemize}
 
-Este SyRS no impone requisitos de diseño gráfico ni de interacción detallada sobre la interfaz del GCS; únicamente especifica el contenido y las propiedades de los mensajes intercambiados (ver §9.1 y RF‑006), junto con las necesidades de visibilidad del operador descritas en §5.2 y en el ConOps. \cite{segoldmine_ppi, omg_sysml_mbse}
+Este SyRS no impone requisitos de diseño gráfico ni de interacción detallada sobre la interfaz del GCS; únicamente especifica el contenido y las propiedades de los mensajes intercambiados (ver §9.1 y RF‑006), junto con las necesidades de visibilidad del operador descritas en §5.2 y en el ConOps.
 
 \subsection{Hardware Interfaces}\label{subsec:hardware_interfaces}
 
-Las interfaces de hardware internas definen cómo C\&DH, GNC, EPS, PROP, TRAC, COMMS y STR se conectan a través de buses y enlaces físicos, en coherencia con la arquitectura física y la matriz N2 del sistema (Cuadro 5). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi} El detalle de puertos concretos, conectores y asignación de pines se mantiene en el PBS/ASM y en los documentos de integración física, por lo que aquí se presenta únicamente un resumen de los tipos de interfaz y su rol:
+Las interfaces de hardware internas definen cómo C\&DH, GNC, EPS, PROP, TRAC, COMMS y STR se conectan a través de buses y enlaces físicos, en coherencia con la arquitectura física y la matriz N2 del sistema (Tab.~\ref{tab:n2_fisica}). El detalle de puertos concretos, conectores y asignación de pines se mantiene en el PBS/ASM y en los documentos de integración física, por lo que aquí se presenta únicamente un resumen de los tipos de interfaz y su rol:
 
 \begin{itemize}
-    \item \textbf{I2C:} Bus para sensores y módulos de monitoreo. Dos instancias principales: (a) \textbf{hardware I2C en RPi\,5} para IMU y otros periféricos de alto nivel (C\&DH/GNC); (b) \textbf{Soft-I2C en Arduino Mega} (pines D42/D43) para VL53L0X (ToF) e INA226 (corriente motores), cuyo resultado se reporta vía TLM LLC. La INA219/INA226 de EPS conecta a C\&DH. \cite{nasa_cm, segoldmine_ppi}
-    \item \textbf{GPIO:} Líneas digitales para señales discretas de control, triggers y sensores específicos (p.\ ej., Trigger/Echo para el HC-SR04), conectando la MCU con el hardware de bajo nivel. \cite{omg_sysml_mbse, nasa_cm}
-    \item \textbf{CSI‑2:} Interfaz de cámara conectada \textbf{directamente a la RPi\,5 (C\&DH/OBC)}; no pasa por el MCU Arduino. Utilizada por la capa GNC (ELANav, lógica de percepción) para adquirir imágenes frontales y soportar RF‑001 (Percepción Visual). El ICD específico de la cámara (pinout CSI‑2, formato de frame, parámetros de la cámara IMX219) queda fuera del scope de ICD-LLC-001 y se documenta en la especificación de hardware de C\&DH/GNC. \cite{segoldmine_ppi, omg_sysml_mbse}
-    \item \textbf{PWM:} Señales de modulación de ancho de pulso generadas por el MCU Arduino Mega (según comandos de C\&DH vía LLC) hacia drivers de PROP para el control de velocidad/torque de los motores, implementando la cadena de movilidad en soporte de RF‑003 y RF‑005. \cite{nasa_cm, segoldmine_ppi}
-    \item \textbf{UART:} Enlaces serie para comunicación entre la OBC (Raspberry Pi) y la MCU (Arduino Mega), así como para módulos de comunicación o periféricos (p.\ ej., radio), típicamente entre C\&DH, COMMS y otros sensores/actuadores según la definición del PBS/ASM. \cite{omg_sysml_mbse, nasa_cm}
+    \item \textbf{I2C:} Bus para sensores y módulos de monitoreo. Dos instancias principales: (a) \textbf{hardware I2C en RPi\,5} para periféricos de alto nivel del HLC (C\&DH/GNC); (b) \textbf{Soft-I2C en Arduino Mega} (pines D42/D43, bit-bang para evitar conflicto con el TWI hardware D20/D21 usado por las interrupciones de encoder INT0/INT1) que comparten tres sensores: VL53L0X (ToF frontal, 0x29), INA3221 (monitoreo de tensión de 3 bancos de batería, 0x40, modo bus-only) y MPU-6050 (IMU 6 ejes, 0x68). Los resultados se reportan vía TLM LLC.
+    \item \textbf{GPIO:} Líneas digitales para señales discretas de control, triggers y sensores específicos (p.\ ej., Trigger/Echo para el HC-SR04), conectando la MCU con el hardware de bajo nivel.
+    \item \textbf{CSI-2:} Interfaz de cámara conectada \textbf{directamente a la RPi\,5 (C\&DH/OBC)}; no pasa por el MCU Arduino. Utilizada por la capa GNC para adquirir imágenes frontales y soportar RF-001 (Percepción Visual). El sensor actual es OV5647 en CAM1; el ICD específico de la cámara (pinout CSI-2, formato de frame, parámetros del sensor) queda fuera del scope de ICD-LLC-001 y se documenta en la especificación de hardware de C\&DH/GNC.
+    \item \textbf{PWM:} Señales de modulación de ancho de pulso generadas por el MCU Arduino Mega (según comandos de C\&DH vía LLC) hacia drivers de PROP para el control de velocidad/torque de los motores, implementando la cadena de movilidad en soporte de RF‑003 y RF‑005.
+    \item \textbf{UART:} Enlaces serie para comunicación entre la OBC (Raspberry Pi) y la MCU (Arduino Mega), así como para módulos de comunicación o periféricos (p.\ ej., radio), típicamente entre C\&DH, COMMS y otros sensores/actuadores según la definición del PBS/ASM.
     \item \textbf{USB:} Interfaz principal para la conexión entre la OBC y el TNC (KISS), permitiendo un canal de datos robusto para el enlace UHF.
-    \item \textbf{Distribución de potencia DC:} Canales dedicados desde EPS hacia C\&DH, GNC, PROP, TRAC y COMMS, con niveles de tensión definidos (p.\ ej., 4S Li‑ion/LiFePO$_4$ a convertidores DC‑DC 5\,V/12\,V), protecciones asociadas (BMS, fusibles) y mecanismos de aislamiento. \cite{segoldmine_ppi, nasa_cm}
+    \item \textbf{Distribución de potencia DC:} Canales dedicados desde EPS hacia C\&DH, GNC, PROP, TRAC y COMMS, con niveles de tensión 5\,V/12\,V provistos por convertidores DC-DC desde tres bancos de batería independientes monitoreados por INA3221 (modo bus-only). Protecciones asociadas (fusibles 10\,A por banco) y mecanismos de aislamiento mediante relés conmutados por el LLC (pines D40/D41 \emph{active-low}; ver \texttt{relay.rs}).
 \end{itemize}
 
-La matriz N2 (Cuadro 5) consolida la asignación de estos buses por par de subsistemas (FROM/TO), indicando para cada celda si la conexión es de control/actuación, potencia, datos, housekeeping o mecánica. Para las interfaces \texttt{[PWR]} e \texttt{[HK]}, la matriz se extenderá para incluir: voltaje nominal y tolerancia, corriente máxima y derating, tipo de conector/pines, y fusible/breaker asociado (p.\ ej., ``EPS $\rightarrow$ PROP: \texttt{[PWR]} 12\,V $\pm$ 5\%; $I_{\max}=8$\,A, fusible 10\,A, conector XT30; línea supervisada por INA219''). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi} El modelo SysML (IBD físico) es la referencia de diseño de hardware, y este SyRS se limita a exigir que las interfaces resultantes sean identificables, consistentes con la arquitectura y verificables vía V\&V. \cite{nasa_cm, segoldmine_ppi}
+La matriz N2 (Tab.~\ref{tab:n2_fisica}) consolida la asignación de estos buses por par de subsistemas (FROM/TO), indicando para cada celda si la conexión es de control/actuación, potencia, datos, housekeeping o mecánica. Para las interfaces \texttt{[PWR]} e \texttt{[HK]}, la matriz se extenderá para incluir: voltaje nominal y tolerancia, corriente máxima y derating, tipo de conector/pines, y fusible/breaker asociado (p.\ ej., ``EPS $\rightarrow$ PROP: \texttt{[PWR]} 12\,V $\pm$ 5\%; $I_{\max}=8$\,A, fusible 10\,A, conector XT30; línea supervisada por INA219''). El modelo SysML (IBD físico) es la referencia de diseño de hardware, y este SyRS se limita a exigir que las interfaces resultantes sean identificables, consistentes con la arquitectura y verificables vía V\&V.
 
 \subsection{Software Interfaces}\label{subsec:software_interfaces}
 
-Las interfaces de software describen los protocolos y mecanismos lógicos que gobiernan el intercambio de información entre el Rover Olympus y el GCS, así como entre módulos de software a bordo (agentes de ELANav y servicios de sistema). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}
+Las interfaces de software describen los protocolos y mecanismos lógicos que gobiernan el intercambio de información entre el Rover Olympus y el GCS, así como entre módulos de software a bordo (stack de navegación del HLC y servicios de sistema; integración futura con la biblioteca ELANav).
 
 \subsubsection{Interfaz Rover–GCS (software)}
 
@@ -105,53 +104,53 @@ En el plano lógico, la interfaz Rover–GCS se basa en:
     en C\&DH. La ruta se gobierna por política RDP (timeouts, reintentos) y
     la tabla CSP; si falla el directo, se emplea el retransmisor.
 
-    \item \textbf{Tipos de mensaje:} Se contemplan, al menos, mensajes de configuración de misión (objetivos, parámetros), comandos de modo (start/pause/homing/safe), telemetría de salud y datos de misión (logs, métricas, productos de percepción), tal como se define en el ICD de comunicaciones. \cite{nasa_cm, segoldmine_ppi}
-    \item \textbf{Latencia inyectada:} La lógica de enlace incorpora un mecanismo de inyección de latencia 0--5 s (CON‑002), transparente a la aplicación, para reproducir condiciones de enlace remoto en la validación. \cite{segoldmine_ppi, omg_sysml_mbse}
+    \item \textbf{Tipos de mensaje:} Se contemplan, al menos, mensajes de configuración de misión (objetivos, parámetros), comandos de modo (start/pause/homing/safe), telemetría de salud y datos de misión (logs, métricas, productos de percepción), tal como se define en el ICD de comunicaciones.
+    \item \textbf{Latencia inyectada:} La lógica de enlace incorpora un mecanismo de inyección de latencia 0--5 s (CON‑002), transparente a la aplicación, para reproducir condiciones de enlace remoto en la validación.
 \end{itemize}
 
 
 \subsubsection{Interfaces internas de software a bordo}
 
-A bordo del rover, la ejecución de ELANav y de los servicios de sistema (telemetría, gestión de potencia, FDIR) se realiza sobre un stack Linux embebido ejecutándose en C\&DH/GNC, conforme a las suposiciones de §4.5. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse} Desde la perspectiva de interfaces:
+A bordo del rover, la ejecución del stack de navegación del HLC (Olympus HLC actual; integración futura con la biblioteca ELANav) y de los servicios de sistema (telemetría, gestión de potencia, FDIR) se realiza sobre un stack Linux embebido ejecutándose en C\&DH/GNC, conforme a las suposiciones de \S\ref{subsec:assumptions}. Desde la perspectiva de interfaces:
 
 \begin{itemize}
-    \item Los agentes internos (percepción, clasificación de transitabilidad, planificación, control, registro de datos) se comunican mediante mecanismos de IPC proporcionados por el sistema operativo (p.\ ej., sockets, colas de mensajes, middleware), pero este SyRS no fija una tecnología específica (ROS, ZeroMQ, etc.), sino los requisitos de desempeño asociados. \cite{omg_sysml_mbse, nasa_cm}
-    \item \textbf{RNF‑001} impone una latencia máxima de procesamiento de $\le$ 2 s por ciclo de agente, lo que limita la suma de retardos en las interfaces internas de software (sensado $\rightarrow$ percepción $\rightarrow$ decisión $\rightarrow$ comando). \cite{nasa_cm, segoldmine_ppi}
-    \item \textbf{RNF‑002} (resiliencia de recuperación) y \textbf{RF‑005} (Fault Stop) condicionan la lógica de FDIR, requiriendo que las interfaces internas permitan detectar y propagar eventos de falla (p.\ ej., slip alto, anomalías de potencia) en tiempo compatible con la protección del sistema. \cite{segoldmine_ppi, omg_sysml_mbse}
+    \item Los agentes internos (percepción, clasificación de transitabilidad, planificación, control, registro de datos) se comunican mediante mecanismos de IPC proporcionados por el sistema operativo (p.\ ej., sockets, colas de mensajes, middleware), pero este SyRS no fija una tecnología específica (ROS, ZeroMQ, etc.), sino los requisitos de desempeño asociados.
+    \item \textbf{RNF‑001} impone una latencia máxima de procesamiento de $\le$ 2 s por ciclo de agente, lo que limita la suma de retardos en las interfaces internas de software (sensado $\rightarrow$ percepción $\rightarrow$ decisión $\rightarrow$ comando).
+    \item \textbf{RNF‑002} (resiliencia de recuperación) y \textbf{RF‑005} (Fault Stop) condicionan la lógica de FDIR, requiriendo que las interfaces internas permitan detectar y propagar eventos de falla (p.\ ej., slip alto, anomalías de potencia) en tiempo compatible con la protección del sistema.
 \end{itemize}
 
-Los contratos detallados entre módulos internos (definición de tópicos, tipos de mensajes, APIs) se consideran parte del diseño de software y se gestionan en artefactos específicos del proyecto, manteniendo su trazabilidad con los requisitos RF/RNF/CON pertinentes. \cite{nasa_cm, segoldmine_ppi}
+Los contratos detallados entre módulos internos (definición de tópicos, tipos de mensajes, APIs) se consideran parte del diseño de software y se gestionan en artefactos específicos del proyecto, manteniendo su trazabilidad con los requisitos RF/RNF/CON pertinentes.
 
 \subsection{Internal Interfaces}\label{subsec:internal_interfaces}
 
-Las interfaces internas del Rover Olympus consolidan las relaciones entre subsistemas descritas en la arquitectura funcional y física (§8) y materializadas en el IBD físico y la matriz N2 (Cuadro 5). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi} Desde la perspectiva de integración y V\&V, los enlaces clave son:
+Las interfaces internas del Rover Olympus consolidan las relaciones entre subsistemas descritas en la arquitectura funcional y física (§8) y materializadas en el IBD físico y la matriz N2 (Tab.~\ref{tab:n2_fisica}). Desde la perspectiva de integración y V\&V, los enlaces clave son:
 
 \begin{itemize}
     \item \textbf{C\&DH como hub de datos y comandos:}
     \begin{itemize}
-        \item Enlaces de datos C\&DH$\leftrightarrow$GNC (UART) y C\&DH$\leftrightarrow$COMMS (USB/UART), que soportan el ruteo de TM/CMD y telemetría, en cumplimiento de RF‑006 y RNF‑001. \cite{segoldmine_ppi, nasa_cm}
-        \item Enlaces de diagnóstico C\&DH$\leftrightarrow$PROP y C\&DH$\leftrightarrow$TRAC para monitorear estados de actuadores y tren de rodaje. \cite{omg_sysml_mbse, nasa_cm}
+        \item Enlaces de datos C\&DH$\leftrightarrow$GNC (UART) y C\&DH$\leftrightarrow$COMMS (USB/UART), que soportan el ruteo de TM/CMD y telemetría, en cumplimiento de RF‑006 y RNF‑001.
+        \item Enlaces de diagnóstico C\&DH$\leftrightarrow$PROP y C\&DH$\leftrightarrow$TRAC para monitorear estados de actuadores y tren de rodaje.
     \end{itemize}
     \item \textbf{Cadena de movilidad y navegación:}
     \begin{itemize}
-        \item GNC$\rightarrow$PROP: Comandos de actuación (p.\ ej., setpoints de velocidad/torque) que implementan la navegación autónoma y las funciones de evitación de obstáculos (RF‑003) y compensación de slip (RF‑004). \cite{nasa_cm, segoldmine_ppi}
-        \item PROP$\rightarrow$TRAC: Transmisión del torque eléctrico a las ruedas, materializada físicamente por la interfaz mecánica entre motores y tren de rodaje. \cite{omg_sysml_mbse, segoldmine_ppi}
-        \item TRAC$\rightarrow$GNC: Realimentación de encoders/odometría hacia GNC para estimación de estado y cálculo de slip, en soporte de RF‑004. \cite{segoldmine_ppi, nasa_cm}
+        \item GNC$\rightarrow$PROP: Comandos de actuación (p.\ ej., setpoints de velocidad/torque) que implementan la navegación autónoma y las funciones de evitación de obstáculos (RF‑003) y compensación de slip (RF‑004).
+        \item PROP$\rightarrow$TRAC: Transmisión del torque eléctrico a las ruedas, materializada físicamente por la interfaz mecánica entre motores y tren de rodaje.
+        \item TRAC$\rightarrow$GNC: Realimentación de encoders/odometría hacia GNC para estimación de estado y cálculo de slip, en soporte de RF‑004.
     \end{itemize}
     \item \textbf{Gestión de potencia EPS$\leftrightarrow$subsystems:}
     \begin{itemize}
-        \item EPS$\rightarrow$C\&DH/GNC/PROP/TRAC/COMMS: Canales de potencia dedicados, con protecciones y segmentación acordes con EPS‑REQ‑001/002 y CON‑001. \cite{nasa_cm, segoldmine_ppi}
-        \item EPS$\leftrightarrow$C\&DH: Interfaz de gestión y telemetría de potencia que permite a C\&DH monitorizar el estado energético y ejecutar políticas de desconexión/reducción de carga, en coherencia con RNF‑002 y RF‑005. \cite{omg_sysml_mbse, nasa_cm}
+        \item EPS$\rightarrow$C\&DH/GNC/PROP/TRAC/COMMS: Canales de potencia dedicados, con protecciones y segmentación acordes con EPS‑REQ‑001/002 y CON‑001.
+        \item EPS$\leftrightarrow$C\&DH: Interfaz de gestión y telemetría de potencia que permite a C\&DH monitorizar el estado energético y ejecutar políticas de desconexión/reducción de carga, en coherencia con RNF‑002 y RF‑005.
     \end{itemize}
     \item \textbf{Interfaces mecánicas STR$\leftrightarrow$otros subsistemas:}
     \begin{itemize}
-        \item STR proporciona soporte y referencia para la integración física de todos los subsistemas, incluyendo el montaje de sensores de GNC (cámaras, IMU), electrónica C\&DH/EPS y elementos de COMMS (antenas), conforme a los requisitos estructurales STR‑REQ‑001/002 y a la caracterización del entorno análogo. \cite{segoldmine_ppi, nasa_cm, omg_sysml_mbse}
+        \item STR proporciona soporte y referencia para la integración física de todos los subsistemas, incluyendo el montaje de sensores de GNC (cámaras, IMU), electrónica C\&DH/EPS y elementos de COMMS (antenas), conforme a los requisitos estructurales STR‑REQ‑001/002 y a la caracterización del entorno análogo.
     \end{itemize}
 \end{itemize}
 
 En lugar de repetir descripciones detalladas de cada conector, esta sección se apoya en el IBD físico y en la matriz N2 como fuente autoritativa de las interfaces internas, y garantiza que:
 (i) cada interfaz relevante está identificada y trazada a uno o más requisitos RF/RNF/CON, y
-(ii) existe un camino claro hacia su verificación mediante los métodos T/A/D/I definidos en la estrategia de V\&V (§12). \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}
+(ii) existe un camino claro hacia su verificación mediante los métodos T/A/D/I definidos en la estrategia de V\&V (§12).
 
 \begin{landscape}
 \scriptsize
