@@ -123,7 +123,7 @@ Los contratos detallados entre módulos internos (definición de tópicos, tipos
 
 \subsection{Internal Interfaces}\label{subsec:internal_interfaces}
 
-Las interfaces internas del Rover Olympus consolidan las relaciones entre subsistemas descritas en la arquitectura funcional y física (§8) y materializadas en el IBD físico y la matriz N2 (Tab.~\ref{tab:n2_fisica}). Desde la perspectiva de integración y V\&V, los enlaces clave son:
+Las interfaces internas del Rover Olympus consolidan las relaciones entre subsistemas descritas en la arquitectura funcional y física (\S\ref{sec:architecture}) y materializadas en el IBD físico y la matriz N2 (Tab.~\ref{tab:n2_fisica}). Desde la perspectiva de integración y V\&V, los enlaces clave son:
 
 \begin{itemize}
     \item \textbf{C\&DH como hub de datos y comandos:}
@@ -150,7 +150,7 @@ Las interfaces internas del Rover Olympus consolidan las relaciones entre subsis
 
 En lugar de repetir descripciones detalladas de cada conector, esta sección se apoya en el IBD físico y en la matriz N2 como fuente autoritativa de las interfaces internas, y garantiza que:
 (i) cada interfaz relevante está identificada y trazada a uno o más requisitos RF/RNF/CON, y
-(ii) existe un camino claro hacia su verificación mediante los métodos T/A/D/I definidos en la estrategia de V\&V (§12).
+(ii) existe un camino claro hacia su verificación mediante los métodos T/A/D/I definidos en la estrategia de V\&V (\S\ref{sec:vv}).
 
 \begin{landscape}
 \scriptsize
@@ -188,32 +188,34 @@ En lugar de repetir descripciones detalladas de cada conector, esta sección se 
 \textbf{PROP}\par(Drivers / Motores) & \textbf{[MEC]} Montaje/ disipación drivers y motores & \textbf{[MEC]} Salida mecánica (H‑bridge $\rightarrow$ ruedas) & --- & \textbf{[CTRL]} Control de actuador desde C\&DH (PWM+DIR / UART) & \textbf{[CTRL]} Actuación desde GNC (setpoints de velocidad/ torque vía PWM) & --- & \textbf{[PWR]} Canal de potencia a drivers/motores \\ \hline
 
 % C&DH Row
-\textbf{C\&DH}\par(RPi 5 / OBC) & \textbf{[MEC]} Integración en avionics bay & \textbf{[DATA]} Diagnóstico/ estados TRAC (estado tren de rodaje) & \textbf{[CTRL]} Señales de control auxiliar actuadores (PWM/DIR por UART) & --- & \textbf{[DATA]} Enlace UART GNC (MCU)$\leftrightarrow$C\&DH + comandos/ telemetría específicos & \textbf{[DATA]} Enlace USB (TNC)$\leftrightarrow$C\&DH (KISS) y UART auxiliar & \textbf{[HK]} Medición/gestión de potencia (I$^2$C/SPI/UART hacia INA219 u otros) \\ \hline
+\textbf{C\&DH}\par(RPi 5 / OBC) & \textbf{[MEC]} Integración en avionics bay & \textbf{[DATA]} Diagnóstico/ estados TRAC (estado tren de rodaje) & \textbf{[CTRL]} Señales de control auxiliar actuadores (PWM/DIR por UART) & --- & \textbf{[DATA]} Enlace UART GNC (MCU)$\leftrightarrow$C\&DH + comandos/ telemetría específicos & \textbf{[DATA]} Enlace USB (TNC)$\leftrightarrow$C\&DH (KISS) y UART auxiliar & \textbf{[HK]} Medición/gestión de potencia (Soft-I$^2$C hacia INA3221 multi-banco; otros sensores I$^2$C según necesidad) \\ \hline
 
 % GNC Row
-\textbf{GNC}\par(IMU / Cámaras / Proc. / HC-SR04 / LiDAR) & \textbf{[MEC]} Montaje y alineación de sensores en STR & \textbf{[DATA]} Sensores de movilidad (encoders, ultrasónico, LiDAR, estado suspensión) & \textbf{[CTRL]} Comandos de actuación a PROP (pActuationOut; PWM) & \textbf{[DATA]} Intercambio de datos con C\&DH (UART GNC$\leftrightarrow$C\&DH + cfg/tlm) & --- & --- & \textbf{[PWR]} Alimentación GNC (canal dedicado 5\,V/3.3\,V DC) \\ \hline
+\textbf{GNC}\par(MPU-6050 IMU / OV5647 cámara / RPi5 proc. / HC-SR04 US / VL53L0X ToF / TF02 LiDAR) & \textbf{[MEC]} Montaje y alineación de sensores en STR & \textbf{[DATA]} Sensores de movilidad (encoders, ultrasónico, LiDAR, estado suspensión) & \textbf{[CTRL]} Comandos de actuación a PROP (pActuationOut; PWM) & \textbf{[DATA]} Intercambio de datos con C\&DH (UART GNC$\leftrightarrow$C\&DH + cfg/tlm) & --- & --- & \textbf{[PWR]} Alimentación GNC (canal dedicado 5\,V/3.3\,V DC) \\ \hline
 
 % COMMS Row
 \textbf{COMMS}\par(Radio / FPV) & \textbf{[MEC]} Montaje / orientación de antenas & --- & --- & \textbf{[DATA]} TM/CMD Rover--GCS vía C\&DH (USB/UART/SPI, según radio) & --- & --- & \textbf{[PWR]} Alimentación COMMS (5--12\,V DC según radio) \\ \hline
 
 % EPS Row
-\textbf{EPS}\par(18650 + BMS + DC/DC + PDU) & \textbf{[MEC]} Montaje de baterías, PDU y protecciones & \textbf{[PWR]} Canal TRAC (pPowerChannel\_TRAC) \newline \textbf{[HK]} Medición corriente y tensión (V/I) hacia C\&DH (I$^2$C, p.\ ej., INA219) & \textbf{[PWR]} Canal PROP (pPowerChannel\_PROP) \newline \textbf{[HK]} Supervisión potencia motores (sensores internos/ externa, si aplica) & \textbf{[PWR]} 5\,V DC regulado (rail C\&DH + GND) \newline \textbf{[HK]} Telemetría de potencia (pTlmPowerOut $\rightarrow$ C\&DH) & \textbf{[PWR]} Canal GNC (pPowerChannel\_GNC) \newline \textbf{[HK]} Telemetría de potencia hacia EPS/C\&DH (canal común) & \textbf{[PWR]} Canal COMMS (pPowerChannel\_COMMS) \newline \textbf{[HK]} Telemetría de potencia hacia EPS/C\&DH (canal común) & --- \\ \hline
+\textbf{EPS}\par(18650 NMC, 3 bancos / DC-DC 5\,V \& 12\,V / relés conmutados por LLC) & \textbf{[MEC]} Montaje de baterías, PDU y protecciones & \textbf{[PWR]} Canal TRAC (pPowerChannel\_TRAC) \newline \textbf{[HK]} Medición de tensión multi-banco (Soft-I$^2$C INA3221 modo bus-only); corriente de motor por ACS712 por canal hacia el LLC (ADC) & \textbf{[PWR]} Canal PROP (pPowerChannel\_PROP) \newline \textbf{[HK]} Supervisión potencia motores (sensores internos/ externa, si aplica) & \textbf{[PWR]} 5\,V DC regulado (rail C\&DH + GND) \newline \textbf{[HK]} Telemetría de potencia (pTlmPowerOut $\rightarrow$ C\&DH) & \textbf{[PWR]} Canal GNC (pPowerChannel\_GNC) \newline \textbf{[HK]} Telemetría de potencia hacia EPS/C\&DH (canal común) & \textbf{[PWR]} Canal COMMS (pPowerChannel\_COMMS) \newline \textbf{[HK]} Telemetría de potencia hacia EPS/C\&DH (canal común) & --- \\ \hline
 
 \end{longtable}
 \end{landscape}
+
+\emph{Nota sobre EPS:} la configuración actual no incluye un BMS dedicado por celda; la protección se distribuye entre NTC por celda (LLC ADC), voltaje multi-banco (INA3221), corriente por motor (ACS712 por canal) y fusibles 10\,A por banco.
 
 % --- Extensiones N2 para COMMS UHF ---
 \paragraph{Extensiones N2 (COMMS UHF).}
 \begin{itemize}
   \item C\&DH $\leftrightarrow$ COMMS(UHF): [DATA] USB/UART (KISS) hacia TNC; [DATA] bus principal CSP.
-  \item EPS $\rightarrow$ COMMS(UHF): [PWR] 12\,V (radio) y 5\,V (TNC); [HK] telemetrías V/I (INA219).
+  \item EPS $\rightarrow$ COMMS(UHF): [PWR] 12\,V (radio) y 5\,V (TNC); [HK] telemetrías de tensión vía INA3221 (banco correspondiente).
   \item COMMS(UHF) $\leftrightarrow$ STR: [MEC] montaje de antenas; [RF] Radio$\leftrightarrow$Antena.
   \item COMMS(UHF) $\leftrightarrow$ Estación/Relay: [RF] enlace externo (UHF).
 \end{itemize}
 
 % === ICD Registry ===
 \paragraph{ICD Registry — Documentos de Control de Interfaz registrados.}
-Los siguientes ICDs son artefactos activos del proyecto (CI-ICD conforme a §13.4) y especifican el detalle cuantitativo (pines, protocolos, tramas) de las celdas de la Tabla~\ref{tab:n2_fisica} indicadas:
+Los siguientes ICDs son artefactos activos del proyecto (CI-ICD conforme a \S\ref{sec:appendices}) y especifican el detalle cuantitativo (pines, protocolos, tramas) de las celdas de la Tabla~\ref{tab:n2_fisica} indicadas:
 
 \begin{table}[H]
 \centering
@@ -223,7 +225,7 @@ Los siguientes ICDs son artefactos activos del proyecto (CI-ICD conforme a §13.
 \textbf{ID ICD} & \textbf{Interfaz} & \textbf{Scope (celdas N2)} & \textbf{Estado} \\ \hline
 ICD-LLC-001 & C\&DH/OBC (RPi\,5) $\leftrightarrow$ MCU (Arduino Mega\,2560) & N2: C\&DH$\leftrightarrow$PROP/\allowbreak TRAC/\allowbreak Sensores — UART 115200\,bps; frame LLC; comandos de movilidad y telemetría de bajo nivel & ACTIVO \\ \hline
 ICD-COMMS-001 & C\&DH $\leftrightarrow$ COMMS (Wi-Fi / UHF) & N2: C\&DH$\leftrightarrow$COMMS — CSP sobre UDP/IP y AX.25/KISS; formatos TM/CMD & ACTIVO \\ \hline
-ICD-CAM-001 & C\&DH/OBC (RPi\,5) $\leftrightarrow$ Cámara IMX219 (CSI‑2) & N2: C\&DH$\leftrightarrow$GNC — CSI‑2 MIPI 4-lane; formato frame, parámetros IMX219; fuera de scope ICD-LLC-001 & PENDIENTE \\ \hline
+ICD-CAM-001 & C\&DH/OBC (RPi\,5) $\leftrightarrow$ Cámara OV5647 (CSI-2) & N2: C\&DH$\leftrightarrow$GNC — CSI-2 MIPI; formato frame, parámetros OV5647 (CAM1); fuera de scope ICD-LLC-001 & PENDIENTE \\ \hline
 \end{tabularx}
 \caption{Registro de ICDs activos del Rover Olympus.}
 \label{tab:icd_registry}
