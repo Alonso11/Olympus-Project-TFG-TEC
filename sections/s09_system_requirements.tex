@@ -137,30 +137,32 @@ Ante la pérdida de enlace directo, el sistema \textbf{DEBERÁ} realizar una con
     \ReqAccept{A: captura de log TLM en campaña UC-01, verificar 0 frames con CRC inválido sobre $\ge$ 10\,000 frames CSP transmitidos.}
 \end{reqblock}
 
-\subsection{Secondary Use Cases Requirements (UC-02 to UC-05)}
-Conforme a la identificación de vacíos en la auditoría técnica, se establecen los requerimientos funcionales maestros para los casos de uso secundarios que garantizan la resiliencia y seguridad del sistema.
+\subsection{Secondary Behaviors and Use Case Requirements}
+Se establecen los requerimientos funcionales maestros para los casos de uso secundarios y los modos de operación auxiliares que garantizan la resiliencia y seguridad del sistema. La numeración de los UCs sigue la nomenclatura top-level establecida en \S\ref{subsec:use_cases_top_level}.
 
-\subsubsection{UC-02: Homing and Retreat}
+\subsubsection{UC-04: Modo regreso a casa (Homing and Retreat)}
 \begin{itemize}
     \item \textbf{SYS-FUN-020:} El sistema DEBERÁ mantener un registro dinámico de los últimos 5 waypoints transitables (puntos seguros) durante la navegación.
-    \item \textbf{SYS-FUN-021:} El sistema DEBERÁ iniciar una maniobra de retorno autónomo (Retreat) ante una pérdida de enlace $>$ 10 s o un deslizamiento persistente $>$ 25\%.
+    \item \textbf{SYS-FUN-021:} El sistema DEBERÁ iniciar una maniobra de retorno autónomo (Retreat) ante una pérdida de enlace $>$ 10\,s o slip persistente detectado en el HLC (\texttt{SLIP\_STALL\_FRAMES = 2} frames consecutivos con \texttt{stall\_mask} activo en TLM; ver RF-004-R1).
 \end{itemize}
 
-\subsubsection{UC-03: Manual Override}
+\subsubsection{Modo Manual Override (operacional)}
+\emph{No se registra como UC top-level (no aparece en \S\ref{subsec:use_cases_top_level}); se especifica aquí como comportamiento operacional disponible vía comandos \texttt{MODE:AUTO} / \texttt{MODE:TELEOP} del GCS.}
 \begin{itemize}
     \item \textbf{SYS-FUN-030:} El sistema DEBERÁ permitir la interrupción inmediata de los modos autónomos mediante comandos de control manual prioritarios.
-    \item \textbf{SYS-FUN-031:} El tiempo de transición entre modo autónomo y control manual NO DEBERÁ exceder los 500 ms tras la recepción del comando.
+    \item \textbf{SYS-FUN-031:} El tiempo de transición entre modo autónomo y control manual NO DEBERÁ exceder los 500\,ms tras la recepción del comando \texttt{MODE:TELEOP}.
 \end{itemize}
 
-\subsubsection{UC-04: Safe Mode}
+\subsubsection{Modo Safe Mode (operacional)}
+\emph{No se registra como UC top-level; se especifica como modo de operación del MSM (ver \S\ref{subsec:op_modes}).}
 \begin{itemize}
     \item \textbf{SYS-FUN-040:} \textit{[\textbf{SUPERSEDED} por SYS-FUN-040a y SYS-FUN-040b. Texto original preservado para trazabilidad.]} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltajes de batería críticos ($<$ 12V) o fallos de latencia en el C\&DH $>$ 5 s.
-    \item \textbf{SYS-FUN-040a:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltaje de batería crítico ($<$ 12V), detectado por el monitor EPS (INA226).
+    \item \textbf{SYS-FUN-040a:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltaje de cualquier banco $<$ 12\,V, detectado por el monitor multi-banco INA3221 sobre Soft-I$^2$C del LLC.
     \item \textbf{SYS-FUN-040b:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante fallos de latencia en el C\&DH superiores a 5\,s sin respuesta del ciclo de agente HLC.
     \item \textbf{SYS-FUN-041:} En \emph{Safe Mode}, el sistema DEBERÁ priorizar la telemetría de salud y desenergizar los actuadores de tracción.
 \end{itemize}
 
-\subsubsection{UC-05: Safe Deactivation}
+\subsubsection{UC-05: Safe Deactivation / Passivation}
 \begin{itemize}
     \item \textbf{SYS-FUN-050:} El sistema DEBERÁ sincronizar y cerrar todos los logs de misión en almacenamiento no volátil antes de confirmar la disponibilidad de apagado.
     \item \textbf{SYS-FUN-051:} El sistema DEBERÁ asegurar que los actuadores se encuentran en una configuración estable (parking) antes de la desactivación final.
