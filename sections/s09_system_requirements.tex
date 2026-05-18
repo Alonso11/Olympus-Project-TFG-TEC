@@ -83,58 +83,58 @@ Ante la pérdida de enlace directo, el sistema \textbf{DEBERÁ} realizar una con
 \begin{reqblock}{RF-001}{Percepción Visual}
     \ReqShall{El sistema DEBERÁ adquirir percepción visual del entorno frontal para navegación autónoma. Ver GNC-REQ-001.}
     \item[\textbf{Prioridad:}] CRÍTICO
-    \ReqTrace{ConOps UC-01; §7.3.1}
+    \ReqTrace{ConOps UC-01 (\S\ref{sec:uc01}); GNC-REQ-001}
     \item[\textbf{Racional:}] Base fundamental para la detección de obstáculos y planificación de trayectorias.
-    \ReqAccept{Demonstration (Visualización en GCS)}
+    \ReqAccept{D (visualización en tiempo real del stream de cámara OV5647 en GCS) + T (medición de FPS $\ge$ 10 y latencia frame-a-GCS $\le 500$\,ms).}
 \end{reqblock}
 
 \begin{reqblock}{RF-002}{Clasificación de Transitabilidad}
     \ReqShall{El sistema DEBERÁ clasificar la transitabilidad del terreno para navegación autónoma. Ver GNC-REQ-002.}
     \item[\textbf{Prioridad:}] CRÍTICO
-    \ReqTrace{ConOps UC-01; §7.3.2}
+    \ReqTrace{ConOps UC-01 (\S\ref{sec:uc01}); GNC-REQ-002}
     \item[\textbf{Racional:}] Permite al agente ELANav distinguir zonas seguras de zonas de riesgo (alto slip o colisión).
-    \ReqAccept{Analysis / Test (Confianza $\ge$ 95\%)}
+    \ReqAccept{A/T según protocolo de GNC-REQ-002: dataset $\ge$ 200 frames anotados, traversable-recall con IoU $\ge$ 0.5, criterio $\ge$ 95\%.}
 \end{reqblock}
 
 \begin{reqblock}{RF-003}{Evitación Reactiva de Obstáculos}
-    \ReqShall{El sistema DEBERÁ detectar y evitar obstáculos físicos con una altura $\ge$ 20 cm durante la navegación autónoma. Ver GNC-REQ-002.}
+    \ReqShall{El sistema DEBERÁ detectar y evitar obstáculos físicos cuya distancia frontal sea $\le$ \texttt{HC\_EMERGENCY\_MM = 200\,mm} (HC-SR04) o $\le$ \texttt{TOF\_EMERGENCY\_MM = 150\,mm} (VL53L0X), ejecutando hard-stop antes de impactar (transición a \texttt{Avoid} en el MSM del LLC). Ver GNC-REQ-002.}
     \item[\textbf{Prioridad:}] CRÍTICO
-    \ReqTrace{ConOps UC-01; §7.3.3}
+    \ReqTrace{ConOps UC-01 (\S\ref{sec:uc01}); state machine \S\ref{subsec:uc01_states}}
     \item[\textbf{Racional:}] Prevenir daños estructurales y estancamiento en terrenos con irregularidades significativas.
-    \ReqAccept{Test / Demonstration (Pruebas de campo)}
+    \ReqAccept{T: pruebas de campo con obstáculo móvil $\ge$ 5 pasadas; verificar 100\% de detecciones y transición a \texttt{Avoid} antes del contacto.}
 \end{reqblock}
 
 \begin{reqblock}{RF-004}{Compensación de Slip}
     \textit{[\textbf{SUPERSEDED} por RF-004-R1 — CR-002. Texto original preservado para trazabilidad histórica del baseline.]}
     \ReqShall{El sistema DEBERÁ estimar y compensar dinámicamente el deslizamiento (slip) en pendientes volcánicas. Ver GNC-REQ-003.}
     \item[\textbf{Prioridad:}] ALTO
-    \ReqTrace{ConOps UC-01; §7.3.4}
+    \ReqTrace{ConOps UC-01 (\S\ref{sec:uc01})}
     \item[\textbf{Racional:}] Garantizar la fidelidad de la odometría y evitar la deriva del rover en superficies no consolidadas.
-    \ReqAccept{Analysis (Comparación vs Ground Truth)}
+    \ReqAccept{A: comparación vs ground truth. [SUPERSEDED --- ver RF-004-R1.]}
 \end{reqblock}
 
-\begin{reqblock}{RF-004-R1}{Compensación de Slip (Encoder-Based)}
-    \ReqShall{El sistema DEBERÁ estimar y compensar dinámicamente el deslizamiento (slip) en pendientes volcánicas mediante odometría de encoders (6 ruedas), actualizando el estado cinemático a $\ge$ 10 Hz. Reemplaza RF-004. Ver CR-002.}
+\begin{reqblock}{RF-004-R1}{Detección de Slip (Encoder-Based)}
+    \ReqShall{El sistema DEBERÁ detectar deslizamiento (slip) en pendientes volcánicas mediante odometría de encoders (6 ruedas, fase A en INT0--INT5, fase B en Port L), reportando el estado de stall en el frame TLM a $\ge$ 10\,Hz. Ante slip persistente (\texttt{SLIP\_STALL\_FRAMES = 2} frames consecutivos en el HLC), el sistema DEBERÁ activar transición a estado HomingRetreat (\texttt{Retreat} en el MSM). Reemplaza RF-004. Ver CR-002.}
     \item[\textbf{Prioridad:}] ALTO
-    \ReqTrace{ConOps UC-01; §7.3.4; CR-002}
-    \item[\textbf{Racional:}] EKF descartado del scope actual del TFG. La compensación se implementa mediante lectura de encoders en LLC (Arduino Mega), validando slip por comparación de velocidad angular estimada vs. velocidad real medida. La métrica de aceptación se define contra ground truth físico en sitio análogo.
-    \ReqAccept{Analysis/Test (Encoders vs. Ground Truth — distancia estimada vs. medida real)}
+    \ReqTrace{ConOps UC-01 (\S\ref{sec:uc01}); CR-002}
+    \item[\textbf{Racional:}] EKF descartado del scope actual del TFG. La detección se implementa mediante lectura de encoders en LLC (Arduino Mega) y monitoreo de \texttt{stall\_mask} en el HLC; la transición a HomingRetreat se realiza arriba (HLC SlipMonitor). La métrica de aceptación se define contra ground truth físico en sitio análogo.
+    \ReqAccept{A/T: tramo recto de 5\,m con error encoder vs. ground truth $\le$ 5\% (RNF-003). Adicionalmente: T con superficie de bajo coef. de fricción para inducir slip y verificar transición a HomingRetreat en $\le$ 2 frames TLM ($\le$ 200\,ms a 10\,Hz).}
 \end{reqblock}
 
 \begin{reqblock}{RF-005}{Fault Stop Resiliente}
-    \ReqShall{El sistema DEBERÁ ejecutar una transición inmediata a estado seguro (Stop) ante la detección de slip $>$ 25\% o fallos de navegación. Ver PROP-REQ-002.}
+    \ReqShall{El sistema DEBERÁ ejecutar una transición inmediata a estado seguro (\texttt{Fault} en el MSM del LLC, con \texttt{relay.emergency\_off()}) ante stall persistente de encoder ($\ge$ \texttt{STALL\_THRESHOLD = 50} ciclos $\approx$ 1\,s), obstáculo dentro de \texttt{HC\_EMERGENCY\_MM = 200\,mm} o \texttt{TOF\_EMERGENCY\_MM = 150\,mm}, anomalía de potencia (sobrecorriente \texttt{OC\_FAULT}) o pérdida de comunicación con HLC. La transición debe completar en $\le 500$\,ms (ver PROP-REQ-002).}
     \item[\textbf{Prioridad:}] CRÍTICO
-    \ReqTrace{ConOps UC-01; §7.3.5}
+    \ReqTrace{ConOps UC-01 (\S\ref{sec:uc01}); state machine \S\ref{subsec:uc01_states}}
     \item[\textbf{Racional:}] Proteger la integridad del rover ante condiciones de tracción inmanejables.
-    \ReqAccept{Demonstration (Simulación de fallo)}
+    \ReqAccept{T (setup INT-04b): inyectar obstáculo a $<$ 200\,mm $\Rightarrow$ verificar transición a \texttt{Fault} y emisión de relay-off en $\le 500$\,ms vía log TLM.}
 \end{reqblock}
 
 \begin{reqblock}{RF-006}{Integridad de Telemetría}
     \ReqShall{El sistema DEBERÁ asegurar la integridad y consistencia de los datos de telemetría y comando (TM/CMD) durante todo el ciclo de misión. Ver COMM-REQ-001.}
     \item[\textbf{Prioridad:}] CRÍTICO
-    \ReqTrace{ConOps UC-01; §7.3.6}
+    \ReqTrace{ConOps UC-01 (\S\ref{sec:uc01}); COMM-REQ-001}
     \item[\textbf{Racional:}] Evitar la corrupción de comandos críticos de navegación y garantizar la veracidad de la telemetría recibida en la GCS.
-    \ReqAccept{Analysis (Logs de CRC/CSP)}
+    \ReqAccept{A: captura de log TLM en campaña UC-01, verificar 0 frames con CRC inválido sobre $\ge$ 10\,000 frames CSP transmitidos.}
 \end{reqblock}
 
 \subsection{Secondary Use Cases Requirements (UC-02 to UC-05)}
