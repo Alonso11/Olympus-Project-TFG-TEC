@@ -3,11 +3,13 @@
 
 \section{System Requirements}\label{sec:requirements}
 
-Esta sección contiene la ``definición maestra'' de los requisitos del sistema (RF/RNF/CON) del Rover Olympus y sus derivados a nivel de subsistema, organizada según la arquitectura de 7 subsistemas. Los requisitos se consolidan aquí para asegurar la coherencia del baseline técnico. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}
+Esta sección contiene la ``definición maestra'' de los requisitos del sistema (RF/RNF/CON) del Rover Olympus y sus derivados a nivel de subsistema, organizada según la arquitectura de 7 subsistemas. Los requisitos se consolidan aquí para asegurar la coherencia del baseline técnico.
 
 \subsection{Functional Requirements (By Subsystem)}
 
-Los requisitos funcionales describen capacidades obligatorias del Rover Olympus para ejecutar UC‑01. Se organizan bajo los 7 subsistemas técnicos definidos en la arquitectura.
+Los requisitos funcionales describen capacidades obligatorias del Rover Olympus para ejecutar UC-01. Se organizan bajo los 7 subsistemas técnicos definidos en la arquitectura.
+
+\emph{Nota sobre el tag \texttt{[EXTERNO]}:} aquellos requisitos marcados con \texttt{[EXTERNO]} se verifican mediante documentación de proveedor (datasheet, certificado), análisis de diseño o procedimientos de prueba que no forman parte de la campaña operacional de validación de este TFG. La trazabilidad de su verificación se documenta en \S\ref{sec:vv}.
 
 \subsubsection{Structural (Estructura / Chasis)}
 \textbf{Soporte de Sistema:}
@@ -41,20 +43,20 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
 \subsubsection{Energía (EPS / Power)}
 \textbf{Soporte de CON-001:}
 \begin{itemize}
-    \item \textbf{EPS-REQ-001:} El subsistema de Energía DEBERÁ reportar voltaje y corriente al C\&DH con una frecuencia de $\ge$ 1 Hz y precisión de $\pm$ 1\% mediante sensores de monitoreo de potencia integrados.
+    \item \textbf{EPS-REQ-001:} El subsistema de Energía DEBERÁ reportar al C\&DH el voltaje de bus de cada banco de batería con una frecuencia de $\ge$ 1\,Hz y resolución $\le$ 8\,mV (sensor INA3221 en modo bus-only sobre Soft-I$^2$C). La medición de corriente se realiza distribuidamente a nivel de canal de motor mediante ACS712 (ver PROP-REQ-001 y la matriz N2 \S\ref{subsec:internal_interfaces}) y se agrega al frame TLM del LLC.
     \item \textbf{EPS-REQ-002:} El subsistema de Energía DEBERÁ interrumpir la potencia a los motores ante voltajes críticos de la batería principal del sistema. [EXTERNO]
 \end{itemize}
 
-\subsubsection{COMM (Telecomunicaciones)}
+\subsubsection{COMMS (Telecomunicaciones)}
 \textbf{Soporte de RF-006, CON-002:}
 \begin{itemize}
-    \item \textbf{COMM-REQ-001:} El subsistema COMM DEBERÁ implementar el protocolo CSP para asegurar la integridad de TM/CMD (soporte a RF-006).
-    \item \textbf{COMM-REQ-002:} El subsistema COMM DEBERÁ mantener un enlace estable a 2.4 GHz hasta 50 m de distancia en línea de vista. [EXTERNO]
+    \item \textbf{COMM-REQ-001:} El subsistema COMMS DEBERÁ implementar el protocolo CSP para asegurar la integridad de TM/CMD (soporte a RF-006).
+    \item \textbf{COMM-REQ-002:} El subsistema COMMS DEBERÁ mantener un enlace estable a 2.4 GHz hasta 50 m de distancia en línea de vista. [EXTERNO]
 \end{itemize}
 
 % --- Requisitos UHF elevados a Nivel Sistema ---
 \paragraph{COMM-REQ-003 (Enlace UHF Robusto).}
-El subsistema COMM \textbf{DEBERÁ} proporcionar un enlace de telemetría y comando en banda UHF que permita la operación en condiciones de baja visibilidad (NLoS) mediante protocolos de retransmisión y entrega garantizada. \\
+El subsistema COMMS \textbf{DEBERÁ} proporcionar un enlace de telemetría y comando en banda UHF que permita la operación en condiciones de baja visibilidad (NLoS) mediante protocolos de entrega garantizada (RDP, implementado en el HLC) y, cuando el hardware lo permita, retransmisión vía nodo intermedio (\emph{store-and-forward}, conceptual en el baseline actual). \\
 \textit{Verificación:} Test/Demo con casos directo y vía retransmisor.
 
 \paragraph{COMM-REQ-004 (Integridad en UHF).}
@@ -164,7 +166,7 @@ Conforme a la identificación de vacíos en la auditoría técnica, se establece
 
 \subsection{System Operational Modes}\label{subsec:op_modes}
 
-Esta subsección define formalmente los modos operacionales del Rover Olympus conforme a ISO/IEC/IEEE 29148 §9.4.16 y ECSS-E-ST-70-11C. Los modos STB/EXP/AVD/RET/FLT/SAFE están implementados en \texttt{state\_machine/mod.rs} (LLC) y el agente MSM (HLC); esta tabla los eleva a requisito de sistema, constituyendo el baseline de trazabilidad para cambios de diseño. \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}
+Esta subsección define formalmente los modos operacionales del Rover Olympus conforme a ISO/IEC/IEEE 29148 §9.4.16 y ECSS-E-ST-70-11C. Los modos STB/EXP/AVD/RET/FLT/SAFE están implementados en \texttt{state\_machine/mod.rs} (LLC) y el agente MSM (HLC); esta tabla los eleva a requisito de sistema, constituyendo el baseline de trazabilidad para cambios de diseño.
 
 \begin{landscape}
 \centering
@@ -235,7 +237,7 @@ SYS-FUN-040a \newline SYS-FUN-040b \newline SYS-FUN-041 \\ \hline
 \end{longtable}
 \end{landscape}
 
-\textbf{Regla de prioridad de transiciones:} SAFE tiene prioridad sobre cualquier otro modo. FLT tiene prioridad sobre EXP y AVD. Las transiciones no listadas en esta tabla son inválidas y deberán ser rechazadas por la MSM con log de error. \cite{nasa_cm, segoldmine_ppi}
+\textbf{Regla de prioridad de transiciones:} SAFE tiene prioridad sobre cualquier otro modo. FLT tiene prioridad sobre EXP y AVD. Las transiciones no listadas en esta tabla son inválidas y deberán ser rechazadas por la MSM con log de error.
 
 \subsection{Performance and Non-Functional Requirements}
 \sysreq{RNF-001}{Latencia de Procesamiento}{CRÍTICO}{ELANav}{$\le$ 2 s por ciclo bajo carga nominal máxima (YOLOv8n activo + TM streaming + encoders a 10\,Hz).}
@@ -276,7 +278,7 @@ SYS-FUN-040a \newline SYS-FUN-040b \newline SYS-FUN-041 \\ \hline
 
 \subsubsection{Environmental Requirements (ISO 29148 §9.5.9)}\label{subsubsec:env_req}
 
-Esta subsección consolida los requisitos ambientales operacionales y de transporte del Rover Olympus conforme a ISO/IEC/IEEE 29148 §9.5.9 \cite{ieee_29148} y ECSS-E-ST-10-06C §5.4 \cite{ecss_e_st_10_06c}. Los requisitos RNF-004 (temperatura máxima), RNF-005 (EMC cualitativo) y STR-REQ-002 (IP4X) se complementan con los ENV-REQ definidos aquí, que cierran las brechas de cota inferior, humedad, método de test y EMC cuantitativo. \cite{nasa_cm, segoldmine_ppi}
+Esta subsección consolida los requisitos ambientales operacionales y de transporte del Rover Olympus conforme a ISO/IEC/IEEE 29148 §9.5.9 \cite{ieee_29148} y ECSS-E-ST-10-06C §5.4 \cite{ecss_e_st_10_06c}. Los requisitos RNF-004 (temperatura máxima), RNF-005 (EMC cualitativo) y STR-REQ-002 (IP4X) se complementan con los ENV-REQ definidos aquí, que cierran las brechas de cota inferior, humedad, método de test y EMC cuantitativo.
 
 \begin{itemize}
     \item \textbf{ENV-REQ-001 (Temperatura operacional mínima):} El sistema DEBERÁ operar correctamente con una temperatura ambiente mínima de $+$5\,°C, conforme a los límites operacionales de los componentes COTS críticos (RPi5: 0–50\,°C; Arduino Mega: $-$40–85\,°C; celdas LiPo: 0–45\,°C en descarga). El límite operacional del sistema queda fijado en $+$5\,°C por la restricción de las celdas LiPo. \\
