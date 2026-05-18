@@ -3,8 +3,7 @@
 
 \section{Appendices}\label{sec:appendices}
 
-Esta sección agrupa anexos de apoyo para el SyRS/SRS final del Rover Olympus. Incluye (i) un glosario consolidado (sinónimos/abreviaturas y términos de dominio) y (ii) un resumen de historial de revisiones, depurando inconsistencias entre los borradores main/main1/main3 y dejando un criterio claro de baseline para el documento final. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-Los anexos se mantienen concisos: el propósito es facilitar lectura y auditoría académica, sin duplicar contenido ``maestro'' que ya está en secciones 1--13 (requisitos, V\&V, trazabilidad, arquitectura). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+Esta sección agrupa anexos de apoyo para el SyRS/SRS del Rover Olympus. Incluye (i) la matriz de trazabilidad maestra, (ii) el registro de TBDs y plan de resolución, (iii) el registro de requisitos diferidos/superseded, (iv) la FMEA, (v) los presupuestos de ingeniería (potencia, masa, RF), (vi) el glosario consolidado y (vii) el historial de revisiones. Los anexos se mantienen concisos y referencian, sin duplicar, las definiciones maestras de las secciones de requisitos, V\&V, trazabilidad y arquitectura.
 
 \subsection{Traceability Matrix (SyRS $\rightarrow$ Subsystem $\rightarrow$ V\&V)}
 La siguiente tabla resume la trazabilidad de los requerimientos de sistema hacia sus derivados, método de verificación primaria, nivel V\&V y estado de cierre. \textbf{Nivel:} S=Sistema, I=Integración, U=Unitario. \textbf{Estado:} OPEN=pendiente de evidencia; CLOSED=evidencia registrada. \cite{nasa_cm, segoldmine_ppi}
@@ -28,28 +27,28 @@ La siguiente tabla resume la trazabilidad de los requerimientos de sistema hacia
 \endlastfoot
 
 \multicolumn{6}{|l|}{\textbf{Requisitos Funcionales de Sistema (RF)}} \\ \hline
-RF-001 & Percepción Visual CSI (FOV $\ge$120°) & GNC-REQ-001 & Demonstration & S & OPEN \\
+RF-001 & Percepción Visual CSI (FOV según lente OV5647; $\ge$120° con M12 wide-angle) & GNC-REQ-001 & Demonstration/Test & S & OPEN \\
 RF-002 & Clasificación de Terreno ($\ge$95\%) & GNC-REQ-002 & Analysis & S & OPEN \\
-RF-003 & Evitación Reactiva de Obstáculos & TRAC-REQ-001; GNC-REQ-002 & Test & S & OPEN \\
+RF-003 & Evitación Reactiva (HC-SR04 $\le$200\,mm, VL53L0X $\le$150\,mm) & TRAC-REQ-001; GNC-REQ-002 & Test & S & OPEN \\
 RF-004 & Compensación de Slip \textit{[SUPERSEDED]} & GNC-REQ-003 & -- & -- & SUPERSEDED \\
-RF-004-R1 & Compensación Slip (Encoder, error $<$5\%) & GNC-REQ-003; CR-002 & Analysis/Test & S & OPEN \\
-RF-005 & Fault Stop ($<$5\,s ante slip$>$25\%) & PROP-REQ-002 & Demonstration & S & OPEN \\
+RF-004-R1 & Detección Slip (Encoder, error $<$5\% vs ground truth) & GNC-REQ-003; CR-002 & Analysis/Test & S & OPEN \\
+RF-005 & Fault Stop ($\le$500\,ms ante stall/proximidad/OC\_FAULT) & PROP-REQ-002 & Demonstration/Test & S & OPEN \\
 RF-006 & Integridad TM/CMD (CRC-32 CSP) & COMM-REQ-001 & Analysis/Inspection & S & OPEN \\ \hline
 
 \multicolumn{6}{|l|}{\textbf{Requisitos UC Secundarios (SYS-FUN)}} \\ \hline
 SYS-FUN-020 & Registro dinámico 5 waypoints seguros & SW-logic MSM/HLC & Demonstration & S & OPEN \\
-SYS-FUN-021 & Retreat ante link lost$>$10\,s o slip$>$25\% & SW-logic MSM/HLC & Demonstration & S & OPEN \\
+SYS-FUN-021 & Retreat ante link lost$>$10\,s o slip persistente HLC (\texttt{SLIP\_STALL\_FRAMES = 2}) & SW-logic MSM/HLC & Demonstration & S & OPEN \\
 SYS-FUN-030 & Manual override inmediato & SW-logic MSM & Demonstration & S & OPEN \\
 SYS-FUN-031 & Transición autónomo$\rightarrow$manual $\le$500\,ms & CDH-REQ-001 & Test & S & OPEN \\
 SYS-FUN-040 & Safe Mode entry \textit{[SUPERSEDED — 040a+040b]} & -- & -- & -- & SUPERSEDED \\
-SYS-FUN-040a & Safe Mode por voltaje batería $<$12\,V & EPS-REQ-001; INA226 & Test & S & OPEN \\
+SYS-FUN-040a & Safe Mode por voltaje cualquier banco $<$12\,V (INA3221) & EPS-REQ-001 & Test & S & OPEN \\
 SYS-FUN-040b & Safe Mode por latencia HLC $>$5\,s & CDH-REQ-001 & Test & S & OPEN \\
 SYS-FUN-041 & Safe Mode: TM salud + motores desenergizados & SYS-FUN-040a/040b & Demonstration & S & OPEN \\
 SYS-FUN-050 & Sync y cierre de logs antes de apagado & INF-REQ-001 & Inspection & S & OPEN \\
 SYS-FUN-051 & Actuadores en parking antes de deactivación & PROP-REQ-002 & Demonstration & S & OPEN \\ \hline
 
 \multicolumn{6}{|l|}{\textbf{Modos Operacionales (MODE)}} \\ \hline
-MODE-001..006 & Modos STB/\allowbreak EXP/\allowbreak AVD/\allowbreak RET/\allowbreak FLT/\allowbreak SAFE & §9.4 Tab.~\ref{tab:op_modes} & Demonstration & S & OPEN \\ \hline
+MODE-001..007 & Modos STB/\allowbreak EXP/\allowbreak AVD/\allowbreak CLB/\allowbreak RET/\allowbreak FLT/\allowbreak SAFE (7 estados \texttt{RoverState} + \texttt{SafetyState} paralelo) & Tab.~\ref{tab:op_modes} & Demonstration & S & OPEN \\ \hline
 
 \multicolumn{6}{|l|}{\textbf{Requisitos No Funcionales y de Desempeño (RNF)}} \\ \hline
 RNF-001 & Latencia ciclo $\le$2\,s & CDH-REQ-001 & Test & S & OPEN \\
@@ -79,8 +78,8 @@ Conforme a ISO/IEC/IEEE 29148, este registro identifica los parámetros técnico
 \begin{tabularx}{\textwidth}{| l | X | p{3.0cm} | p{2.2cm} | p{3.8cm} |}
 \hline
 \textbf{TBD-ID} & \textbf{Descripción del Parámetro} & \textbf{Requisito/Elemento} & \textbf{Responsable} & \textbf{Criterio de Resolución} \\ \hline
-TBD-OP-01 & Umbrales de severidad para contingencias (\texttt{severity\_\allowbreak allows\_\allowbreak retreat}) & §7.3.8 (SM), s09a & Líder GNC & Análisis de simulación en entorno volcánico. \\ \hline
-TBD-OP-02 & Política de reintentos de enlace (\texttt{retry\_allowed}) & §7.3.8 (SM), s09a & Líder COMM & Caracterización de latencia UHF en campo. \\ \hline
+TBD-OP-01 & Umbrales de severidad para contingencias (\texttt{severity\_\allowbreak allows\_\allowbreak retreat}) & \S\ref{subsec:uc01_states}; s09a & Líder GNC & Análisis de simulación en entorno volcánico. \\ \hline
+TBD-OP-02 & Política de reintentos de enlace (\texttt{retry\_allowed}) & \S\ref{subsec:uc01_states}; s09a & Líder COMM & Caracterización de latencia UHF en campo. \\ \hline
 TBD-ENV-01 & Nivel de protección antipartículas (IP4X o superior) & STR-REQ-002, SyRS-100 & Líder STR & Pruebas de infiltración con regolito simulado. \\ \hline
 TBD-PER-01 & Ground truth físico para validación encoder (distancia real vs. estimada) & SyRS-013, RF-004-R1; CR-002 & Líder GNC & Definir recorrido de referencia con medición física en sitio análogo. \\ \hline
 TBD-DATA-01 & Umbral de almacenamiento crítico (\texttt{storage\_near\_full}) & CDH-REQ-002, §11.1 & Líder C\&DH & Capacidad efectiva de microSD vs bitrate TM. \\ \hline
@@ -128,7 +127,9 @@ CR-001 \\ \hline
 \label{tab:deferred}
 \end{table}
 
-\textbf{Nota sobre requisitos [EXTERNO]:} Los requisitos marcados \texttt{[EXTERNO]} en §9 (STR-REQ-001/002, TRAC-REQ-002, CDH-REQ-002, EPS-REQ-002, COMM-REQ-002, GNC-REQ-003) son requisitos \textbf{activos} cuya verificación depende del hardware físico del rover, no del software de vuelo. Su estado es ACTIVE/EXTERNAL y no forman parte de este registro.
+\textbf{Nota sobre requisitos [EXTERNO]:} Los requisitos marcados \texttt{[EXTERNO]} en \S\ref{sec:requirements} (STR-REQ-001, TRAC-REQ-002, CDH-REQ-002, EPS-REQ-002b, COMM-REQ-002, GNC-REQ-003) son requisitos \textbf{activos} cuya verificación depende del hardware físico o de documentación de proveedor, no del software de vuelo. Su estado es ACTIVE/EXTERNAL y no forman parte de este registro.
+
+\emph{Nota sobre consolidaciones recientes:} STR-REQ-002 ya no se considera externo --- consolidado con ENV-REQ-003 que aporta método de test (blow test IP4X); EPS-REQ-002 se dividió en EPS-REQ-002a (protección sw del LLC, no externo) y EPS-REQ-002b (protección hw por celda, externo).
 
 \subsection{FMEA — Failure Mode and Effects Analysis}\label{subsec:fmea}
 
