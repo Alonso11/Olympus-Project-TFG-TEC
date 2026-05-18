@@ -27,7 +27,7 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
   \item \ReqMetric{Ejecución completa del ciclo operacional (uplink $\rightarrow$ ejecución autónoma $\rightarrow$ downlink $\rightarrow$ idle) al menos 1 vez por campaña de verificación.}
   \item \ReqCond{Fase 4 (Operación nominal) en sitio análogo.}
   \item \ReqAccept{Registro de misión que evidencie: comando de inicio, ejecución autónoma y transmisión de telemetría/datos.}
-  \item \ReqTrace{CONOPS: Fase 4 (§6.1) y Ciclo diario (§7.3.9); CU: UC-01 (§7.3).}
+  \item \ReqTrace{ConOps: Fase 4 (\S\ref{subsec:mission_phases}) y Ciclo Diario (\S\ref{subsec:daily_ops}); CU: UC-01 (\S\ref{sec:uc01}).}
 \end{reqblock}
 
 \begin{reqblock}
@@ -36,17 +36,17 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
   \item \ReqMetric{7/7 subsistemas identificados y presentes en el baseline de arquitectura e integración.}
   \item \ReqCond{Baseline de arquitectura del sistema.}
   \item \ReqAccept{Evidencia documental del BDD/arquitectura mostrando los 7 subsistemas.}
-  \item \ReqTrace{Arquitectura: §8.1; Contexto del sistema: §4.2.}
+  \item \ReqTrace{Arquitectura: \S\ref{sec:architecture}; Contexto del sistema: \S\ref{subsec:system_description}.}
 \end{reqblock}
 
 \paragraph{Functional requirements}
 \begin{reqblock}
   \item \ReqID{SyRS-010}
-  \item \ReqShall{El sistema deberá adquirir percepción visual mediante cámara CSI frontal para soportar la exploración autónoma.}
-  \item \ReqMetric{Campo de visión horizontal $\ge$ 120°.}
+  \item \ReqShall{El sistema deberá adquirir percepción visual mediante cámara CSI frontal (OV5647 en CAM1) para soportar la exploración autónoma.}
+  \item \ReqMetric{Campo de visión horizontal según lente OV5647 instalado ($\ge$ 120° con lente M12 wide-angle; ver GNC-REQ-001).}
   \item \ReqCond{UC-01 en modo Exploración activa.}
-  \item \ReqAccept{Evidencia (capturas/stream) que demuestre adquisición CSI y FOV medido $\ge$ 120°.}
-  \item \ReqTrace{CU: UC-01; Req: RF-001 / GNC-REQ-001.}
+  \item \ReqAccept{Evidencia (capturas/stream) que demuestre adquisición CSI y FOV medido conforme al lente seleccionado.}
+  \item \ReqTrace{CU: UC-01 (\S\ref{sec:uc01}); Req: RF-001 / GNC-REQ-001.}
 \end{reqblock}
 
 \begin{reqblock}
@@ -60,29 +60,29 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
 
 \begin{reqblock}
   \item \ReqID{SyRS-012}
-  \item \ReqShall{El sistema deberá evitar obstáculos durante la navegación autónoma para prevenir colisiones y atascos.}
-  \item \ReqMetric{0 colisiones con obstáculos de altura $\ge$ 20 cm durante un recorrido de verificación.}
+  \item \ReqShall{El sistema deberá detectar y evitar obstáculos frontales dentro de los umbrales de emergencia (HC-SR04 $\le$ 200\,mm o VL53L0X $\le$ 150\,mm) durante la navegación autónoma.}
+  \item \ReqMetric{0 colisiones con obstáculos dentro de los umbrales de emergencia durante un recorrido de verificación.}
   \item \ReqCond{UC-01 en Desplazarse/EvitarObstáculo.}
   \item \ReqAccept{Video/telemetría + registro de eventos (\texttt{obstacle\_detected}/\texttt{cleared}) sin colisiones.}
-  \item \ReqTrace{CU: UC-01; Req: RF-003; Eventos: EVT-MOB001.}
+  \item \ReqTrace{CU: UC-01 (\S\ref{sec:uc01}); Req: RF-003; Eventos: EVT-MOB001.}
 \end{reqblock}
 
 \begin{reqblock}
   \item \ReqID{SyRS-013}
-  \item \ReqShall{El sistema deberá compensar dinámicamente el deslizamiento (slip) durante la navegación.}
-  \item \ReqMetric{Error de odometría $<$ 5\% respecto a ground truth (distancia real) mediante encoders (6 ruedas). Reemplaza criterio EKF — ver CR-002.}
+  \item \ReqShall{El sistema deberá detectar deslizamiento (slip) durante la navegación y activar transición a HomingRetreat ante slip persistente.}
+  \item \ReqMetric{Error de odometría $<$ 5\% respecto a ground truth (distancia real) mediante encoders (6 ruedas); transición a HomingRetreat ante slip persistente (\texttt{SLIP\_STALL\_FRAMES = 2} frames consecutivos con \texttt{stall\_mask} activo en HLC). Reemplaza criterio EKF --- ver CR-002.}
   \item \ReqCond{UC-01 en terreno con transiciones/pendientes.}
-  \item \ReqAccept{Análisis comparativo (encoders vs. ground truth) con error $<$ 5\% en recorrido de referencia.}
-  \item \ReqTrace{CU: UC-01; Req: RF-004-R1; CR-002; Interfaces internas SW condicionadas por desempeño.}
+  \item \ReqAccept{Análisis comparativo (encoders vs. ground truth) con error $<$ 5\% en recorrido de referencia + verificación de transición a HomingRetreat en $\le$ 2 frames TLM ante slip inducido.}
+  \item \ReqTrace{CU: UC-01 (\S\ref{sec:uc01}); Req: RF-004-R1; CR-002.}
 \end{reqblock}
 
 \begin{reqblock}
   \item \ReqID{SyRS-014}
-  \item \ReqShall{El sistema deberá ejecutar una parada segura (Fault Stop) ante deslizamiento (slip) > 20\%.}
-  \item \ReqMetric{Activación de Fault Stop en < 5 s desde la detección de slip > 20\%.}
-  \item \ReqCond{UC-01 durante Desplazarse en terreno que induzca slip.}
-  \item \ReqAccept{Log de evento + medición temporal que muestre slip > 20\% y detención dentro de 5 s.}
-  \item \ReqTrace{CU: UC-01; Req: RF-005; umbral slip > 20\% (contingencia).}
+  \item \ReqShall{El sistema deberá ejecutar una parada segura (Fault Stop) ante stall persistente de encoder, proximidad de emergencia (HC/TOF) o anomalía \texttt{OC\_FAULT}.}
+  \item \ReqMetric{Activación de Fault Stop en $\le$ 500\,ms desde la detección (matches RF-005 y PROP-REQ-002).}
+  \item \ReqCond{UC-01 durante Desplazarse en terreno que induzca slip o presencia de obstáculo.}
+  \item \ReqAccept{Log de evento + medición temporal que muestre stall persistente (LLC \texttt{STALL\_THRESHOLD = 50} ciclos) y detención dentro de 500\,ms.}
+  \item \ReqTrace{CU: UC-01 (\S\ref{sec:uc01}); Req: RF-005.}
 \end{reqblock}
 
 \begin{reqblock}
@@ -100,15 +100,15 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
   \item \ReqMetric{100\% de paquetes TM/CMD de prueba verificados como válidos por el mecanismo de integridad (checksum/CRC) definido por CSP.}
   \item \ReqCond{UC-01 (uplink/downlink) y ciclo diario.}
   \item \ReqAccept{Captura de tráfico + verificación de integridad documentada.}
-  \item \ReqTrace{CU: UC-01; Req: RF-006 / COMM-REQ-001; Interfaces: §9.1.1 / §9.4.1.}
+  \item \ReqTrace{CU: UC-01 (\S\ref{sec:uc01}); Req: RF-006 / COMM-REQ-001; Interfaces: \S\ref{sec:system_interfaces}.}
 \end{reqblock}
 
 \begin{reqblock}
   \item \ReqID{SyRS-017}
-  \item \ReqShall{El sistema deberá reportar voltaje y corriente al C\&DH para monitoreo de energía.}
-  \item \ReqMetric{Frecuencia $\ge$ 1 Hz y precisión $\pm$ 1\%.}
+  \item \ReqShall{El sistema deberá reportar al C\&DH el voltaje de bus de cada banco de batería (INA3221 multi-banco) y la corriente por canal de motor (ACS712 por canal, ADC del LLC), para monitoreo distribuido de energía.}
+  \item \ReqMetric{Voltaje: frecuencia $\ge$ 1\,Hz, resolución $\le$ 8\,mV (INA3221 modo bus-only). Corriente: agregada en frame TLM del LLC.}
   \item \ReqCond{Operación nominal y modo seguro.}
-  \item \ReqAccept{Registro de telemetría EPS (serie temporal) que demuestre $\ge$ 1 muestra/s y error dentro de $\pm$ 1\%.}
+  \item \ReqAccept{Registro de telemetría EPS multi-banco (serie temporal) que demuestre $\ge$ 1 muestra/s y resolución de tensión $\le$ 8\,mV.}
   \item \ReqTrace{CU: UC-01 (monitorizar estado); Req: EPS-REQ-001.}
 \end{reqblock}
 
