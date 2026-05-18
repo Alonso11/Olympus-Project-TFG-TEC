@@ -133,7 +133,7 @@ CR-001 \\ \hline
 
 \subsection{FMEA — Failure Mode and Effects Analysis}\label{subsec:fmea}
 
-Este análisis identifica los modos de falla relevantes de los componentes y funciones críticas del Rover Olympus, sus efectos sobre la misión UC‑01, y las mitigaciones ya implementadas en el software de vuelo (LLC/HLC). El objetivo es demostrar que el diseño considera el comportamiento ante falla (\textit{fail-safe}) y que los requisitos RF‑005, RNF‑002 y SYS‑FUN‑040 están respaldados por mecanismos concretos. \cite{nasa_cm, segoldmine_ppi}
+Este análisis identifica los modos de falla relevantes de los componentes y funciones críticas del Rover Olympus, sus efectos sobre la misión UC-01, y las mitigaciones ya implementadas en el software de vuelo (LLC/HLC). El objetivo es demostrar que el diseño considera el comportamiento ante falla (\textit{fail-safe}) y que los requisitos RF-005, RNF-002 y SYS-FUN-040 están respaldados por mecanismos concretos. Análisis conforme a ECSS-Q-ST-30C \cite{ecss_q_st_30}.
 
 \textbf{Escalas conforme a ECSS-Q-ST-30C} \cite{ecss_q_st_30}\textbf{:}
 \begin{itemize}
@@ -181,17 +181,41 @@ Sensor HC-SR04 &
 Sin eco / lectura saturada &
 Obstáculo no detectado; riesgo colisión &
 Critical & Ocasional &
-Valor fuera de rango {[}0–400{]}\,cm &
-Lectura inválida $\rightarrow$ obstáculo presente (\textit{fail-safe}) &
+Valor fuera de rango {[}0--400{]}\,cm &
+Lectura inválida $\rightarrow$ obstáculo presente (\textit{fail-safe}); VL53L0X y TF02 como respaldo &
 RF-003 \\ \hline
 
-INA226 \newline (monitor EPS) &
-Fallo I$^2$C / lectura inválida &
-Batería sin monitoreo; riesgo sobrecarga &
+TF02 LiDAR \newline (largo alcance) &
+Frame USART2 corrupto / FIFO overflow / SIG bajo ($<$7) &
+Distancia frontal de largo alcance no fiable; objetos lejanos no anticipados &
+Major & Ocasional &
+ISR USART2 con ring buffer; validación SIG $\ge$ 7 en HLC &
+Frame inválido descartado; LLC continúa con HC-SR04 + VL53L0X como respaldo &
+RF-001 \newline RF-003 \\ \hline
+
+VL53L0X \newline (ToF corto alcance) &
+Fallo Soft-I$^2$C / lectura saturada ($>$2000\,mm) &
+Detección corto alcance no fiable; obstáculo cercano no detectado &
+Critical & Remota &
+Soft-I$^2$C timeout / rango fuera de [10, 2000]\,mm &
+Lectura inválida $\rightarrow$ obstáculo presente (\textit{fail-safe}); HC-SR04 como respaldo &
+RF-003 \\ \hline
+
+INA3221 \newline (monitor multi-banco EPS) &
+Fallo Soft-I$^2$C / lectura inválida en uno o más bancos &
+Batería sin monitoreo; riesgo sobrecarga/sobre-descarga &
 Major & Remota &
-Lectura I$^2$C inválida o fuera de rango físico &
-Valor inválido $\rightarrow$ alerta HLC; voltaje $<$12\,V $\rightarrow$ SafeMode &
+Lectura Soft-I$^2$C inválida o fuera de rango físico (0--26\,V por banco) &
+Valor inválido $\rightarrow$ alerta HLC; voltaje de cualquier banco $<$12\,V $\rightarrow$ SafeMode (SYS-FUN-040a) &
 EPS-REQ-001 \newline SYS-FUN-040a \\ \hline
+
+BTS7960 \newline (drivers motores CR/CL/RR/RL) &
+Sobrecorriente ($>I_{stall}$ NFP-5840 $\approx$ 6.5\,A) o sobre-temperatura del driver &
+Motor bloqueado o driver destruido; pérdida de tracción &
+Critical & Ocasional &
+ACS712 ADC + umbral \texttt{OC\_FAULT} en LLC (\texttt{config.rs}) &
+\texttt{OC\_FAULT} $\rightarrow$ desenergización inmediata del canal afectado + transición a FLT &
+RF-005 \newline EPS-REQ-001 \\ \hline
 
 LM335 / NTC \newline (sensores térmicos) &
 Lectura errónea / desconexión &
@@ -236,7 +260,7 @@ RF-005 \newline SyRS-060 \\ \hline
 \end{longtable}
 \end{landscape}
 
-\textbf{Nota:} Todos los modos de falla Critical/Major convergen en SafeMode (SYS‑FUN‑040) o FAULT en la MSM. No se identificaron modos de falla sin mitigación en los componentes de vuelo actuales. Clasificación de severidad y ocurrencia conforme a ECSS-Q-ST-30C. \cite{ecss_q_st_30, nasa_cm, segoldmine_ppi}
+\textbf{Nota:} Todos los modos de falla Critical/Major convergen en SafeMode (SYS-FUN-040a/040b) o FAULT en la MSM. No se identificaron modos de falla sin mitigación en los componentes de vuelo actuales. Clasificación de severidad y ocurrencia conforme a ECSS-Q-ST-30C \cite{ecss_q_st_30}.
 
 % ============================================================
 \subsection{Engineering Budgets}\label{subsec:eng_budgets}
