@@ -44,32 +44,32 @@
 \rowcolor{AgencyBlue!15}
 \endlastfoot
 
-SyRS-001 & D/T & Log de campaña + TM/CMD + datos & Ejecutar ciclo diario completo (uplink--exec--downlink--idle) & Evidencia de al menos 1 ciclo completo & UC-01; ConOps §7.3.9 & --\\ \hline
-SyRS-002 & I & Evidencia BDD/arquitectura & Inspección documental del baseline & 7/7 subsistemas identificados & §8.1; §4.2 & --\\ \hline
-SyRS-010 & T/D & Capturas CSI + medición FOV & Setup cámara CSI; medir FOV & FOV $\ge$ 120° & UC-01; RF-001 & --\\ \hline
+SyRS-001 & D/T & Log de campaña + TM/CMD + datos & Ejecutar ciclo diario completo (uplink--exec--downlink--idle) & Evidencia de al menos 1 ciclo completo & UC-01; ConOps \S\ref{subsec:daily_ops} & --\\ \hline
+SyRS-002 & I & Evidencia BDD/arquitectura & Inspección documental del baseline & 7/7 subsistemas identificados & \S\ref{sec:architecture}; \S\ref{subsec:system_description} & --\\ \hline
+SyRS-010 & T/D & Capturas CSI OV5647 + medición FOV & Setup cámara CSI + medición con patrón a distancia conocida & FOV horizontal según lente seleccionado ($\ge$120° con M12 wide-angle, ver GNC-REQ-001) & UC-01; RF-001 & --\\ \hline
 SyRS-011 & T/A & Resultados de clasificación & Dataset/escenario; sectores 10$\times$10 cm & Confianza $\ge$ 95\% & UC-01; RF-002 & --\\ \hline
-SyRS-012 & D/T & Video + logs evitación & Recorrido con obstáculos $\ge$ 20 cm & 0 colisiones & UC-01; RF-003 & --\\ \hline
-SyRS-013 & A/T & Encoders vs. ground truth & Recorrido de referencia + medición real & Error $<$ 5\% & UC-01; RF-004-R1; CR-002 & Ground truth físico en sitio análogo\\ \hline
-SyRS-014 & T & Logs slip + tiempo a stop & Inducir slip > 20\% y medir & Fault Stop < 5 s & UC-01; RF-005 & --\\ \hline
+SyRS-012 & D/T & Video + logs evitación & Recorrido con obstáculos dentro de umbrales de emergencia (HC-SR04 $\le$200\,mm, VL53L0X $\le$150\,mm) & 0 colisiones & UC-01; RF-003 & --\\ \hline
+SyRS-013 & A/T & Encoders vs. ground truth + log RET & Recorrido de referencia + medición real + inducir slip & Error $<$ 5\% + transición a HomingRetreat en $\le$2 frames TLM & UC-01; RF-004-R1; CR-002 & Ground truth físico en sitio análogo\\ \hline
+SyRS-014 & T & Logs stall + tiempo a stop & Inducir stall persistente, proximidad de emergencia o \texttt{OC\_FAULT} & Fault Stop $\le$500\,ms & UC-01; RF-005 & --\\ \hline
 SyRS-015 & T & Medición tiempo de paro & Señal Fault Stop + medición & $\le$ 500 ms & PROP-REQ-002 & --\\ \hline
 SyRS-016 & I/T & pcap + verificación integridad & Captura + decodificación CSP & 100\% paquetes válidos & UC-01; RF-006 & --\\ \hline
-SyRS-017 & T/A & Serie temporal V/I & Medir V/I y comparar instrumento & $\ge$ 1 Hz y $\pm$ 1\% & UC-01; EPS-REQ-001 & --\\ \hline
+SyRS-017 & T/A & Serie temporal V multi-banco + I por motor & Medir V (INA3221) + I (ACS712 por canal) y comparar instrumento & V: $\ge$1\,Hz, resolución $\le$8\,mV; I: agregada en frame TLM del LLC & UC-01; EPS-REQ-001 & --\\ \hline
 SyRS-018 & T/D & Resultado prueba de rango & Enlace 2.4 GHz LoS a distancia & Estable $\ge$ 50 m & COMM-REQ-002 & Definir “estable” (TBD)\\ \hline
 SyRS-030 & I/T & Mensajes con campos mínimos & Capturar TM en downlink & 4/4 campos presentes & UC-01; ConOps downlink & --\\ \hline
 SyRS-040 & T/A & Perfilado latencia & Instrumentar tiempos por ciclo & $\le$ 2 s/ciclo & UC-01; RNF-001 & --\\ \hline
 SyRS-041 & A/T & Error relativo de distancia & Comparar con referencia & Error < 5\% & UC-01; RNF-003 & Método referencia TBD\\ \hline
 SyRS-042 & D/T & Tabla intentos/éxitos rescate & Ejecutar N escenarios & $\ge$ 90\% éxito & UC-01; RNF-002 & Definir “rescate” (TBD)\\ \hline
-SyRS-050 & I/T & pcap + decodificación & Capturar uplink/downlink & CSP sobre UDP/IP verificado & UC-01; §9.1/§9.4 & --\\ \hline
-SyRS-051 & T & Medición delay impuesto & Configurar delay 0--5 s & Retardo dentro de [0,5] s & CON-002 & --\\ \hline
-SyRS-052 & I/D & Evidencia interfaces internas & Inspección N2/IBD + smoke test & CSI/I2C/PWM/bus datos operativos & N2 Cuadro 5; §9.5 & --\\ \hline
-SyRS-060 & D/T & Logs estado/evento & Inyectar comandos/fallas & Transiciones como tabla & UC-01; §7.3.8 & --\\ \hline
-SyRS-061 & D/T & Logs retreat + waypoint & Disparar conditions\_adverse\_detected & safe\_waypoint\_reached evidenciado & UC-01; §7.3.8 & Guardas/políticas TBD\\ \hline
+SyRS-050 & I/T & pcap + decodificación & Capturar uplink/downlink & CSP sobre UDP/IP verificado & UC-01; \S\ref{sec:system_interfaces} & --\\ \hline
+SyRS-051 & T & Medición delay impuesto & Configurar delay 0--5 s & Retardo dentro de [0,5]\,s; \emph{implementación pendiente} & CON-002 & --\\ \hline
+SyRS-052 & I/D & Evidencia interfaces internas & Inspección N2/IBD + smoke test & CSI/I2C/PWM/bus datos operativos & N2: Tab.~\ref{tab:n2_fisica}; \S\ref{subsec:internal_interfaces} & --\\ \hline
+SyRS-060 & D/T & Logs estado/evento & Inyectar comandos/fallas & Transiciones como tabla (7 \texttt{RoverState}: STB/EXP/AVD/CLB/RET/FLT/SAFE) & UC-01; \S\ref{subsec:uc01_states} & --\\ \hline
+SyRS-061 & D/T & Logs retreat + waypoint & Disparar conditions\_adverse\_detected o slip persistente & safe\_waypoint\_reached evidenciado & UC-01; \S\ref{subsec:uc01_states} & Guardas/políticas TBD\\ \hline
 SyRS-070 & T/I & Registros 2 h & Ejecutar logging 2 h & Sin pérdida; recuperación posible & CDH-REQ-002 & --\\ \hline
 SyRS-080 & D/T & SafeMode + log & Inyectar sw\_fault\_critical/power\_anomaly & Any$\rightarrow$SafeMode evidenciado & EVT-CDH-010/EVT-EPS-005 & --\\ \hline
 SyRS-081 & I/T & Presencia protecciones + prueba & Inspección EPS + ensayo & Protecciones presentes y funcionales & EPS/N2 & --\\ \hline
 SyRS-090 & I & Evidencia campaña lab-only & Revisión plan/actas campaña & Condición consistente & CON-001 & --\\ \hline
-SyRS-091 & I/D & Evidencia entorno (pendiente/obs.) & Medición y registro del sitio & Incluye pendiente $\le$ 20° y obstáculos & §4.4; §7.3.11 & --\\ \hline
-SyRS-100 & I/T & Evidencia protección antipartículas & Inspección + prueba de exposición & Cumple criterio definido (TBD) & STR-REQ-002; entorno & Nivel exacto TBD\\ \hline
+SyRS-091 & I/D & Evidencia entorno (pendiente/obs.) & Medición y registro del sitio & Incluye pendiente $\le$ 20° y obstáculos & \S\ref{subsec:operational_environment}; \S\ref{subsec:operational_constraints} & --\\ \hline
+SyRS-100 & I/T & Evidencia protección antipartículas & Blow test con polvo simulado ($\le$1\,mm, 30\,min) + inspección & Cumple método ENV-REQ-003 (IP4X IEC 60529) & STR-REQ-002; ENV-REQ-003 & --\\ \hline
 
 \end{longtable}
 
@@ -98,12 +98,12 @@ SyRS-100 & I/T & Evidencia protección antipartículas & Inspección + prueba de
 \rowcolor{AgencyBlue!15}
 \endlastfoot
 
-SRS-001 & I/T & pcap + decodificación CSP/UDP & Captura de red (uplink/downlink) & Decodificación correcta + integridad verificada & UC-01; §9.4.1 & --\\ \hline
-SRS-002 & T & Medición delay configurado & Configurar latencia 0--5 s & Retardo dentro de [0,5] s & CON-002 & --\\ \hline
-SRS-010 & D/T & Trazas máquina de estados & Ejecutar UC-01 y contingencias & Transiciones válidas + history & UC-01; §7.3.8 & --\\ \hline
-SRS-011 & T/D & Respuesta a eventos mínimos & Inyectar eventos del diccionario & Eventos consumidos/producidos & Cuadro 1; UC-01 & --\\ \hline
-SRS-012 & T/I & Logs eventos no manejados & Inyectar evento no definido para estado & Sin transición + log con campos requeridos & §7.3.8.3 & --\\ \hline
-SRS-013 & D/T & Gestión de enlace en logs & Forzar link\_lost/link\_restored & Transiciones GestiónEnlace coherentes & §7.3.8 & Guardas retry\_* TBD\\ \hline
+SRS-001 & I/T & pcap + decodificación CSP/UDP & Captura de red (uplink/downlink) & Decodificación correcta + integridad verificada & UC-01; \S\ref{subsec:software_interfaces} & --\\ \hline
+SRS-002 & T & Medición delay configurado & Configurar latencia 0--5 s & Retardo dentro de [0,5]\,s; \emph{implementación pendiente} & CON-002 & --\\ \hline
+SRS-010 & D/T & Trazas máquina de estados & Ejecutar UC-01 y contingencias & Transiciones válidas + history & UC-01; \S\ref{subsec:uc01_states} & --\\ \hline
+SRS-011 & T/D & Respuesta a eventos mínimos & Inyectar eventos del diccionario & Eventos consumidos/producidos & Tab.~\ref{tab:diccionario_eventos}; UC-01 & --\\ \hline
+SRS-012 & T/I & Logs eventos no manejados & Inyectar evento no definido para estado & Sin transición + log con campos requeridos & \S\ref{subsec:uc01_states} & --\\ \hline
+SRS-013 & D/T & Gestión de enlace en logs & Forzar link\_lost/link\_restored & Transiciones GestiónEnlace coherentes & \S\ref{subsec:uc01_states} & Guardas retry\_* TBD\\ \hline
 SRS-014 & D/T & Evento storage\_near\_full & Llenar hasta umbral & Priorización de downlink evidenciada & EVT-CDH-007 & Umbral/política TBD\\ \hline
 SRS-020 & I/T & Payload TM con campos mínimos & Capturar TM de estado & 4/4 campos presentes & ConOps downlink; UC-01 & --\\ \hline
 SRS-030 & T/A & Perfilado tiempos por ciclo & Instrumentar ciclos de agentes & $\le$ 2 s (según métrica) & RNF-001; UC-01 & --\\ \hline
@@ -120,5 +120,5 @@ SRS-061 & I/T & Logs de auditoría & Revisar logs en pruebas & Campos completos 
   \item SyRS incluidos: \textbf{26} (SyRS-001 al SyRS-100).
   \item SRS incluidos: \textbf{13} (SRS-001 al SRS-061).
   \item Confirmación: cada requisito tiene al menos un método I/A/D/T asignado en su matriz correspondiente.
-  \item TBD pendientes: definición de ``enlace estable'', baseline para mejora EKF, método de referencia para error de navegación, definición de escenarios de ``rescate'', umbrales/políticas de reintento y nivel exacto de protección antipartículas.
+  \item TBD pendientes: definición operativa de ``enlace estable'' (SyRS-018); método de referencia para ground truth físico de odometría (SyRS-013/RF-004-R1, CR-002); definición de escenarios de ``rescate'' (RNF-002); umbrales/políticas de reintento (TBD-OP-02); confirmación del lente OV5647 instalado para FOV (GNC-REQ-001); implementación de inyección de latencia (SyRS-051/SRS-002, CON-002).
 \end{itemize}
