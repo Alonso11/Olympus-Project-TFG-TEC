@@ -21,7 +21,7 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
 \subsubsection{Tracción (Locomotion)}
 \textbf{Soporte de RF-003, RF-004:}
 \begin{itemize}
-    \item \textbf{TRAC-REQ-001:} El subsistema de Tracción DEBERÁ permitir el desplazamiento estable en superficies volcánicas con pendientes de hasta 20°.
+    \item \textbf{TRAC-REQ-001:} El subsistema de Tracción DEBERÁ permitir desplazamiento en superficies volcánicas con pendientes longitudinales y laterales de hasta 20° sin: (a) volcadura del rover, (b) stall persistente de encoder $\ge$ 1\,s (definido por \texttt{STALL\_THRESHOLD = 50} ciclos en el LLC), ni (c) desviación lateral involuntaria $\ge$ 50\,cm sobre un tramo recto de 10\,m. \emph{Verificación: T (campaña de campo con video y log TLM).}
     \item \textbf{TRAC-REQ-002:} El subsistema de Tracción DEBERÁ proveer un despeje del suelo (ground clearance) de al menos 10 cm. [EXTERNO]
 \end{itemize}
 
@@ -36,7 +36,7 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
 \textbf{Soporte de RNF-001, RF-006:}
 \begin{itemize}
     % CDH-REQ-001 (abstraído de Yocto)
-    \item \textbf{CDH-REQ-001:} El subsistema C\&DH \textbf{DEBERÁ} garantizar un tiempo de respuesta del sistema ante comandos de navegación de \(\le 2\,\mathrm{s}\) (soporte a RNF-001).
+    \item \textbf{CDH-REQ-001:} El subsistema C\&DH \textbf{DEBERÁ} procesar y enrutar comandos de navegación con una latencia interna $\le 2\,\mathrm{s}$, medida desde la recepción del comando en la interfaz de COMMS (entrada CSP al gateway HLC) hasta la emisión del comando ASCII al LLC vía UART (soporte a RNF-001). \emph{Excluye: propagación radio (CON-002) y ejecución motor en LLC (PROP-REQ-002).}
     \item \textbf{CDH-REQ-002:} El subsistema C\&DH DEBERÁ disponer de almacenamiento local suficiente para 2 horas de telemetría y logs de misión. [EXTERNO]
 \end{itemize}
 
@@ -44,7 +44,8 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
 \textbf{Soporte de CON-001:}
 \begin{itemize}
     \item \textbf{EPS-REQ-001:} El subsistema de Energía DEBERÁ reportar al C\&DH el voltaje de bus de cada banco de batería con una frecuencia de $\ge$ 1\,Hz y resolución $\le$ 8\,mV (sensor INA3221 en modo bus-only sobre Soft-I$^2$C). La medición de corriente se realiza distribuidamente a nivel de canal de motor mediante ACS712 (ver PROP-REQ-001 y la matriz N2 \S\ref{subsec:internal_interfaces}) y se agrega al frame TLM del LLC.
-    \item \textbf{EPS-REQ-002:} El subsistema de Energía DEBERÁ interrumpir la potencia a los motores ante voltajes críticos de la batería principal del sistema. [EXTERNO]
+    \item \textbf{EPS-REQ-002a:} El LLC DEBERÁ entrar en SafeMode y emitir corte hardware de potencia (relés bancarios D40/D41 \emph{active-low}) al detectar voltaje de cualquier banco $< 12\,$V durante $\ge$ 1 ciclo de telemetría. \emph{Verificación: T (integration test con fuente programable).}
+    \item \textbf{EPS-REQ-002b:} Cada banco de batería 18650 NMC DEBERÁ contar con protección física por sobre-descarga (\emph{under-voltage cutoff} $\ge 2.5\,$V/celda) según especificación del fabricante de celda. [EXTERNO]
 \end{itemize}
 
 \subsubsection{COMMS (Telecomunicaciones)}
@@ -70,7 +71,8 @@ Ante la pérdida de enlace directo, el sistema \textbf{DEBERÁ} realizar una con
 \subsubsection{GNC (Guía, Navegación y Control)}
 \textbf{Soporte de RF-001, RF-002, RF-003, RF-004:}
 \begin{itemize}
-    \item \textbf{GNC-REQ-001:} El subsistema GNC DEBERÁ adquirir imágenes mediante una interfaz de cámara de alta velocidad con un FOV horizontal $\ge$ 120° (soporte a RF-001).
+    \item \textbf{GNC-REQ-001:} El subsistema GNC DEBERÁ adquirir imágenes con la cámara frontal OV5647 equipada con lente M12 wide-angle ($\ge$ 120° HFOV nominal), conectada vía CSI-2 al RPi5 CAM1, a una tasa $\ge$ 10\,FPS en resolución 640$\times$480 (soporte a RF-001). \emph{Verificación: T (medición de FOV horizontal con patrón a distancia conocida).}
+    % TODO HW: confirmar el lente físico instalado. Si es lente stock OV5647 (~54° HFOV), revisar este requisito a "$\ge$ 54°" y eliminar la mención al lente M12.
     \item \textbf{GNC-REQ-002:} El subsistema GNC DEBERÁ clasificar la transitabilidad con una confianza $\ge$ 95\% en sectores de 10x10 cm (soporte a RF-002). \\
     \textit{Protocolo de test mínimo:} dataset $\ge$200 frames anotados con ground truth de terreno análogo; métrica = traversable-recall con IoU$\ge$0.5; criterio de aceptación = recall $\ge$95\% sobre el conjunto de test.
     \item \textbf{GNC-REQ-003:} El subsistema GNC DEBERÁ estimar el estado cinemático y deslizamiento del rover con una frecuencia de actualización mínima de 10 Hz (soporte a RF-004). [EXTERNO]
