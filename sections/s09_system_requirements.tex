@@ -15,7 +15,7 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
 \textbf{Soporte de Sistema:}
 \begin{itemize}
     \item \textbf{STR-REQ-001:} El subsistema Structural DEBERÁ soportar la masa total del rover manteniendo un factor de seguridad de al menos 1.5 frente a cargas estáticas en pendientes de hasta 20°. [EXTERNO]
-    \item \textbf{STR-REQ-002:} El subsistema Structural DEBERÁ proveer una envolvente de protección para la electrónica crítica equivalente a IP4X para prevenir el ingreso de suelo volcánico. [EXTERNO]
+    \item \textbf{STR-REQ-002:} El subsistema Structural DEBERÁ proveer una envolvente de protección para la electrónica crítica equivalente a IP4X (IEC 60529) para prevenir el ingreso de suelo volcánico. \emph{El método de verificación cuantitativo (blow test con polvo simulado, $\le$1\,mm, 30\,min) se especifica en ENV-REQ-003.}
 \end{itemize}
 
 \subsubsection{Tracción (Locomotion)}
@@ -254,14 +254,14 @@ SYS-FUN-040a \newline SYS-FUN-040b \newline SYS-FUN-041 \\ \hline
 \textbf{Dimensión paralela SafetyState:} Independientemente del \texttt{RoverState} reportado en esta tabla, el LLC mantiene un \texttt{SafetyState} (\texttt{Normal/Warn/Limit/FaultStall}) que modula los límites operacionales (velocidad máxima, agresividad de rampas) sin cambiar de modo. Permite degradación gradual antes de invocar SAFE o FLT (ver \S\ref{subsec:uc01_states}).
 
 \subsection{Performance and Non-Functional Requirements}
-\sysreq{RNF-001}{Latencia de Procesamiento}{CRÍTICO}{ELANav}{$\le$ 2 s por ciclo bajo carga nominal máxima (YOLOv8n activo + TM streaming + encoders a 10\,Hz).}
-\sysreq{RNF-002}{Resiliencia de Recuperación}{ALTO}{ConOps}{Éxito $\ge$ 90\% en rescates.}
+\sysreq{RNF-001}{Latencia de Procesamiento}{CRÍTICO}{ConOps; HLC stack}{$\le$ 2\,s por ciclo bajo carga nominal máxima (YOLOv8n-seg activo + TM streaming + encoders a 10\,Hz). En integración futura aplica al stack ELANav.}
+\sysreq{RNF-002}{Resiliencia de Recuperación}{ALTO}{ConOps}{Éxito $\ge$ 90\% en operaciones de rescate, definidas como transición RET (HomingRetreat) que alcance un waypoint seguro dentro de los últimos 5 registrados (SYS-FUN-020) sin entrar en FLT. Medido sobre $\ge$ 10 corridas de campaña.}
 \sysreq{RNF-003}{Precisión de Navegación}{ALTO}{ConOps}{Error $<$ 5\% dist. total bajo operación nominal (encoders activos + MSM en estado EXP).}
 
 \begin{reqblock}{RNF-004}{Límite Térmico Estructural}
     \ReqShall{El sistema DEBERÁ operar en un entorno cuya temperatura ambiente no exceda los 45 °C, garantizando que el chasis no supere los 60 °C.}
     \item[\textbf{Prioridad:}] ALTO
-    \ReqTrace{Análisis Térmico §8.2}
+    \ReqTrace{Análisis Térmico (\S\ref{sec:thermal_budget})}
     \item[\textbf{Racional:}] Prevenir la deformación estructural del material termoplástico (PLA MAX) en condiciones de calor extremo.
     \ReqAccept{Analysis / Test (Cámara térmica)}
 \end{reqblock}
@@ -270,7 +270,7 @@ SYS-FUN-040a \newline SYS-FUN-040b \newline SYS-FUN-041 \\ \hline
     \ReqShall{El sistema DEBERÁ minimizar la interferencia electromagnética entre los actuadores de potencia y los sensores de navegación mediante blindaje y cableado trenzado.}
     \item[\textbf{Prioridad:}] MEDIO
     \ReqTrace{Mejores prácticas NASA SE}
-    \item[\textbf{Racional:}] Evitar ruidos en la IMU y GPS causados por los picos de corriente de los motores DC.
+    \item[\textbf{Racional:}] Evitar ruidos en la IMU (MPU-6050) y en las lecturas de distancia (HC-SR04, VL53L0X, TF02) causados por los picos de corriente de los motores DC (drivers L298N y BTS7960). Olympus no integra GPS.
     \ReqAccept{Inspection / Test}
 \end{reqblock}
 
@@ -301,14 +301,14 @@ Esta subsección consolida los requisitos ambientales operacionales y de transpo
     \item \textbf{ENV-REQ-002 (Humedad relativa):} El sistema DEBERÁ operar en un rango de humedad relativa de 20\,\% a 90\,\% sin condensación. Las PCBs expuestas DEBERÁN estar revestidas con barniz conformal o equivalente. \\
     \textit{Verificación:} Inspection (verificación visual de revestimiento conformal en PCBs; análisis de datasheet para componentes sensibles).
 
-    \item \textbf{ENV-REQ-003 (Protección antipartículas — IP4X con método):} El subsistema STR DEBERÁ proveer protección equivalente a IP4X (IEC 60529) para la electrónica crítica. Método de test aceptado: exposición al flujo de aire con polvo volcánico simulado ($\le$1\,mm de diámetro) durante 30\,min a caudal moderado, seguida de inspección visual de ausencia de partículas en PCBs. Complementa STR-REQ-002. \\
+    \item \textbf{ENV-REQ-003 (Método de verificación IP4X):} Complemento de STR-REQ-002 que define el método de test cuantitativo para la protección IP4X (IEC 60529): exposición al flujo de aire con polvo volcánico simulado ($\le$1\,mm de diámetro) durante 30\,min a caudal moderado, seguida de inspección visual de ausencia de partículas en PCBs. \\
     \textit{Verificación:} Test (blow test con polvo simulado + inspección post-exposición).
 
     \item \textbf{ENV-REQ-004 (Shock de transporte):} El sistema DEBERÁ sobrevivir sin pérdida de funcionalidad a una caída libre de 0.5\,m sobre superficie firme en su contenedor de transporte (PKG-REQ-001), simulando condiciones de traslado al sitio análogo. \\
     \textit{Verificación:} Test (drop test desde 0.5\,m; verificar boot completo y ausencia de daños estructurales post-caída).
 
     \item \textbf{ENV-REQ-005 (EMC cuantitativo):} La interferencia electromagnética generada por los actuadores de potencia NO DEBERÁ causar errores de lectura ($>$5\,\% fuera de rango nominal) en los sensores de navegación con interfaz I$^2$C o GPIO a distancias de cableado $\ge$10\,cm con blindaje aplicado. Complementa y cuantifica RNF-005. \\
-    \textit{Verificación:} Test (lectura INA226 y HC-SR04 con motores a plena carga; verificar que las lecturas estén dentro del $\pm$5\,\% del valor de referencia sin motores).
+    \textit{Verificación:} Test (lectura INA3221 multi-banco y HC-SR04/VL53L0X con motores a plena carga; verificar que las lecturas estén dentro del $\pm$5\,\% del valor de referencia sin motores).
 \end{itemize}
 
 \subsubsection{Physical Characteristics (ISO 29148 9.5.11)}
@@ -332,12 +332,14 @@ Esta subsección consolida los requisitos ambientales operacionales y de transpo
 \begin{itemize}
     \item \textbf{SEC-REQ-001:} El sistema DEBERÁ procesar únicamente comandos provenientes de nodos de control autorizados y autenticados en la red del sistema.
     \item \textbf{SEC-REQ-002:} Los parámetros críticos de navegación DEBERÁN estar protegidos contra modificaciones no autorizadas durante la ejecución de la misión.
+    \item[] \emph{Nota:} CSP soporta autenticación HMAC opcional; el baseline actual no la habilita (campañas controladas en SETEC Lab). SEC-REQ-001 y SEC-REQ-002 quedan como objetivo para deployments con red expuesta.
 \end{itemize}
 
 \subsubsection{Information Management (ISO 29148 9.5.14)}
 \begin{itemize}
     \item \textbf{INF-REQ-001:} El sistema DEBERÁ almacenar logs de telemetría y eventos en memoria no volátil, asegurando la persistencia tras pérdida de energía.
-    \item \textbf{INF-REQ-002:} Todos los registros de datos DEBERÁN estar sincronizados temporalmente con una precisión de $\le$ 100 ms respecto al reloj maestro.
+    \item \textbf{INF-REQ-002:} Todos los registros de datos DEBERÁN estar sincronizados temporalmente con una precisión de $\le$ 100\,ms respecto al reloj maestro.
+    \item[] \emph{Nota:} el reloj maestro es el del HLC (RPi5, NTP/local); el LLC adjunta su \texttt{tick\_ms} en cada frame TLM y el \texttt{OlympusLogger} correla con timestamp HLC. Precisión efectiva pendiente de medición formal.
 \end{itemize}
 
 \subsubsection{Life Cycle and Packaging (ISO 29148 9.5.16/17)}
