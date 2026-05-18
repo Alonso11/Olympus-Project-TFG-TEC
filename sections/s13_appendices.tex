@@ -266,10 +266,10 @@ RF-005 \newline SyRS-060 \\ \hline
 \subsection{Engineering Budgets}\label{subsec:eng_budgets}
 % ============================================================
 
-Este apéndice establece los presupuestos de ingeniería (potencia, masa y enlace RF) del Rover Olympus con valores derivados de hojas de datos del fabricante (\textbf{[DS]}), estimaciones de ingeniería (\textbf{[EST]}) y parámetros pendientes de medición en hardware real (\textbf{[TBM]}). Los valores [TBM] deben resolverse antes del cierre de la campaña V\&V para cerrar los requisitos RNF-007 (MOD $\ge$2\,h) y EPS-REQ-001 (monitoreo INA226). \cite{nasa_cm, segoldmine_ppi, rpi5_brief, arduino_mega_ds, imx219_ds}
+Este apéndice establece los presupuestos de ingeniería (potencia, masa y enlace RF) del Rover Olympus con valores derivados de hojas de datos del fabricante (\textbf{[DS]}), estimaciones de ingeniería (\textbf{[EST]}) y parámetros pendientes de medición en hardware real (\textbf{[TBM]}). Los valores [TBM] deben resolverse antes del cierre de la campaña V\&V para cerrar los requisitos RNF-007 (MOD $\ge$2\,h) y EPS-REQ-001 (monitoreo multi-banco INA3221) \cite{rpi5_brief, arduino_mega_ds}.
 
 % ------------------------------------------------------------
-\subsubsection{Power Budget (Bus 12 V — 4S LiPo)}
+\subsubsection{Power Budget (Bus 12 V — 3 bancos 18650 NMC)}
 % ------------------------------------------------------------
 
 \begin{landscape}
@@ -278,9 +278,9 @@ Este apéndice establece los presupuestos de ingeniería (potencia, masa y enlac
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.3}
 \begin{longtable}{| p{2.0cm} | p{4.5cm} | c | r | r | r | r | r | c |}
-\caption{Presupuesto de potencia del Rover Olympus (modo traversal, bus 12\,V, 4S LiPo).
-  Valores [TBM] requieren banco de motores con corriente medida por INA226. Criterio RNF-007: energía total $\ge$89.4\,Wh
-  $\Rightarrow$ batería mínima 4S ($\approx$14.8\,V) $\ge$5\,400\,mAh ($\ge$80\,Wh con 10\,\% derating).}
+\caption{Presupuesto de potencia del Rover Olympus (modo traversal, bus 12\,V, 3 bancos 18650 NMC).
+  Valores [TBM] requieren banco de motores con corriente medida por ACS712 por canal (INA3221 mide voltaje multi-banco). Criterio RNF-007: energía total $\ge$89.4\,Wh
+  $\Rightarrow$ capacidad combinada $\ge$5\,400\,mAh ($\ge$80\,Wh con 10\,\% derating).}
 \label{tab:power_budget}\\
 \hline
 \textbf{Subsistema} & \textbf{Componente} & \textbf{V\textsubscript{bus}} &
@@ -301,9 +301,10 @@ Este apéndice establece los presupuestos de ingeniería (potencia, masa y enlac
 
 C\&DH  & RPi5 (OBC/HLC)         & 5\,V  & 0.636 & 3.18  & 1.506 & 7.53  & 6.36  & [DS] \cite{rpi5_brief} \\ \hline
 C\&DH  & Arduino Mega (LLC)      & 5\,V  & 0.050 & 0.25  & 0.050 & 0.25  & 0.50  & [DS] \cite{arduino_mega_ds} \\ \hline
-GNC    & Cámara IMX219           & 3.3\,V & 0.150 & 0.50  & 0.150 & 0.50  & 1.00  & [DS] \cite{imx219_ds} \\ \hline
+GNC    & Cámara OV5647 (CAM1)    & 3.3\,V & 0.150 & 0.50  & 0.150 & 0.50  & 1.00  & [DS] \\ \hline
 GNC    & HC-SR04 ($\times$1)     & 5\,V  & 0.003 & 0.015 & 0.003 & 0.015 & 0.03  & [DS] \\ \hline
-EPS    & INA226 (monitor)        & 3.3\,V & 0.001 & 0.003 & 0.001 & 0.003 & 0.01  & [DS] \\ \hline
+EPS    & INA3221 (monitor multi-banco) & 3.3\,V & 0.001 & 0.003 & 0.001 & 0.003 & 0.01 & [DS] \\ \hline
+EPS    & ACS712 ($\times$6, sense corriente motor) & 5\,V & 0.060 & 0.30 & 0.060 & 0.30 & 0.60 & [DS] \\ \hline
 PROP   & 6$\times$ Motor NFP-5840 & 12\,V & {[TBM]} & {[TBM]} & {[TBM]} & $\approx$14.4 & {[TBM]} & [EST] \\ \hline
 COMM   & WiFi 802.11n (RPi5 integ.) & incl. & -- & -- & -- & $\le$1.0 & $\le$2.0 & [EST] \\ \hline
 \hline
@@ -328,9 +329,10 @@ COMM   & WiFi 802.11n (RPi5 integ.) & incl. & -- & -- & -- & $\le$1.0 & $\le$2.0
 C\&DH  & RPi5 (SBC)                & 45    & [DS]  & PCB sin carcasa \\ \hline
 C\&DH  & Arduino Mega 2560         & 37    & [DS]  & PCB sin carcasa \\ \hline
 C\&DH  & microSD 64\,GB (clase 10) & 2     & [DS]  & \\ \hline
-GNC    & Cámara IMX219             & 6     & [DS]  & módulo + lente wide-angle \\ \hline
+GNC    & Cámara OV5647 (CAM1)      & 6     & [DS]  & módulo + lente seleccionado (ver GNC-REQ-001) \\ \hline
 GNC    & HC-SR04                   & 8     & [DS]  & \\ \hline
-EPS    & INA226 breakout           & 3     & [DS]  & \\ \hline
+EPS    & INA3221 breakout (triple) & 3     & [DS]  & monitoreo multi-banco \\ \hline
+EPS    & ACS712 ($\times$6, current sense) & 30 & [DS] & 5\,g/módulo, uno por motor \\ \hline
 EPS    & LM335 + NTC ($\times$2)   & 5     & [EST] & sensores térmicos \\ \hline
 PROP   & 6$\times$ Motor NFP-5840  & 2\,160 & [EST] & $\approx$360\,g/motor (estimado) \\ \hline
 PROP   & Controladores de motor    & 120   & [EST] & 6$\times$ driver \\ \hline
@@ -338,7 +340,7 @@ COMM   & Módulo WiFi integrado     & --    & [DS]  & incluido en RPi5 \\ \hline
 STR    & Chasis / estructura       & {[TBM]} & [TBM] & Medición directa con balanza \\ \hline
 STR    & Ruedas ($\times$6)        & {[TBM]} & [TBM] & \\ \hline
 STR    & Arnés / cableado          & {[TBM]} & [TBM] & Estimado $\approx$200\,g \\ \hline
-EPS    & Batería 4S LiPo           & {[TBM]} & [TBM] & $\approx$500--700\,g típico \\ \hline
+EPS    & 18650 NMC ($\times$3 bancos) & {[TBM]} & [TBM] & celdas + portabaterías + protección \\ \hline
 \hline
 \multicolumn{2}{|l|}{\textbf{Electrónica conocida (excl. estructura)}} & $\approx$2\,386 & [DS/EST] & sin arnés ni batería \\ \hline
 \multicolumn{2}{|l|}{\textbf{Total estimado (sistema completo)}}       & 5\,000--7\,000 & [EST] & pendiente medición estructura \\ \hline
@@ -384,35 +386,23 @@ Sensibilidad del receptor              & $-91$   & dBm  & IEEE 802.11n MCS0 (6\,
 
 \subsection{Glossary}
 
-Este glosario consolida términos y abreviaturas utilizados en el SyRS/SRS final. Para evitar redundancias, se considera complementario a la Sección 3 (Terms, Definitions, Acronyms), que contiene las definiciones operativas principales. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+Este glosario consolida términos clave utilizados en el SyRS/SRS. Para definiciones operativas completas, ver \S\ref{sec:terms} (Terms, Definitions, Acronyms), que es la fuente autoritativa; este apéndice solo recoge un subconjunto frecuente para referencia rápida.
 
 \textbf{Términos clave (consolidación):}
 \begin{itemize}
-    \item \textbf{ELANav:} Embedded Library for Autonomous Navigation (biblioteca embebida para navegación autónoma). \cite{omg_sysml_mbse, nasa_cm}  
-    \item \textbf{Rover Olympus:} Rover académico tipo exploración, plataforma de validación de ELANav (7 subsistemas). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-    \item \textbf{UC‑01:} Exploración de superficie (caso núcleo); navegación autónoma continua con percepción y evitación. \cite{segoldmine_ppi, nasa_cm}  
-    \item \textbf{Sitio análogo:} Terreno volcánico / regolito simulado usado para validación (pendientes hasta 20°, obstáculos, transiciones de suelo). \cite{nasa_cm, segoldmine_ppi}  
-    \item \textbf{Slip ratio / deslizamiento:} Indicador de diferencia entre avance teórico y real; usado como disparador de contingencia con umbral slip $>$ 20\%. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-    \item \textbf{GCS / Estación terrena:} Sistema externo operado por Rover Planner para uplink/downlink. \cite{nasa_cm, segoldmine_ppi}  
-    \item \textbf{CSP:} CubeSat Space Protocol (encapsulamiento TM/CMD). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-    \item \textbf{V\&V:} Verification \& Validation, con métodos T/A/D/I (Test/\allowbreak Analysis/\allowbreak Demonstration/\allowbreak Inspection). \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}
-    \item \textbf{BDD/IBD/PBS/N2/ASM:} Artefactos de arquitectura (SysML y descomposición física) usados para trazabilidad y soporte de integración. \cite{omg_sysml_mbse, segoldmine_ppi}  
+    \item \textbf{ELANav:} Biblioteca embebida para la navegación de sistemas espaciales de misión crítica. Proyecto de investigación TEC (Escuela de Ingeniería Electrónica, coord.\ Johan Carvajal Godínez, 2025--2027). Olympus es la plataforma rover de validación de esta biblioteca.
+    \item \textbf{Rover Olympus:} Rover académico tipo exploración, plataforma de validación de ELANav (7 subsistemas).
+    \item \textbf{UC-01:} Exploración de superficie (caso núcleo); navegación autónoma continua con percepción y evitación.
+    \item \textbf{Sitio análogo:} Terreno volcánico / regolito simulado usado para validación (pendientes hasta 20°, obstáculos, transiciones de suelo).
+    \item \textbf{Slip ratio / deslizamiento:} Diferencia entre velocidad teórica del eje motriz y velocidad real de avance del rover; en Olympus la detección es \emph{event-based} (stall de encoder) y no porcentual, ver RF-004-R1.
+    \item \textbf{GCS / Estación terrena:} Sistema externo operado por Rover Planner para uplink/downlink.
+    \item \textbf{CSP:} CubeSat Space Protocol (encapsulamiento TM/CMD).
+    \item \textbf{V\&V:} Verification \& Validation, con métodos T/A/D/I (Test/Analysis/Demonstration/Inspection).
+    \item \textbf{BDD/IBD/PBS/N2/ASM:} Artefactos de arquitectura (SysML y descomposición física) usados para trazabilidad y soporte de integración.
 \end{itemize}
 
 \subsection{Revision History}
 
-Este SyRS/SRS final es el resultado de un proceso iterativo de borradores (main, main1, main3) que fueron generados en distintas iteraciones y niveles de detalle. En lugar de mantener historias de revisión divergentes por archivo, esta sección consolida el historial relevante y establece un criterio único de baseline para el documento final. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
+El historial de cambios del SyRS/SRS Rover Olympus se mantiene en el \emph{Change Register} (\S\ref{subsec:change-register}, Tab.~\ref{tab:change-register}), que documenta los Change Requests (CR-001, CR-002, CR-003\dots) aprobados sobre el baseline, sus motivos, los Configuration Items afectados y la decisión del mini-CCB. Cada CR se enlaza, donde aplica, a los commits en el repositorio del proyecto.
 
-\textbf{Historial consolidado (síntesis):}
-\begin{itemize}
-    \item \textbf{Iteración inicial:} Creación del documento base y establecimiento del foco UC‑01 como caso núcleo de validación. \cite{nasa_cm, segoldmine_ppi}  
-    \item \textbf{Reestructuración:} Adopción de estructura alineada a ISO/IEC/IEEE 29148 y guía NASA SE (reorganización de secciones, formalización de V\&V y trazabilidad). \cite{nasa_cm, segoldmine_ppi, omg_sysml_mbse}  
-    \item \textbf{Auditoría e integración:} Consolidación de arquitectura lógica/física (7 subsistemas), diferenciación PBS vs BDD, inclusión de PBS/ASM y matriz N2, y fortalecimiento del plan V\&V con criterios cuantitativos. \cite{nasa_cm, segoldmine_ppi}  
-    \item \textbf{Versión extendida:} Incorporación de detalle adicional de integración y apéndices ampliados de ConOps/Casos de Uso (main3), usados como insumo para completar secciones de main.pdf. \cite{segoldmine_ppi}  
-    \item \textbf{Consolidación final (esta versión):} Unificación, depuración y normalización de contenido entre main/main1/main3, eliminando redundancias y fijando ``definición maestra'' de requisitos en Sección 11; referencias cruzadas por ID en el resto del documento; y ajuste realista del UC‑05 hacia ``Safe Deactivation/Passivation'' documentado como [EXTERNO] en ConOps/Scope. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-\end{itemize}
-
-\textbf{Nota (SE) sobre inconsistencias depuradas:}
-\begin{itemize}
-    \item En main.pdf aparecía texto residual (``TBD'' en algunas secciones y referencias a una ``versión 3.15''); para este SRS final se adopta el control de revisiones más consistente observado en main1/main3 (v3.12 como referencia interna de borrador) y se elimina la numeración residual no sustentada. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}  
-\end{itemize}
+\emph{Convención:} los IDs de requisito son inmutables conforme a NASA-NPR-7123.1C; cambios sustanciales se gestionan vía \emph{supersession} (p.\,ej., RF-004 $\rightarrow$ RF-004-R1) en lugar de renombrar IDs existentes.
