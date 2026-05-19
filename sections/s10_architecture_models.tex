@@ -1027,17 +1027,17 @@ C\&DH (OBC) &
 \(-20\,^{\circ}\mathrm{C}\) \dots \ \(+60\,^{\circ}\mathrm{C}\) &
 CPU/GPU sensibles a frío extremo; riesgo de falla SD/SSD. Gestión activa vía calefactores. \\
 
-EPS (Batería + BMS) &
+EPS (3 bancos NMC + INA3221 + ACS712) &
 \(-10\,^{\circ}\mathrm{C}\) \dots \ \(+40\,^{\circ}\mathrm{C}\) &
-Las Li-ion presentan degradación severa bajo \(0\,^{\circ}\mathrm{C}\). Requiere aislamiento + calefacción. \\
+Celdas Li-ion NMC presentan degradación severa bajo \(0\,^{\circ}\mathrm{C}\). Sin BMS centralizado, la protección térmica se delega a la PDU + INA3221 (monitoreo V) y al criterio operacional de campaña. \\
 
 PROP / MOV &
 \(-80\,^{\circ}\mathrm{C}\) \dots \ \(+85\,^{\circ}\mathrm{C}\) &
-Elements electromecánicos toleran rangos amplios; evitar condensación. \\
+Elementos electromecánicos (motores NFP-5840 + drivers mixtos L298N/BTS7960) toleran rangos amplios; evitar condensación en drivers. \\
 
-GNC / Cámara CSI &
+GNC / Cámara OV5647 &
 \(-40\,^{\circ}\mathrm{C}\) \dots \ \(+60\,^{\circ}\mathrm{C}\) &
-Sensor y ribbon cable sensibles a frío; deriva afecta enfoque. \\
+Sensor OV5647 y ribbon cable CSI sensibles a frío; deriva afecta enfoque. ToF VL53L0X y TF02 dentro del mismo rango. \\
 
 COMMS &
 \(-30\,^{\circ}\mathrm{C}\) \dots \ \(+70\,^{\circ}\mathrm{C}\) &
@@ -1071,9 +1071,9 @@ Para el entorno análogo se emplearán soluciones térmicas COTS: aislamiento pa
 \hline
 \textbf{Parámetro} & \textbf{Valor} \\
 \hline
-\textbf{Entorno de referencia} (análogos) & \(-80\,^{\circ}\mathrm{C}\) \dots \ \(+30\,^{\circ}\mathrm{C}\) \\
-\textbf{Margen frío} (según TCS+MLI+RHU) & \(+8\,^{\circ}\mathrm{C}\) de reserva \\
-\textbf{Margen calor} (capacidad radiativa OSR) & \(+15\,^{\circ}\mathrm{C}\) de reserva \\
+\textbf{Entorno de referencia} (sitio análogo terrestre volcánico, p.\,ej.\ Costa Rica) & \(-10\,^{\circ}\mathrm{C}\) \dots \ \(+35\,^{\circ}\mathrm{C}\) \\
+\textbf{Margen frío} (aislamiento pasivo + gestión por conducción) & \(+8\,^{\circ}\mathrm{C}\) de reserva \\
+\textbf{Margen calor} (ventilación pasiva + sombra de bahía) & \(+15\,^{\circ}\mathrm{C}\) de reserva \\
 \hline
 \end{tabular}
 \end{table}
@@ -1083,9 +1083,9 @@ Para el entorno análogo se emplearán soluciones térmicas COTS: aislamiento pa
 % ------------------------------------------------------------
 \paragraph{Análisis resumido.}
 \begin{itemize}
-    \item Los límites térmicos están dictados por tolerancias COTS y restricciones operacionales.  
-    \item El TCS combinado permite mantener el EPS por encima de \(0\,^{\circ}\mathrm{C}\) y el C\&DH en banda nominal.  
-    \item Los márgenes (\(+8\,^{\circ}\mathrm{C}\) frío, \(+15\,^{\circ}\mathrm{C}\) calor) garantizan compatibilidad con variaciones rápidas.
+    \item Los límites térmicos están dictados por tolerancias COTS y restricciones operacionales.
+    \item La estrategia TCS pasiva (aislamiento + conducción interna) busca mantener los 3 bancos NMC por encima de \(0\,^{\circ}\mathrm{C}\) y el C\&DH/GNC en banda nominal durante campañas diurnas en sitio análogo.
+    \item Los márgenes (\(+8\,^{\circ}\mathrm{C}\) frío, \(+15\,^{\circ}\mathrm{C}\) calor) garantizan compatibilidad con variaciones diurnas/nocturnas típicas del entorno análogo terrestre.
 \end{itemize}
 
 
@@ -1095,38 +1095,42 @@ Para el entorno análogo se emplearán soluciones térmicas COTS: aislamiento pa
 
 
 
-El sistema se compone de dos nodos con responsabilidades especializadas. El \textbf{Nodo A} (OBC con una distribución a medida de \textbf{Yocto Project}) concentra la percepción sensorial, el modelo de IA y la lógica de decisión global mediante una \textbf{Máquina de Estados Maestra (MSM)}. El \textbf{Nodo B} (MCU con \textbf{FreeRTOS}) actúa como una capa de ejecución determinista que gestiona los actuadores mediante una arquitectura basada en \textbf{prioridades de tareas}.
+El sistema se compone de dos nodos con responsabilidades especializadas. El \textbf{Nodo A} (OBC con una distribución a medida de \textbf{Yocto Project}) concentra la percepción sensorial, el modelo de IA y la lógica de decisión global mediante una \textbf{Máquina de Estados Maestra (MSM)}. El \textbf{Nodo B} (MCU con firmware \textbf{Rust \texttt{no\_std} bare-metal} sobre \texttt{avr-hal}; \textit{sin RTOS}) actúa como capa de ejecución determinista que gestiona los actuadores y los sensores de seguridad mediante un \textbf{main loop cooperativo} ($\sim$20\,ms) acompañado de \textbf{interrupciones por hardware} (USART, encoders por GPIO PCINT, ISR del LiDAR TF02).
 
 
 \begin{landscape}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\paperheight]{figures/YoctoNodeImageProcessing.png}
-    \caption{Vista funcional de la arquitectura de software: IA en Yocto y ejecución en FreeRTOS.}
+    \caption{Vista funcional de la arquitectura de software: percepción + IA en Yocto (RPi5) y ejecución determinista en Rust \texttt{no\_std} bare-metal (Arduino Mega).}
     \label{fig:software_arqui}
 \end{figure}
 \end{landscape}
 
 \subsubsection{Nodo A (Yocto/Linux): Percepción, IA y Máquina de Estados Maestra}
 \label{subsubsec:nodoA_yocto}
-La Raspberry Pi 5 ejecuta una imagen optimizada de \textbf{Yocto Project}, centralizando la percepción directa de la \textbf{NavCam (CSI)}, el \textbf{LiDAR TF-Luna} (UART/I2C) y el \textbf{Sensor HC-SR04} (GPIO). Esta aproximación permite que el flujo de datos sea consumido directamente por el modelo de IA sin latencias de red o de paso por microcontroladores.
+La Raspberry Pi 5 ejecuta una imagen optimizada de \textbf{Yocto Project} (sin layers de ML genéricas, ver memoria de build limpio 2026-03-24) que centraliza la percepción de alto nivel de la \textbf{NavCam OV5647 (CSI)} y el \textbf{LiDAR TF02} (UART 115200\,bps). Los sensores de seguridad de corto rango (\textbf{HC-SR04} ultrasonido en GPIO y \textbf{VL53L0X} ToF en I2C) viven en el Nodo B (Arduino Mega) para mantener el lazo de \emph{emergency stop} fuera del camino crítico UART; sus lecturas llegan a la RPi5 sólo como telemetría agregada en los frames TLM.
 
 El flujo de software en este nodo se divide en tres niveles:
 \begin{enumerate}
-    \item \textbf{Capa de Percepción:} Lectura directa de drivers del kernel (V4L2 para cámara, I2C para LiDAR, GPIO para ultrasonido) y normalización de los datos sensoriales.
-    \item \textbf{Motor de Inferencia:} Ejecución del modelo de IA (p. ej., TFLite u ONNX) para la clasificación de la transitabilidad del terreno y la detección de obstáculos en el camino.
-    \item \textbf{Máquina de Estados Maestra (MSM):} Gobierna el comportamiento global del rover basándose en los resultados de la IA y el estado de la misión. Dependiendo del estado activo (\texttt{STANDBY}, \texttt{EXPLORE}, \texttt{AVOID}, \texttt{FAULT}), la MSM habilita o deshabilita subsistemas y genera los paquetes de mando para la MCU.
+    \item \textbf{Capa de Percepción:} Lectura directa de drivers del kernel (V4L2 para cámara CSI, UART para TF02) y consumo de telemetría del Nodo B vía CSP \texttt{csp\_if\_udp} (HC-SR04, VL53L0X, encoders, INA3221, ACS712 agregados).
+    \item \textbf{Motor de Inferencia:} Ejecución del modelo \textbf{YOLOv8n-seg} (formato ONNX) para clasificación de transitabilidad y segmentación de obstáculos sobre los frames OV5647 (baseline COCO, $\sim$205\,ms/frame, $\sim$4.9\,FPS en RPi5 CPU; pendiente fine-tuning terreno volcánico --- RF-002).
+    \item \textbf{Máquina de Estados Maestra (MSM, módulo \texttt{olympus\_hlc.msm}):} Gobierna el comportamiento global del rover basándose en los resultados de la IA y el estado de la misión. Dependiendo del estado activo (\texttt{STANDBY}, \texttt{EXPLORE}, \texttt{AVOID}, \texttt{RETREAT}, \texttt{CLIMB}, \texttt{FAULT}, \texttt{SAFE}), la MSM habilita o deshabilita subsistemas y genera los comandos ASCII para la MCU (\texttt{EXP:L:R}, \texttt{CLB:L:R}, \texttt{STB}, \texttt{RST}, \texttt{BNK:0}) según el ICD-LLC-001.
 \end{enumerate}
 
-\subsubsection{Nodo B (FreeRTOS): Ejecución Determinista y Actuación}
+\subsubsection{Nodo B (Rust \texttt{no\_std} bare-metal): Ejecución Determinista y Actuación}
 \label{subsubsec:nodoB_freertos}
-El Arduino Mega 2560 R3 utiliza \textbf{FreeRTOS} para garantizar latencias acotadas en el control físico de los actuadores. La arquitectura se simplifica mediante \textbf{Tareas RTOS} especializadas que se ejecutan concurrentemente bajo un esquema de prioridades:
+El Arduino Mega 2560 R3 ejecuta el firmware \textbf{\texttt{rover-low-level-controller}} (LLC v2.20) compilado con \textbf{Rust \texttt{no\_std} sobre \texttt{avr-hal}} y desplegado mediante \texttt{ravedude}; \textbf{no} usa un RTOS (FreeRTOS no aporta valor en esta plataforma AVR de 8\,bits dada la simplicidad del scheduler requerido). La determinación se logra con un \textbf{main loop cooperativo} de período fijo ($\sim$20\,ms) combinado con \textbf{interrupciones por hardware} para los caminos críticos, organizado en módulos:
 
 \begin{itemize}
-    \item \textbf{\texttt{Task\_Communication} (Prioridad Media):} Encargada de gestionar el enlace UART con la RPi 5. Se encarga de decodificar los paquetes binarios entrantes, validar su integridad (CRC) y actualizar los setpoints de movimiento en la memoria compartida.
-    \item \textbf{\texttt{Task\_Actuation} (Prioridad Alta):} Es la tarea más crítica. Genera las señales \textbf{PWM} para los 6 motores de tracción y el servomotor de dirección. Implementa la lógica de rampas de aceleración y asegura que los actuadores respondan de forma suave a las órdenes de la MSM.
-    \item \textbf{\texttt{Task\_Safety} (Prioridad Máxima):} Supervisa la salud del sistema. Verifica la presencia del enlace con la OBC (watchdog) y monitoriza señales de diagnóstico de los drivers. En caso de pérdida de comunicación o falla detectada, fuerza un estado de parada segura (\emph{Safe Stop}).
+    \item \textbf{Módulo \texttt{comms} (USART0 con ISR FIFO):} Decodifica los frames ASCII entrantes desde la RPi5 (comandos \texttt{EXP/CLB/STB/RST/BNK:0/PING}) y emite telemetría \texttt{TLM:\dots} de vuelta. CRC opcional; integridad por handshake \texttt{PING$\rightarrow$PONG}.
+    \item \textbf{Módulo \texttt{state\_machine} (MSM 7 estados + SafetyState paralelo):} Implementa los 7 estados \texttt{Standby/Explore/Avoid/Retreat/Climb/Fault/Safe} y la dimensión paralela \texttt{SafetyState (Normal/Warn/Limit/FaultStall)}. Gobierna las transiciones según sensores (HC-SR04 $<$200\,mm, TF02 $<$150\,mm, VL53L0X CLB $<$50\,mm, stall por encoders).
+    \item \textbf{Módulo \texttt{motors} (\texttt{MotorWithEncoder}, drivers mixtos):} Genera PWM hacia los drivers \textbf{L298N (×1, FR/FL)} y \textbf{BTS7960 (×4, CR/CL/RR/RL)} usando la configuración mixed-drivers (commit \texttt{1845c4a}); aplica dead-band del 15\% y rampas; consume \texttt{QuadratureEncoder} fase A/B (D44--D49) para lazo cerrado por rueda.
+    \item \textbf{Módulo \texttt{sensors}:} Drivers Rust para HC-SR04 (GPIO trigger/echo), VL53L0X (I2C 0x29), MPU-6050 (I2C 0x68), INA3221 (I2C bus-only, 3 canales), ACS712 (ADC analógico × 6) y TF02 (UART2 con fix FIFO en ISR USART2, commit \texttt{6dc27ec}).
+    \item \textbf{Módulo \texttt{safety} (lazo de emergencia):} Verifica el watchdog UART contra la OBC, los umbrales \texttt{OC\_FAULT} de ACS712 (provisional 15\,A, pendiente calibración con \texttt{I\_stall} NFP-5840), las condiciones de stall por encoder y el corte de emergencia por sensores de corto rango. Una violación fuerza \texttt{state\_machine.transition\_to(Fault)} con \textit{paro seguro} en $\le$500\,ms (RF-005).
 \end{itemize}
+
+Cobertura de prueba en x86: 49/49 tests verdes (3 suites) al 2026-04-29. El despliegue en HW se realiza mediante \texttt{make flash-mixed PORT=/dev/ttyACM0}; la calibración de \texttt{OC\_FAULT\_BTS} con \texttt{I\_stall} medido en banco es prerrequisito antes de energizar BTS7960 con carga (procedimiento de 6 pasos, ver memoria \texttt{session\_2026\_04\_29\_llc\_protection}).
 
 \subsubsection{Protocolo de Comunicación y Flujo de Mando}
 \label{subsubsec:protocolo_serial}
