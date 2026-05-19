@@ -323,9 +323,11 @@ Los eventos conceptuales aquí descritos se realizan a nivel de implementación 
 Los eventos se especifican como \textit{Command, Signal, Status, Fault, Time}. 
 Las condiciones cuantitativas (umbrales, timeouts, políticas) se marcan como \textbf{TBD} hasta disponer de requisitos verificables.
 Este diccionario se ampliará para cubrir la totalidad de eventos del diagrama (incluyendo \texttt{cmd\_end\_mission}, \texttt{cmd\_enter\_safe\_mode}, \texttt{energy\_critical}, eventos internos y eventos de recuperación/gestión de enlace). 
-Las guardas basadas en severidad (p.\,ej., \texttt{severity\_allows\_retreat}, \texttt{severity\_requires\_replan}, 
+Las guardas basadas en severidad (p.\,ej., \texttt{severity\_allows\_retreat}, \texttt{severity\_requires\_replan},
 
 \texttt{severity\_requires\_retreat}) y políticas de reintento (\texttt{retry\_allowed}, \texttt{retry\_exhausted}) se consideran TBD y se definirán mediante parámetros configurables en el software, documentados en el ICD de software y reflejados en los procedimientos de prueba correspondientes. Hasta entonces, estas guardas se implementarán como constantes configurables (config files) y su valor por defecto se definirá en la configuración de campaña.
+
+\textbf{Implementación actual del gating de retreat (HLC v0).} En el stack HLC desplegado (\texttt{olympus\_hlc.monitors.WaypointTracker} y \texttt{olympus\_hlc.engine}), las guardas de severidad multi-nivel anteriores aún no están implementadas. La decisión de retreat táctico se reduce a la conjunción \texttt{tlm.dist\_mm > 0 AND tlm.dist\_mm < RETREAT\_DIST\_MM (300\,mm)}, evaluada solo si \texttt{msm\_state != CLIMB} (se suprime durante escalada porque CLB usa \texttt{CLB\_TOF\_EMERGENCY\_MM = 50\,mm}) y siempre que \texttt{SafeMode} no esté activo (SafeMode bloquea todo comando excepto \texttt{STB}, \texttt{PING}, \texttt{RST}, \texttt{BNK:0}). La prioridad ejecutada en \texttt{engine.update()} es \texttt{SafeMode > retreat táctico > slip}. La cuantificación multi-nivel de severidad queda como gap (TBD-OP-01) y se contempla integrar mediante ELANav cuando esté disponible.
 
 \begin{landscape}
 \scriptsize

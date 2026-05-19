@@ -78,7 +78,7 @@ Conforme a ISO/IEC/IEEE 29148, este registro identifica los parámetros técnico
 \begin{tabularx}{\textwidth}{| l | X | p{3.0cm} | p{2.2cm} | p{3.8cm} |}
 \hline
 \textbf{TBD-ID} & \textbf{Descripción del Parámetro} & \textbf{Requisito/Elemento} & \textbf{Responsable} & \textbf{Criterio de Resolución} \\ \hline
-TBD-OP-01 & Umbrales de severidad para contingencias (\texttt{severity\_\allowbreak allows\_\allowbreak retreat}) & \S\ref{subsec:uc01_states}; s09a & Líder GNC & Análisis de simulación en entorno volcánico. \\ \hline
+TBD-OP-01 & Umbrales de severidad multi-nivel para contingencias (\texttt{severity\_\allowbreak allows\_\allowbreak retreat}, \texttt{severity\_\allowbreak requires\_\allowbreak replan}, \texttt{severity\_\allowbreak requires\_\allowbreak retreat}). Impl.~actual HLC: guarda binaria \texttt{dist\_mm < 300\,mm AND state != CLIMB AND not SafeMode} en \texttt{WaypointTracker.should\_retreat} --- sin clasificación graduada. & \S\ref{subsec:uc01_states}; s09a; s06 & Líder GNC & Análisis de simulación en entorno volcánico + integración ELANav. \\ \hline
 TBD-OP-02 & Política de reintentos de enlace (\texttt{retry\_allowed}) & \S\ref{subsec:uc01_states}; s09a & Líder COMM & Caracterización de latencia UHF en campo. \\ \hline
 TBD-ENV-01 & Nivel de protección antipartículas (IP4X o superior) & STR-REQ-002, SyRS-100 & Líder STR & Pruebas de infiltración con regolito simulado. \\ \hline
 TBD-PER-01 & Ground truth físico para validación encoder (distancia real vs. estimada) & SyRS-013, RF-004-R1; CR-002 & Líder GNC & Definir recorrido de referencia con medición física en sitio análogo. \\ \hline

@@ -201,7 +201,7 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
   \item \ReqID{SyRS-061}
   \item \ReqShall{El sistema deberá ejecutar HomingRetreat al último waypoint seguro cuando se detecten condiciones adversas y la política lo permita.}
   \item \ReqMetric{Registro de selección de lastSafeWaypoint y navegación hacia él tras conditions\_adverse\_detected.}
-  \item \ReqCond{UC-01; evento conditions\_\allowbreak adverse\_\allowbreak detected con guarda severity\_\allowbreak allows\_\allowbreak retreat (TBD si no está cuantificada).}
+  \item \ReqCond{UC-01; evento conditions\_\allowbreak adverse\_\allowbreak detected con guarda severity\_\allowbreak allows\_\allowbreak retreat (TBD si no está cuantificada). \textit{Impl. actual (HLC \texttt{olympus\_hlc/monitors.py::WaypointTracker.should\_retreat}):} la guarda se reduce a la conjunción \texttt{dist\_mm < RETREAT\_DIST\_MM (300\,mm) AND msm\_state != CLIMB AND not SafeMode.active}; no existe una clasificación multi-nivel de severidad. La cuantificación multi-nivel queda pendiente (ver TBD-OP-01).}
   \item \ReqAccept{Logs de transición a HomingRetreat + llegada safe\_waypoint\_reached.}
   \item \ReqTrace{Modelo de estados: \S\ref{subsec:uc01_states}; CU: UC-01 (\S\ref{sec:uc01}).}
 \end{reqblock}
