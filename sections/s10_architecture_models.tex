@@ -99,16 +99,16 @@ F11 & PROP & Convertir energía eléctrica en torque mecánico utilizable por el
 Motores DC con reductora (NFP-5840-31ZY-EN) + acoples a rueda/tren de tracción.\\ \hline
 
 F12 & PROP & Regular la velocidad angular de los actuadores de propulsión conforme a comandos de control &
-Puentes H (L298N) con PWM + Arduino Mega (control) y/o Raspberry Pi (alto nivel).\\ \hline
+Drivers mixtos (L298N para motores frontales FR/FL; BTS7960 para CR/CL/RR/RL) con PWM + Arduino Mega (control en tiempo real) + Raspberry Pi 5 (alto nivel vía UART).\\ \hline
 
 F13 & PROP & Permitir la inversión del sentido de giro de los actuadores &
-Puentes H (L298N) + control digital desde Arduino Mega.\\ \hline
+Drivers mixtos (L298N + BTS7960) + control digital desde Arduino Mega.\\ \hline
 
 F14 & PROP & Proteger al actuador ante la entrega de potencia anómala &
-Protecciones del driver (L298N) + BMS Daly 4S 20A + (recomendado) fusibles/TVS externos.\\ \hline
+Protecciones por canal (L298N + BTS7960) + ACS712 por motor (disparo \texttt{OC\_FAULT} en LLC) + INA3221 (3 bancos, telemetría tensión) + fusibles/TVS por rama. No se emplea BMS centralizado en la arquitectura desplegada.\\ \hline
 
 F15 & PROP & Limitar y regular el consumo de potencia/corriente de los actuadores &
-Drivers (L298N) + control (Arduino Mega) + (recomendado) sensado de corriente externo (INA/ACS).\\ \hline
+Drivers mixtos (L298N + BTS7960) + control (Arduino Mega) + sensado de corriente implementado (ACS712 por motor + INA3221 3 bancos en modo bus-only).\\ \hline
 
 % -------------------- C&DH --------------------
 F16 & C\&DH & Recibir y enrutar comandos provenientes de COMMS &
@@ -118,7 +118,7 @@ F17 & C\&DH & Gestionar la telemetría y los registros (logs) del sistema &
 Raspberry Pi 4/5 + almacenamiento local (microSD/SSD) + software de logging.\\ \hline
 
 F18 & C\&DH & Procesar datos a bordo para soportar funciones del sistema &
-Raspberry Pi 5 (principal) + Raspberry Pi 4 (backup/auxiliar).\\ \hline
+Raspberry Pi 5 (única OBC desplegada; arquitectura single-node sin redundancia activa de cómputo).\\ \hline
 
 F19 & C\&DH & Almacenar datos generados por el rover para recuperación y análisis posterior &
 Almacenamiento local (microSD/SSD) conectado a Raspberry Pi 4/5.\\ \hline
@@ -140,22 +140,22 @@ F24 & GNC & Estimar el estado del rover a partir de sensores disponibles &
 Raspberry Pi 4/5 + fusión sensorial (EKF) + (recomendado) IMU + encoders (si disponibles).\\ \hline
 
 F25 & GNC & Generar comandos de control hacia los actuadores para ejecutar la trayectoria y mantener estabilidad &
-Arduino Mega (control) + drivers (L298N) + motores DC (lazo cerrado si hay encoders).\\ \hline
+Arduino Mega (control) + drivers mixtos (L298N + BTS7960) + motores DC + \texttt{QuadratureEncoder} por rueda (lazo cerrado \texttt{MotorWithEncoder}, LLC v2.20).\\ \hline
 
 F26 & GNC & Obtener/consumir imágenes del entorno mediante las interfaces del sistema para soportar la percepción &
-Cámara Raspberry Pi v1.3 (CSI) + cámara FPV + capturadora USB + Raspberry Pi 4/5.\\ \hline
+Cámara CSI \textbf{OV5647} (sensor RPi Cam v1.3) + Raspberry Pi 5. (Canal FPV 5.8\,GHz independiente para monitoreo humano; no consumido por el pipeline GNC.)\\ \hline
 
 F27 & GNC & Preprocesar la información visual para habilitar detección/clasificación eficiente y robusta &
-Raspberry Pi 5 + pipeline de visión (OpenCV/ML) + cámara Raspberry.\\ \hline
+Raspberry Pi 5 + pipeline de visión (OpenCV + YOLOv8n-seg) + cámara OV5647.\\ \hline
 
 F28 & GNC & Detectar y evitar obstáculos para prevenir colisiones y atascos &
-Cámara Raspberry + Raspberry Pi 5 (visión) + (recomendado) sensor distancia (TF-Luna LiDAR).\\ \hline
+OV5647 + RPi5 (visión YOLOv8n-seg) + \textbf{LiDAR TF02} (UART, rango táctico) + \textbf{VL53L0X} ToF (I2C, corte emergencia LLC $\le$200\,mm) + \textbf{HC-SR04} ultrasonido (GPIO LLC, redundancia).\\ \hline
 
 F29 & GNC & Fusionar datos de múltiples fuentes sensoriales para mejorar la estimación y la percepción &
-Raspberry Pi 4/5 + fusión (EKF/UKF) + (recomendado) IMU + odometría + rango/visión.\\ \hline
+Raspberry Pi 5 + fusión (TBD futuro EKF/UKF) + \textbf{MPU-6050} IMU (I2C) + encoders cuadratura + rango (TF02/VL53L0X/HC-SR04) + visión (OV5647).\\ \hline
 
 F30 & GNC & Clasificar la transitabilidad del terreno para soportar decisiones de ruta &
-Raspberry Pi 5 + cámara Raspberry (clasificación por visión/ML).\\ \hline
+Raspberry Pi 5 + cámara OV5647 (clasificación por visión: YOLOv8n-seg COCO baseline; pendiente fine-tuning terreno volcánico --- RF-002).\\ \hline
 
 % -------------------- COMMS --------------------
 F31 & COMMS & Establecer y mantener un enlace de comunicación &
@@ -172,22 +172,22 @@ Raspberry Pi 4/5 (heartbeat/timeouts) + política fail-safe (software).\\ \hline
 
 % -------------------- EPS --------------------
 F35 & EPS & Generar/capturar energía conforme a la fuente disponible &
-Packs con 18650 + (recomendado) cargador 4S Li-ion / fuente externa de carga.\\ \hline
+Bancos de 18650 NMC + cargador externo de Li-ion (sin generación propia a bordo; integración fotovoltaica diferida como trabajo futuro).\\ \hline
 
 F36 & EPS & Almacenar energía en un reservorio &
-Pack 4S basado en baterías 18650 (8 celdas por pack).\\ \hline
+Arquitectura de \textbf{3 bancos} 18650 NMC (rail principal + 2 rails secundarios), con telemetría de tensión por INA3221 (un canal por banco).\\ \hline
 
 F37 & EPS & Balancear y gestionar el reservorio de energía &
-BMS Daly 4S 20A (Li-ion; balanceo/protección del pack).\\ \hline
+Protecciones por banco (fusibles + ACS712 + supervisión INA3221). No se emplea BMS centralizado en la arquitectura desplegada (decisión de diseño 2026-05-17, ver memoria \texttt{session\_2026\_05\_17\_ina3221}); el balanceo manual se realiza fuera del rover durante la carga.\\ \hline
 
 F38 & EPS & Suministrar energía regulada a los subsistemas consumidores. &
-Convertidores DC-DC (buck 4S$\rightarrow$5V/6V/12V según cargas) + distribución.\\ \hline
+Convertidores DC-DC (buck 3 bancos $\rightarrow$ 5\,V / 12\,V según cargas) + distribución por PDU.\\ \hline
 
 F39 & EPS & Distribuir potencia incorporando mecanismos de aislamiento/segmentación &
-Power Distribution (PDB) + fusibles por rama + interruptor principal/e-stop (recomendado).\\ \hline
+Power Distribution Unit (PDU) + fusibles por rama + relay de corte de emergencia (\texttt{BNK:0}) accionable por GCS via ICD-LLC-001.\\ \hline
 
 F40 & EPS & Implementar funciones de protección y seguridad eléctrica ante condiciones anómalas &
-BMS Daly + (recomendado) fusibles/TVS/e-stop + buenas prácticas de cableado.\\ \hline
+Fusibles por banco + ACS712 por motor (disparo \texttt{OC\_FAULT} en LLC) + INA3221 (telemetría tensión) + e-stop relay \texttt{BNK:0} + buenas prácticas de cableado.\\ \hline
 
 F41 & EPS & Ejecutar mecanismos de recuperación/reconexión conforme a una política definida &
 Raspberry Pi 4/5 + (opcional) relé/contactor + supervisor de tensión (según política).\\ \hline
@@ -228,19 +228,19 @@ El subsistema \textbf{Tracción (TRAC)} implementa el \textbf{contacto efectivo}
 TRAC interactúa con el entorno a través de las ruedas: recibe reacciones del suelo (fuerzas normales, fricción, obstáculos) y, a partir del torque aplicado desde PROP, genera fuerzas de avance/frenado. Además, TRAC entrega información de movilidad a GNC mediante \textbf{EncodersRueda} y/o sensores asociados al tren de rodaje: en el IBD se representa el flujo \texttt{TRAC.pEncodersOut} $\rightarrow$ \texttt{GNC.pSensorsIn\_Encoders}. Dependiendo de la implementación final, TRAC puede incluir sensado adicional de suspensión/contacto (TBD) y exponer estados/diagnóstico al bus principal a través de C\&DH.
 
 \paragraph{Subsistema de Propulsión (PROP)}
-El subsistema \textbf{Propulsión (PROP)} convierte potencia eléctrica en \textbf{torque mecánico utilizable} para movilidad. En el modelo físico se compone de \textbf{MotoresRueda x6}, \textbf{ControladoresVelocidad} (drivers L298N o BTS7960) y módulos de protección.
+El subsistema \textbf{Propulsión (PROP)} convierte potencia eléctrica en \textbf{torque mecánico utilizable} para movilidad. En el modelo físico se compone de \textbf{MotoresRueda x6} (NFP-5840-31ZY-EN), \textbf{ControladoresVelocidad} con \textbf{configuración mixta} (L298N para los dos motores frontales FR/FL; BTS7960 para los cuatro motores restantes CR/CL/RR/RL, ver \texttt{rover-low-level-controller} commit \texttt{1845c4a}) y módulos de protección por canal (ACS712 por motor + INA3221 por banco).
 
 PROP recibe energía desde EPS (canal \texttt{EPS.\allowbreak pPowerChannel\_\allowbreak PROP}\linebreak[0] $\rightarrow$ \texttt{PROP.\allowbreak pPowerIn\_PROP}) y recibe comandos de actuación desde el Arduino Mega (\texttt{MCU.\allowbreak pPWM\_Out}\linebreak[0] $\rightarrow$ \texttt{PROP.\allowbreak pControlIn\_\allowbreak Motores}). El Arduino, bajo mando de la Raspberry Pi 5, orquesta la velocidad y sentido de giro. Los eventos de diagnóstico del driver pueden reportarse localmente a la MCU para su consolidación en la telemetría del C\&DH. Esta arquitectura asegura que la ejecución del movimiento ocurra en un nodo de tiempo real, mientras que la decisión de alto nivel reside en la OBC.
 
 \paragraph{Subsistema de Manejo de Comandos y Datos (C\&DH)}
 El subsistema \textbf{C\&DH} constituye el \textbf{centro de cómputo y coordinación} del rover. En la arquitectura física se modela con una \textbf{arquitectura de dos nodos}: (i) la \textbf{Computadora a Bordo (OBC) Principal} (Raspberry Pi 5) encargada del procesamiento de IA, visión y lógica de alto nivel, y (ii) el \textbf{Nodo de Actuación} (Arduino Mega 2560 R3) especializado en la ejecución de comandos de movimiento en tiempo real. Ambos nodos se interconectan mediante un \textbf{enlace UART} dedicado.
 
-C\&DH integra los flujos de información del sistema: la RPi 5 actúa como el \textbf{hub de percepción}, recibiendo datos directos de cámaras y sensores de rango (LiDAR/Ultrasonido), y se conecta con COMMS vía \textbf{USB (KISS)}. El Arduino Mega recibe comandos de dirección y velocidad desde la RPi 5 para gestionar los actuadores. A nivel energético, el subsistema se alimenta desde EPS (\texttt{EPS.pPowerOut\_Regulada} $\rightarrow$ \texttt{C\&DH.pPowerIn\_CDH}) y monitorea la telemetría eléctrica a través del bus I2C (sensor INA219).
+C\&DH integra los flujos de información del sistema: la RPi 5 actúa como el \textbf{hub de percepción}, recibiendo datos directos de cámaras y sensores de rango (LiDAR/Ultrasonido), y se conecta con COMMS vía \textbf{USB (KISS)}. El Arduino Mega recibe comandos de dirección y velocidad desde la RPi 5 para gestionar los actuadores. A nivel energético, el subsistema se alimenta desde EPS (\texttt{EPS.pPowerOut\_Regulada} $\rightarrow$ \texttt{C\&DH.pPowerIn\_CDH}) y monitorea la telemetría eléctrica a través del bus I2C mediante el \textbf{INA3221} en modo bus-only (3 canales de tensión, uno por banco del EPS).
 
 \paragraph{Subsistema de Guía, Navegación y Control (GNC)}
-El subsistema \textbf{GNC} implementa la autonomía de navegación: percepción del entorno, estimación de estado y generación de comandos de movimiento. En el modelo IBD, la percepción se centraliza en la \textbf{Raspberry Pi 5}, conectando directamente la \textbf{Cámara CSI}, el \textbf{LiDAR TF-Luna} (UART/I2C) y el \textbf{Sensor Ultrasónico HC-SR04} (GPIO). Esta configuración permite que los modelos de IA procesen datos de proximidad y visión con mínima latencia. 
+El subsistema \textbf{GNC} implementa la autonomía de navegación: percepción del entorno, estimación de estado y generación de comandos de movimiento. En el modelo IBD, la percepción se \textbf{distribuye en dos planos}: (i) la \textbf{Raspberry Pi 5} conecta directamente la \textbf{Cámara CSI OV5647} (pipeline YOLOv8n-seg) y el \textbf{LiDAR TF02} (UART, rango táctico para retreat); (ii) el \textbf{Arduino Mega} adquiere el \textbf{HC-SR04} ultrasonido (GPIO) y el \textbf{VL53L0X} ToF (I2C), ambos consumidos por la máquina de estados maestra (LLC) para disparar el corte de emergencia ($\le 200$\,mm en HC-SR04, $\le 150$\,mm en TF02 y $\le 50$\,mm en CLB mode). Esta distribución reduce la latencia del lazo de seguridad al evitar el cruce UART en el camino crítico de emergency-stop.
 
-La IMU principal y los encoders de rueda completan el esquema sensorial para satisfacer GNC-REQ-003, RF-004 y RNF-003. GNC (ejecutado en la RPi 5) genera setpoints de movilidad que se envían vía UART al \textbf{Arduino Mega}, el cual implementa la ejecución final mediante señales **PWM** hacia los drivers de motor y servos de dirección. Se añade un canal de \emph{e-stop} cableado en EPS/PDU que garantiza la detención $\le 500$\,ms conforme a PROP-REQ-002.
+La \textbf{IMU MPU-6050} (I2C en Arduino Mega) y los \textbf{QuadratureEncoder} de rueda completan el esquema sensorial para satisfacer GNC-REQ-003, RF-004-R1 y RNF-003. GNC (ejecutado en la RPi 5) genera setpoints de movilidad que se envían vía UART al \textbf{Arduino Mega}, el cual implementa la ejecución final mediante señales **PWM** hacia los drivers de motor y servos de dirección. Se añade un canal de \emph{e-stop} cableado en EPS/PDU que garantiza la detención $\le 500$\,ms conforme a PROP-REQ-002.
 
 GNC recibe alimentación desde EPS (\texttt{EPS.pPowerChannel\_GNC} $\rightarrow$ \texttt{GNC.pPowerIn\_GNC}). A nivel de datos, los sensores de percepción alimentan el flujo de IA en la OBC, mientras que la telemetría de navegación se consolida para su envío a COMMS. El montaje de sensores se garantiza por STR mediante puertos mecánicos (\textit{mount}), asegurando alineación y rigidez.
 
@@ -250,7 +250,7 @@ El subsistema \textbf{COMMS} proporciona los enlaces de datos entre el rover y l
 COMMS recibe alimentación desde EPS (\texttt{EPS.\allowbreak pPowerChannel\_\allowbreak COMMS}\linebreak[0] $\rightarrow$ \texttt{COMMS.\allowbreak pPowerIn\_\allowbreak COMMS}). La integración de datos se realiza mediante un enlace **USB (protocolo KISS)** entre la Raspberry Pi 5 y el TNC para el canal UHF, mientras que el flujo Wi-Fi se gestiona internamente en la OBC. Esto asegura que la gestión de paquetes CSP y el ruteo de telemetría se centralicen en el nodo de alto nivel del C\&DH. La interacción con el ambiente se modela mediante el puerto RF (\texttt{pRF\_Out}), incluyendo el enlace de video **FPV independiente** de 5.8 GHz.
 
 \paragraph{Subsistema de Potencia Eléctrica (EPS)}
-El subsistema \textbf{EPS} gestiona la energía del rover: almacenamiento, regulación y distribución. Sus componentes internos incluyen \textbf{Banco de Baterías (18650)}, \textbf{BMS}, \textbf{Convertidores DC/DC (buck)}, \textbf{PDU} (unidad de distribución), \textbf{Protecciones Eléctricas} (fusibles/\allowbreak breakers/\allowbreak switches) y \textbf{Módulo de Supervisión de Potencia} (medición de V/I y lógica de protección). Opcionalmente, puede incluir \textbf{Fuente de Generación} (p.\ ej., paneles) como entrada energética. La PDU implementará segmentación por ramas con fusibles y límites de corriente documentados en el ICD de potencia. Cada convertidor DC-DC incluirá su curva de eficiencia y su nivel de \emph{derating}. Se define una política de \emph{load-shed} para modo SAFE donde se inhabilitan secuencialmente: COMMS vídeo (FPV), GNC visión intensiva y servicios no esenciales de C\&DH.
+El subsistema \textbf{EPS} gestiona la energía del rover: almacenamiento, regulación y distribución. Sus componentes internos incluyen \textbf{3 Bancos de Baterías 18650 NMC} (rail principal + 2 rails secundarios; \textbf{sin BMS centralizado} en la arquitectura desplegada --- decisión de diseño 2026-05-17 reflejada en el driver INA3221), \textbf{Convertidores DC/DC (buck)}, \textbf{PDU} (unidad de distribución), \textbf{Protecciones Eléctricas} (fusibles por banco + relay de corte \texttt{BNK:0} accionable por GCS) y \textbf{Módulo de Supervisión de Potencia} \textbf{INA3221} (medición de tensión bus en 3 canales, modo bus-only) complementado por \textbf{ACS712} en cada motor para sensado de corriente individual y disparo de \texttt{OC\_FAULT} en el LLC. \textit{[FUTURO]} La integración de una fuente de generación fotovoltaica a bordo se contempla como trabajo futuro y no forma parte de la versión desplegada. La PDU implementa segmentación por ramas con fusibles y límites de corriente documentados en el ICD de potencia. Cada convertidor DC-DC incluirá su curva de eficiencia y su nivel de \emph{derating}. Se define una política de \emph{load-shed} para modo SAFE donde se inhabilitan secuencialmente: COMMS vídeo (FPV), GNC visión intensiva y servicios no esenciales de C\&DH.
 
 EPS entrega potencia a los subsistemas mediante canales dedicados: \texttt{pPowerChannel\_GNC}, \texttt{pPowerChannel\_PROP}, \texttt{pPowerChannel\_TRAC} y \texttt{pPowerChannel\_COMMS}, además de una línea de \textbf{potencia regulada} hacia C\&DH (\texttt{pPowerOut\_Regulada}). En sentido de control, EPS recibe comandos de gestión de potencia desde C\&DH (\texttt{pPowerMgmtIface\_EPS}) para habilitar/inhabilitar canales o cambiar modos energéticos, y reporta telemetría de salud eléctrica (\texttt{pTlmPowerOut}) al subsistema de datos. Internamente, la \textbf{PDU} centraliza entradas desde la \textbf{Fuente} y el \textbf{BancoBaterías}, consolidando el \textit{battery bus} y distribuyendo energía hacia los convertidores/reguladores y cargas.
 
@@ -264,8 +264,8 @@ encapsulamiento de misión. Este canal está orientado a TM/CMD robusta y habili
 operación \emph{store-and-forward} mediante un nodo retransmisor CSP cuando la LoS
 directa es limitada por la topografía.
 
-\paragraph{Selección de materiales (Manufactura aditiva).}
-La estructura principal (chasis, ruedas y bahía de aviónica) se fabrica mediante impresión 3D utilizando filamento \textbf{PLA MAX}. Este material ha sido seleccionado por su \textbf{alta tenacidad y rigidez}, superando al PLA estándar en resistencia a impactos y tracción, lo que garantiza la integridad estructural durante la navegación en terrenos irregulares. Presenta una densidad de 1.24\,g/cm$^3$, una temperatura de deformación de 57\,$^{\circ}\mathrm{C}$ y una precisión dimensional de $\pm$0.02\,mm, facilitando el ensamblaje de piezas de precisión como hubs y soportes de rodamientos.
+\paragraph{Selección de materiales (Construcción híbrida).}
+La estructura del Rover Olympus es \textbf{híbrida}: el chasis estructural se construye con \textbf{tubería de PVC} (perfiles tubulares de la suspensión rocker-bogie heredada de POAS), acoplada mediante \textbf{piezas de manufactura aditiva} (acoples motor-eje, hubs de rueda, soportes y bahía de aviónica) y \textbf{paneles de acrílico} para la protección visible de la electrónica. Para las piezas impresas se utiliza filamento \textbf{PLA MAX}, seleccionado por su \textbf{alta tenacidad y rigidez} (densidad 1.24\,g/cm$^3$, temperatura de deformación 57\,$^{\circ}\mathrm{C}$, precisión dimensional $\pm$0.02\,mm), superando al PLA estándar en resistencia a impactos y tracción --- relevante para hubs de rueda, acoples de torque (\texttt{Acople-10}, \texttt{acople\_nfp5840\_v20}) y soportes de rodamientos F687ZZ.
 
 % ============================================================
 % 02 · HARDWARE SELECCIONADO (COTS / DEV) — ROVER OLYMPUS
