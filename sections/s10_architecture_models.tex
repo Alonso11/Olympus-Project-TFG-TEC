@@ -819,13 +819,12 @@ ASM-023 & L3 & TRAC & Rodamientos F687ZZ & [MEC] soporte ejes & COTS & F687ZZ \\
 ASM-030 & L2 & PROP & Motor+reductora \#1 & [PWR] EPS$\rightarrow$PROP; [CTRL] GNC/\allowbreak MCU$\rightarrow$driver; [MEC] TRAC & COTS & NFP-5840-31ZY-EN \\
 ASM-030b & L2 & PROP & Motor+reductora (Alt) & [PWR]/[CTRL]/[MEC] & COTS & JGY-370 \\
 ASM-031 & L2 & PROP & Motor+reductora \#N & [PWR]/[CTRL]/[MEC] & COTS & NFP-5840-31ZY-EN \\
-ASM-032 & L2 & PROP & Driver motor (L298N) & [PWR] EPS; [CTRL] PWM+DIR; [DATA] diag$\rightarrow$C\&DH & COTS & L298N (Red) \\
-ASM-032b & L2 & PROP & Driver High-Power (BTS7960) & Alt. alta corriente (43A); [PWR]/[CTRL] & COTS & BTS7960 \\
+ASM-032 & L2 & PROP & Driver motor (L298N) \textbf{×1}, FR/FL & [PWR] EPS; [CTRL] PWM+DIR; [DATA] diag$\rightarrow$C\&DH & COTS & L298N (Red) \\
+ASM-032b & L2 & PROP & Driver High-Power (BTS7960) \textbf{×4}, CR/CL/RR/RL & Driver primario alta corriente (43A); [PWR]/[CTRL]/[DATA]; config mixed-drivers LLC \texttt{1845c4a} & COTS & BTS7960 \\
 ASM-033 & L3 & PROP & Disipación/soportes drivers & [MEC]/térmico & DEV & \textbf{TBD} \\
 
-ASM-040 & L2 & C\&DH & OBC principal (Raspberry Pi 5) & [PWR] EPS 5V; [DATA] bus principal; [DATA] CSI & COTS & RPI 5 \\
-ASM-041 & L2 & C\&DH & OBC auxiliar (Raspberry Pi 4) & [PWR]/[DATA] auxiliares & COTS & \textbf{TBD} \\
-ASM-042 & L2 & C\&DH & MCU Arduino Mega 2560 R3 & [PWR]; [CTRL] Motores/Servos (PWM) & COTS & Mega 2560 R3 \\
+ASM-040 & L2 & C\&DH & OBC única (Raspberry Pi 5) & [PWR] EPS 5V; [DATA] bus principal; [DATA] CSI; single-node sin redundancia & COTS & RPI 5 \\
+ASM-042 & L2 & C\&DH & MCU Arduino Mega 2560 R3 & [PWR]; [CTRL] Motores/Servos (PWM); [DATA] I2C sensores LLC & COTS & Mega 2560 R3 \\
 ASM-043 & L3 & C\&DH & Almacenamiento SSD/microSD & [DATA] USB/SD; [PWR] 5V & COTS & \textbf{TBD} \\
 ASM-044 & L3 & C\&DH & Interfaces USB / UART & [DATA] Enlaces USB (TNC) y UART (MCU) & DEV & \textbf{TBD} \\
 \hline
@@ -841,26 +840,27 @@ ASM-044 & L3 & C\&DH & Interfaces USB / UART & [DATA] Enlaces USB (TNC) y UART (
 \hline
 \textbf{ASM-ID} & \textbf{PBS} & \textbf{Subsys} & \textbf{Ensamble / Ítem} & \textbf{Interfaces clave (N2)} & \textbf{Tipo} & \textbf{P/N} \\
 \hline
-ASM-050 & L2 & EPS & Pack Li-ion 18650 (4S2P) & [PWR] 14.54V nominal; 101.78 Wh; 7000mAh & COTS & LG INR18650MJ1 \\
-ASM-051 & L2 & EPS & BMS Daly 4S 20A & [PWR] protección/balanceo; [HK] V/I$\rightarrow$C\&DH & COTS & Daly 4S 20A \\
+ASM-050 & L2 & EPS & 3 Bancos Li-ion 18650 NMC & [PWR] rail principal + 2 secundarios; capacidad/configuración por banco \textbf{TBD}; sin BMS centralizado & COTS & \textbf{TBD} \\
 ASM-052 & L2 & EPS & Convertidores DC/DC 5/12V & [PWR] regulación; eficiencias \textbf{TBD} & COTS & \textbf{TBD} \\
-ASM-053 & L2 & EPS & PDU + fusibles + e-stop & [PWR] segmentación/aislamiento & DEV & \textbf{TBD} \\
-ASM-054 & L3 & EPS & INA219 (medición V/I) & [HK] telemetría EPS$\rightarrow$C\&DH (I2C) & COTS & INA219 \\
+ASM-053 & L2 & EPS & PDU + fusibles + relay \texttt{BNK:0} & [PWR] segmentación/aislamiento; e-stop accionable por GCS (ICD-LLC-001) & DEV & \textbf{TBD} \\
+ASM-054 & L3 & EPS & INA3221 (monitor V bus, 3 canales) & [HK] telemetría EPS$\rightarrow$LLC (I2C, modo bus-only) & COTS & INA3221 \\
+ASM-055 & L3 & EPS & Sensores ACS712 ($\times$6, Hall) & [HK] sensado I por motor (66\,mV/A); [CTRL] disparo \texttt{OC\_FAULT} en LLC & COTS & ACS712-30A \\
 
-ASM-060 & L2 & COMMS & NIC Wi‑Fi/dongle 2.4\,GHz & [DATA] UDP/IP + CSP; [PWR] 5V & COTS & \textbf{TBD} \\
-ASM-061 & L2 & COMMS & Transmisor/Receptor FPV (5.8GHz) & [DATA] vídeo; [PWR] 7--16V & COTS & TS832 / RC832 \\
+ASM-060 & L2 & COMMS & NIC Wi‑Fi 2.4\,GHz nativo RPi5 & [DATA] UDP/IP + CSP \texttt{csp\_if\_udp}; [PWR] incl. RPi5; enlace primario rover-GCS desplegado & COTS & incl. RPi5 \\
+ASM-061 & L2 & COMMS & Transmisor/Receptor FPV (5.8GHz) & [DATA] vídeo auxiliar humano (no consumido por GNC); [PWR] 7--16V & COTS & TS832 / RC832 \\
 ASM-062 & L3 & COMMS & Antenas + mounts & [MEC]; [RF] enlace externo & DEV & \textbf{TBD} \\
 
-% --- Ensambles COMMS (UHF) añadidos ---
-ASM-063 & L2 & COMMS & TNC NinoTNC 9600A & [DATA] USB/UART (KISS) C\&DH$\leftrightarrow$TNC; [CTRL] PTT; [PWR] 5V & COTS & \textbf{TBD} \\
-ASM-064 & L2 & COMMS & Transceptor UHF (TM-D710GA/TS-2000) & [AUDIO/DATA] TNC$\leftrightarrow$Radio; [RF] Radio$\leftrightarrow$Antena; [PWR] 12V & COTS & \textbf{TBD} \\
-ASM-065 & L3 & COMMS & Antenas UHF (Eggbeater/Yagi) + coax & [RF] Radio$\leftrightarrow$Antena; [MEC] montaje en STR & COTS & \textbf{TBD} \\
+% --- Ensambles COMMS (UHF) [FUTURO] — no integrados en stack actual ---
+ASM-063 & L2 & COMMS & \textbf{[FUTURO]} TNC NinoTNC 9600A & \textbf{[FUTURO]} No integrado en stack actual; [DATA] USB/UART (KISS) C\&DH$\leftrightarrow$TNC; [CTRL] PTT; [PWR] 5V & COTS & \textbf{TBD} \\
+ASM-064 & L2 & COMMS & \textbf{[FUTURO]} Transceptor UHF (TM-D710GA/TS-2000) & \textbf{[FUTURO]} No integrado; [AUDIO/DATA] TNC$\leftrightarrow$Radio; [RF] Radio$\leftrightarrow$Antena; [PWR] 12V & COTS & \textbf{TBD} \\
+ASM-065 & L3 & COMMS & \textbf{[FUTURO]} Antenas UHF (Eggbeater/Yagi) + coax & \textbf{[FUTURO]} No integradas; [RF] Radio$\leftrightarrow$Antena; [MEC] montaje en STR & COTS & \textbf{TBD} \\
 
-ASM-070 & L2 & GNC & Cámara CSI v1.3 (NavCam) & [DATA] CSI; [MEC] alineación óptica & COTS & RPi Cam v1.3 \\
-ASM-071 & L2 & GNC & IMU principal & [DATA] I2C/SPI; [MEC] orientación & COTS & \textbf{TBD} \\
-ASM-072 & L2 & GNC & LiDAR TF-Luna (Rango 8m) & [DATA] UART/I2C $\rightarrow$ RPi 5; [PWR] 5V & COTS & TF-Luna \\
-ASM-073 & L3 & GNC & Encoders de rueda ($\times$N) & [DATA] cuadratura; TRAC$\rightarrow$GNC & DEV & \textbf{TBD} \\
-ASM-074 & L3 & GNC & Sensor HC-SR04 (Ultrasónico) & [DATA/CTRL] Trigger/Echo $\rightarrow$ RPi 5 & COTS & HC-SR04 \\
+ASM-070 & L2 & GNC & Cámara CSI OV5647 (NavCam) & [DATA] CSI; [MEC] alineación óptica; lente stock 54° (TBD: M12 wide-angle 120°) & COTS & OV5647 (RPi Cam v1.3) \\
+ASM-071 & L2 & GNC & IMU MPU-6050 (6-DOF) & [DATA] I2C 0x68 (Arduino Mega); [MEC] orientación; 100--200\,Hz & COTS & MPU-6050 \\
+ASM-072 & L2 & GNC & LiDAR TF02 (Rango 0.40--22\,m) & [DATA] UART 115200 $\rightarrow$ RPi 5; [PWR] 5V; ISR FIFO fix LLC v2.17 \texttt{6dc27ec} & COTS & Benewake TF02 \\
+ASM-073 & L3 & GNC & Encoders Hall integrados ($\times$6) & [DATA] cuadratura phase A/B en D44--D49; integrados NFP-5840; \texttt{MotorWithEncoder} LLC v2.20 & COTS & incl. NFP-5840 \\
+ASM-074 & L3 & GNC & Sensor HC-SR04 (Ultrasónico) & [DATA/CTRL] Trigger/Echo $\rightarrow$ \textbf{Arduino Mega} (GPIO LLC); corte emergencia $\le$200\,mm & COTS & HC-SR04 \\
+ASM-075 & L3 & GNC & ToF VL53L0X (láser) & [DATA] I2C 0x29 $\rightarrow$ Arduino Mega; rango 0--2\,m; corte emergencia CLB $\le$50\,mm; pull-ups pendientes & COTS & VL53L0X \\
 \hline
 \end{tabular}}
 \end{table}
@@ -921,40 +921,40 @@ ASM-023 & TRAC & Rodamientos F687ZZ & F687ZZ & 12 & 0.003 & 0 & [MEC] soporte de
 % --- PROP ------------------------------------------------------
 ASM-030 & PROP & Motor DC + reductora & NFP-5840-31ZY-EN & 6 & 0.360 & 19.2 & [PWR] EPS$\rightarrow$PROP; [MEC] TRAC. \\
 ASM-030b & PROP & Motor DC + reductora & JGY-370 & \textbf{Alt} & 0.162 & 3.6 & Alternativa 40 RPM, 15.5 kg$\cdot$cm. \\
-ASM-032 & PROP & Driver motor (L298N) & L298N (Red) & 3 & 0.026 & 0.18 & [CTRL] PWM+DIR; [DATA] diag. \\
-ASM-032b & PROP & Driver motor (BTS7960) & BTS7960 (Alt) & \textbf{Alt} & 0.066 & 0.10 & Alternativa alta potencia (43A). \\
+ASM-032 & PROP & Driver L298N (×1, FR/FL) & L298N (Red) & 1 & 0.026 & 0.18 & [CTRL] PWM+DIR; dual channel para motores frontales. \\
+ASM-032b & PROP & Driver BTS7960 (×4, CR/CL/RR/RL) & BTS7960 (BTN7971) & 4 & 0.066 & 0.10 & Driver primario alta corriente; mixed-drivers LLC \texttt{1845c4a}. \\
 ASM-033 & PROP & Disipación/soportes & \textbf{TBD} & 3 & 0.050 & 0 & [MEC]/térmico. \\
 
 % --- C&DH ------------------------------------------------------
-ASM-040 & C\&DH & OBC principal (RPi 5) & RPI 5 & 1 & 0.046 & 12.0 & [DATA] BCM2712 Quad-Core A76; [PWR] 5V/5A. \\
-ASM-041 & C\&DH & OBC auxiliar (RPi 4) & \textbf{TBD} & 1 & 0.047 & 8.0 & Nodo de respaldo/servicios. \\
-ASM-042 & C\&DH & MCU Arduino Mega 2560 R3 & Mega 2560 R3 & 1 & 0.037 & 1.0 & [CTRL] Exclusivo Motores/Servos. \\
-ASM-043 & C\&DH & Almacenamiento SSD/microSD & \textbf{TBD} & 1 & 0.050 & 4.5 & $\ge$2\,h TM/logs. \cite{nasa_cm} \\
-ASM-044 & C\&DH & Interfaces USB / UART & \textbf{TBD} & 1 & 0.050 & 0 & [DATA] Enlace OBC$\leftrightarrow$TNC (USB) y OBC$\leftrightarrow$MCU (UART). \\
+ASM-040 & C\&DH & OBC única (RPi 5) & RPI 5 & 1 & 0.046 & 12.0 & [DATA] BCM2712 Quad-Core A76; [PWR] 5V/5A; single-node. \\
+ASM-042 & C\&DH & MCU Arduino Mega 2560 R3 & Mega 2560 R3 & 1 & 0.037 & 1.0 & [CTRL] Motores/Servos; [DATA] I2C sensores LLC. \\
+ASM-043 & C\&DH & Almacenamiento SSD/microSD & \textbf{TBD} & 1 & 0.050 & 4.5 & $\ge$2\,h TM/logs. \\
+ASM-044 & C\&DH & Interfaces USB / UART & \textbf{TBD} & 1 & 0.050 & 0 & [DATA] Enlace OBC$\leftrightarrow$MCU (UART) y periféricos USB. \\
 
 % --- EPS -------------------------------------------------------
-ASM-050 & EPS & Pack Li-ion 4S2P (8 celdas) & LG INR18650MJ1 & 1 & 0.392 & 0 & 14.54V nom; 7000mAh; 101.78 Wh. \\
-ASM-051 & EPS & BMS 4S 20A (Daly) & Daly 4S 20A & 1 & 0.100 & 0.001 & Para Li-ion (14.8V); 20A cont.; Common Port. \\
-ASM-052 & EPS & Convertidores DC/DC & \textbf{TBD} & 3 & 0.050 & 21.8 & Eficiencias $\ge$85\%. \\
-ASM-053 & EPS & PDU + fusibles + e-stop & \textbf{TBD} & 1 & 0.150 & 0 & Segmentación/aislamiento. \\
-ASM-054 & EPS & Sensor V/I (INA219) & INA219 & 1 & 0.008 & 0.005 & [HK] telemetría EPS$\rightarrow$C\&DH. \\
+ASM-050 & EPS & 3 Bancos Li-ion 18650 NMC & \textbf{TBD} & 3 & \textbf{TBD} & 0 & Capacidad/configuración por banco \textbf{TBD} pendiente PDF v2; sin BMS centralizado. \\
+ASM-052 & EPS & Convertidores DC/DC 5/12V & \textbf{TBD} & 3 & 0.050 & 21.1 & Eficiencias $\ge$85\%; conversión bancos$\rightarrow$cargas. \\
+ASM-053 & EPS & PDU + fusibles + relay \texttt{BNK:0} & \textbf{TBD} & 1 & 0.150 & 0 & Segmentación + e-stop accionable por GCS (ICD-LLC-001). \\
+ASM-054 & EPS & Monitor V bus INA3221 (3 canales) & INA3221 & 1 & 0.002 & < 0.001 & [HK] telemetría EPS$\rightarrow$LLC (I2C bus-only). \\
+ASM-055 & EPS & Sensor I por motor ACS712 (×6) & ACS712-30A & 6 & 0.006 & 0.05 & [HK] sensado I por motor (Hall); [CTRL] disparo \texttt{OC\_FAULT} en LLC. \\
 
 % --- COMMS -----------------------------------------------------
-ASM-060 & COMMS & NIC Wi‑Fi / dongle & \textbf{TBD} & 1 & 0.010 & 1.0 & TM/CMD sobre UDP/IP + CSP. \cite{nasa_cm} \\
-ASM-061 & COMMS & Transmisor/Receptor FPV & TS832 / RC832 & 1 & 0.107 & 2.6 & Canal de vídeo auxiliar (5.8GHz). \\
+ASM-060 & COMMS & Wi‑Fi 2.4\,GHz (nativo RPi5) & incl. RPi5 & 1 & --- & incl. RPi5 & TM/CMD sobre UDP/IP + CSP \texttt{csp\_if\_udp} (HLC \texttt{3e99f8f}). \\
+ASM-061 & COMMS & Transmisor/Receptor FPV & TS832 / RC832 & 1 & 0.107 & 2.6 & Canal vídeo auxiliar humano (5.8GHz); no GNC. \\
 ASM-062 & COMMS & Antenas + mounts & \textbf{TBD} & 2 & 0.030 & 0 & [MEC]/[RF] enlace externo. \\
 
-% --- [ADICIÓN] Adiciones UHF ---
-ASM-063 & COMMS & NinoTNC 9600A & \textbf{TBD} & 1 & 0.040 & 0.5 & NinoTNC 9600A (USB KISS). \\
-ASM-064 & COMMS & TM-D710GA / TS-2000 & \textbf{TBD} & 1 & 1.500 & \textbf{Ext.} & Kenwood TM‑D710GA o TS‑2000 (Externa). \\
-ASM-065 & COMMS & Antena Eggbeater/Yagi & \textbf{TBD} & 1 & 0.200 & 0 & Antena Eggbeater/Yagi. \\
+% --- [FUTURO] UHF — no integrado en stack actual ---
+ASM-063 & COMMS & \textbf{[FUTURO]} NinoTNC 9600A & \textbf{TBD} & --- & --- & --- & \textbf{[FUTURO]} No integrado en stack desplegado. \\
+ASM-064 & COMMS & \textbf{[FUTURO]} TM-D710GA / TS-2000 & \textbf{TBD} & --- & --- & --- & \textbf{[FUTURO]} No integrado; alimentación externa si se integra. \\
+ASM-065 & COMMS & \textbf{[FUTURO]} Antena Eggbeater/Yagi & \textbf{TBD} & --- & --- & --- & \textbf{[FUTURO]} No integrada. \\
 
 % --- GNC -------------------------------------------------------
-ASM-070 & GNC & Cámara CSI v1.3 & RPi Cam v1.3 & 1 & 0.003 & 1.25 & [DATA] CSI; sensor OV5647 (5MP). \cite{nasa_cm} \\
-ASM-071 & GNC & IMU principal (9DOF) & \textbf{TBD} & 1 & 0.003 & 0.15 & [DATA] I2C/SPI; fusión sensorial. \cite{nasa_cm} \\
-ASM-072 & GNC & LiDAR TF-Luna & TF-Luna & 1 & 0.005 & 0.75 & [DATA] Rango UART/I2C $\rightarrow$ RPi 5. \\
-ASM-073 & GNC & Encoders de rueda ($\times$6) & \textbf{TBD} & 6 & 0.010 & 0.10 & Odometría TRAC$\rightarrow$GNC. \\
-ASM-074 & GNC & Sensor Ultrasónico HC-SR04 & HC-SR04 & 1 & 0.009 & 0.075 & [DATA] Rango/Obstáculos $\rightarrow$ RPi 5. \\
+ASM-070 & GNC & Cámara CSI OV5647 (NavCam) & OV5647 (RPi Cam v1.3) & 1 & 0.003 & 1.25 & [DATA] CSI; sensor 5MP; lente stock 54° (TBD M12 120°). \\
+ASM-071 & GNC & IMU MPU-6050 (6-DOF) & MPU-6050 & 1 & 0.005 & 0.10 & [DATA] I2C 0x68 (Arduino Mega); 100--200\,Hz. \\
+ASM-072 & GNC & LiDAR TF02 (0.40--22\,m) & Benewake TF02 & 1 & 0.045 & 1.00 & [DATA] UART 115200 $\rightarrow$ RPi 5; ISR fix LLC v2.17. \\
+ASM-073 & GNC & Encoders Hall ($\times$6) & incl. NFP-5840 & 6 & --- & --- & Integrados en motor; fase A/B D44--D49; \texttt{MotorWithEncoder}. \\
+ASM-074 & GNC & Sensor HC-SR04 (ultrasónico) & HC-SR04 & 1 & 0.009 & 0.075 & [DATA] $\rightarrow$ \textbf{Arduino Mega} GPIO LLC; emergency $\le$200\,mm. \\
+ASM-075 & GNC & ToF VL53L0X (láser) & VL53L0X & 1 & 0.001 & 0.04 & [DATA] I2C 0x29 $\rightarrow$ Arduino Mega; CLB-mode emergency $\le$50\,mm. \\
 \hline
 \end{tabular}}
 \end{table}
@@ -973,15 +973,16 @@ ASM-074 & GNC & Sensor Ultrasónico HC-SR04 & HC-SR04 & 1 & 0.009 & 0.075 & [DAT
 \hline
 \textbf{Subsistema} & \textbf{Subtotal Masa [kg]} & \textbf{Subtotal Potencia [W]} & \textbf{Notas} \\
 \hline
-STR & 2.700 & 0 & Estructural pasivo (sin consumo). \\
-TRAC & 1.591 & 3.0 & Servomotor de dirección. \\
-PROP & 2.338 & 115.2 & Drivers + 6 motores (nom). \\
-C\&DH & 0.230 & 25.5 & RPi5/4, MCU, SSD (peak). \\
-EPS & 0.700 & 21.8 & Pérdidas DC/DC, BMS, PDU. \\
-COMMS & 0.197 & 3.1 & Wi‑Fi/FPV/TNC (Kenwood ext). \\
-GNC & 0.100 & 14.5 & CSI/IMU/LiDAR/encoders. \\
+STR & 2.700 & 0 & Estructural pasivo (PVC + 3D + acrílico). \\
+TRAC & 1.591 & 3.0 & Servomotor MG996R + ruedas/hubs. \\
+PROP & 2.550 & 115.2 & Drivers mixtos (L298N×1 + BTS7960×4) + 6 motores. \\
+C\&DH & 0.183 & 17.5 & RPi5 única + MCU Arduino Mega + SSD (peak). \\
+EPS & 0.638 & 21.1 & Pérdidas DC/DC + INA3221 + ACS712×6 (sin BMS). \\
+COMMS & 0.197 & 2.6 & Wi‑Fi 2.4\,GHz nativo + FPV; UHF [FUTURO] no contabilizado. \\
+GNC & 0.146 & 14.5 & OV5647 + MPU-6050 + TF02 + VL53L0X + HC-SR04 + encoders. \\
+MISC & 0.500 & 0 & Tornillería, cables, adhesivos. \\
 \hline
-\textbf{TOTAL} & \textbf{8.356} & \textbf{183.1} & Estimación CBE (Consumo Load). \\
+\textbf{TOTAL} & \textbf{8.505} & \textbf{173.9} & Estimación CBE (consumo SCIENCE pico). \\
 \hline
 \end{tabular}}
 \end{table}
