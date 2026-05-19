@@ -281,8 +281,89 @@ El estado compuesto \textit{Exploración activa} incluye un pseudoestado de \tex
 \begin{landscape}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\paperheight]{figures/maquina_lista.drawio.png}
-    \caption{Diagrama de la máquina de estados: Modos operacionales y transiciones del Rover Olympus.}
+    \begin{tikzpicture}[
+        node distance=1.6cm and 2.0cm,
+        every node/.style={font=\small},
+        state/.style={rectangle, rounded corners=4pt, draw=black, thick,
+                      minimum width=2.4cm, minimum height=0.9cm,
+                      align=center, fill=blue!8},
+        composite/.style={rectangle, rounded corners=4pt, draw=black, very thick,
+                          double, double distance=2pt,
+                          minimum width=2.8cm, minimum height=1.0cm,
+                          align=center, fill=blue!12},
+        safety/.style={rectangle, rounded corners=3pt, draw=black, thick,
+                       minimum width=2.0cm, minimum height=0.8cm,
+                       align=center, fill=orange!12, font=\footnotesize},
+        terminal/.style={rectangle, rounded corners=4pt, draw=red!70!black, very thick,
+                         minimum width=2.4cm, minimum height=0.9cm,
+                         align=center, fill=red!10},
+        init/.style={circle, draw=black, fill=black, minimum size=4pt, inner sep=0pt},
+        arrow/.style={-{Stealth[length=2mm]}, thick},
+        ev/.style={font=\scriptsize\ttfamily, fill=white, inner sep=1pt}
+    ]
+
+    % ============== PANEL IZQUIERDO: RoverState (7 estados) ==============
+    \node[font=\bfseries] (titR) at (0,2.4) {Dimensión 1 --- \texttt{RoverState} (7 estados)};
+
+    \node[init] (init) at (-5.5,0.6) {};
+    \node[state] (standby) [right=0.8cm of init] {Standby};
+    \node[composite] (explore) [right=2.2cm of standby] {Explore\\[-1pt]\scriptsize\textit{(compuesto)}};
+    \node[state] (avoid)   [above=1.3cm of explore] {Avoid};
+    \node[state] (climb)   [right=1.6cm of explore] {Climb};
+    \node[state] (retreat) [below=1.3cm of explore] {Retreat};
+    \node[terminal] (safe)  at ($(climb)+(2.6,1.4)$) {Safe};
+    \node[terminal] (fault) at ($(climb)+(2.6,-1.4)$) {Fault};
+
+    % Transiciones RoverState
+    \draw[arrow] (init) -- (standby);
+    \draw[arrow] (standby.east) -- node[ev, above]{EXP} (explore.west);
+    \draw[arrow] (explore.north west) to[bend left=15] node[ev, above]{STB} (standby.north east);
+
+    \draw[arrow] (explore.north) -- node[ev, right]{dist$<$200\,mm} (avoid.south);
+    \draw[arrow] (avoid.west) to[bend left=20] node[ev, above]{clear} (explore.north west);
+
+    \draw[arrow] (explore.east) -- node[ev, above]{CLB} (climb.west);
+    \draw[arrow] (climb.south) to[bend left=25] node[ev, below]{CLB end} (explore.south east);
+
+    \draw[arrow] (explore.south) -- node[ev, right]{dist$<$300\,mm / stall} (retreat.north);
+    \draw[arrow] (retreat.west) to[bend right=20] node[ev, below]{wp\_reached} (standby.south);
+
+    \draw[arrow, dashed, red!70!black] (explore.north east) to[bend left=15] node[ev, above, sloped]{BATT/TEMP/FAULT} (safe.west);
+    \draw[arrow, dashed, red!70!black] (explore.south east) to[bend right=15] node[ev, below, sloped]{stall persist / OC} (fault.west);
+    \draw[arrow] (safe.north) to[out=180, in=90, looseness=1.4] node[ev, above]{RST} (standby.north);
+    \draw[arrow] (fault.south) to[out=180, in=270, looseness=1.4] node[ev, below]{RST} (standby.south);
+
+    % ============== PANEL DERECHO: SafetyState (4 niveles) ==============
+    \node[font=\bfseries] (titS) at (10.5,2.4) {Dimensión 2 --- \texttt{SafetyState} (paralelo)};
+
+    \node[safety, fill=green!15]  (normal) at (10.5, 0.9) {Normal};
+    \node[safety, fill=yellow!25] (warn)   [below=0.5cm of normal] {Warn};
+    \node[safety, fill=orange!30] (limit)  [below=0.5cm of warn]   {Limit};
+    \node[safety, fill=red!25]    (faultS) [below=0.5cm of limit]  {FaultStall};
+
+    \draw[arrow] (normal.south) -- node[ev, right]{HW alerta} (warn.north);
+    \draw[arrow] (warn.south)   -- node[ev, right]{cerca umbral} (limit.north);
+    \draw[arrow] (limit.south)  -- node[ev, right]{persistente} (faultS.north);
+    \draw[arrow, dashed, green!50!black] (faultS.east) to[bend left=60] node[ev, right]{recover/reset} (normal.east);
+
+    % Nota explicativa
+    \node[font=\scriptsize\itshape, align=left, text width=4.2cm] at (10.5,-3.4)
+      {Modula límites operacionales\\(velocidad máx, rampas) sin\\cambiar \texttt{RoverState}.\\Independiente del Panel 1.};
+
+    % Marco visual separador
+    \draw[gray!50, dashed] (8.6,-3.0) -- (8.6,2.7);
+
+    % Leyenda
+    \node[font=\scriptsize, align=left, text width=8cm] at (1.5,-3.6)
+      {\textbf{Leyenda:} \begin{tabular}{@{}l@{ }l@{\quad}l@{ }l@{}}
+        \tikz\node[state, minimum width=0.7cm, minimum height=0.3cm]{}; & estado simple &
+        \tikz\node[composite, minimum width=0.7cm, minimum height=0.3cm]{}; & estado compuesto \\
+        \tikz\node[terminal, minimum width=0.7cm, minimum height=0.3cm]{}; & estado de seguridad &
+        \tikz[baseline]{\draw[arrow, dashed, red!70!black] (0,0.5ex) -- (0.8,0.5ex);} & disparo crítico \\
+      \end{tabular}};
+
+    \end{tikzpicture}
+    \caption{Máquina de estados del Rover Olympus: dimensión \texttt{RoverState} (7 estados, panel izquierdo) y dimensión paralela \texttt{SafetyState} (4 niveles, panel derecho). Refleja la implementación real del módulo \texttt{state\_machine} en LLC v2.20.}
     \label{fig:maquina_estados}
 \end{figure}
 \end{landscape}
@@ -299,8 +380,6 @@ El estado compuesto \textit{Exploración activa} incluye un pseudoestado de \tex
 \end{itemize}
 
 \textbf{Dimensión paralela --- SafetyState:} Independientemente del \texttt{RoverState}, el LLC mantiene un \texttt{SafetyState} de cuatro niveles --- \texttt{Normal}, \texttt{Warn}, \texttt{Limit}, \texttt{FaultStall} --- que modula los límites operacionales (velocidad máxima permitida, agresividad de las rampas) sin cambiar de \texttt{RoverState}. Esta separación permite degradar el desempeño de forma gradual (p.\,ej., reducir velocidad al detectar sobrecorriente en un motor) antes de invocar SafeMode o Fault.
-
-% TODO: regenerar la figura maquina_lista.drawio.png para reflejar los 7 estados RoverState + dimensión SafetyState. La versión actual del diagrama muestra solo 5 estados (Standby, Exploración activa, HomingRetreat, SafeMode, Final).
 
 \textbf{Eventos y guardas (visión general):}
 Las transiciones se disparan por \textbf{eventos} (p.\,ej.,
