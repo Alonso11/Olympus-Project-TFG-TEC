@@ -23,6 +23,7 @@ A continuación se definen los términos clave del SyRS/SRS:
     \item[V\&V (Verification and Validation):] Conjunto de actividades para verificar que el sistema cumple sus requisitos (RF/RNF/CON) y validar que satisface su propósito operacional en escenarios representativos (entorno análogo), usando métodos T/A/D/I. \cite{ieee_29148}
     \item[Yocto Project:] Conjunto de herramientas y metadatos para construir imágenes de \emph{Linux embebido} a la medida. Se adopta como base del SO en C\&DH/GNC (imagen propia del proyecto).
     \item[Store-and-forward:] Estrategia de red en la que un nodo intermedio recibe, almacena temporalmente y reenvía paquetes (retransmisor CSP) para salvar obstrucciones de LoS.
+    \item[N\textsuperscript{2} (N-squared) Diagram:] Matriz de interfaces de tamaño $N \times N$ utilizada en MBSE/SE para visualizar y auditar todas las interacciones entre los $N$ bloques (subsistemas o funciones) de un sistema. Los bloques se ubican en la diagonal; las salidas de un bloque se listan en la fila correspondiente y las entradas en la columna; cada celda fuera de la diagonal representa una interfaz unidireccional. Se emplea en \S\ref{sec:system_interfaces} para registrar el flujo físico y lógico entre los 7 subsistemas del rover. \cite{nasa_se_handbook}
     % TODO verificar store-and-forward: stack HLC actual (commit 3e99f8f) usa csp_if_udp nativo sin nodo relay implementado — confirmar si es aspiracional o quitar de la lista.
 \end{description}
 
