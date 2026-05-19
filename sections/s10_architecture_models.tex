@@ -614,36 +614,36 @@ Este presupuesto de masa se estructura exclusivamente según la arquitectura ofi
 \hline
 \textbf{Bloque / Rubro} & \textbf{Masa [kg]} \\
 \hline
-\textbf{STR — Estructura / Chasis} & 2.700 \\
-\textit{(Chasis impreso, bahía de aviónica, brackets/mounts)} & \\[1ex]
+\textbf{STR — Estructura / Chasis híbrido (PVC + 3D + acrílico)} & 2.700 \\
+\textit{(Tubería PVC heredada POAS + acoples impresos PLA MAX + bahía de aviónica + brackets/mounts)} & \\[1ex]
 
 \textbf{TRAC — Tracción (Locomotion)} & 1.591 \\
-\textit{(Ruedas + hubs, rodamientos, servomotor de dirección)} & \\[1ex]
+\textit{(Ruedas + hubs, rodamientos F687ZZ, servomotor de dirección MG996R)} & \\[1ex]
 
-\textbf{PROP — Propulsión (Drive / Actuación)} & 2.338 \\
-\textit{(Motores NFP-5840-31ZY-EN ×6, drivers L298N, acoples)} & \\[1ex]
+\textbf{PROP — Propulsión (Drive / Actuación)} & 2.550 \\
+\textit{(Motores NFP-5840-31ZY-EN ×6, drivers mixtos L298N×1 + BTS7960×4, acoples)} & \\[1ex]
 
-\textbf{C\&DH — Command \& Data Handling} & 0.230 \\
-\textit{(RPi 5, RPi 4 auxiliar, MCU, SSD/microSD, cableado)} & \\[1ex]
+\textbf{C\&DH — Command \& Data Handling} & 0.183 \\
+\textit{(RPi 5 única, MCU Arduino Mega, SSD/microSD, cableado)} & \\[1ex]
 
-\textbf{EPS — Energía (Baterías, BMS, PDU, DC/DC)} & 0.700 \\
-\textit{(Pack 18650 4S2P, BMS Daly, convertidores, PDU)} & \\[1ex]
+\textbf{EPS — Energía (3 bancos + DC/DC + PDU)} & 0.638 \\
+\textit{(3 bancos 18650 NMC, sin BMS centralizado, INA3221 monitor V, ACS712 ×6 sensado I, convertidores DC/DC, PDU)} & \\[1ex]
 
 \textbf{COMMS — Comunicaciones} & 0.197 \\
-\textit{(Wi-Fi, Sistema FPV TS832/RC832, TNC, Antenas)} & \\[1ex]
+\textit{(Wi-Fi 2.4\,GHz nativo RPi5, FPV TS832/RC832 auxiliar, antenas; UHF [FUTURO] no contabilizado)} & \\[1ex]
 
-\textbf{GNC — Guía, Navegación y Control} & 0.100 \\
-\textit{(Cámara CSI, IMU, LiDAR TF-Luna, HC-SR04, encoders)} & \\[1ex]
+\textbf{GNC — Guía, Navegación y Control} & 0.146 \\
+\textit{(Cámara OV5647, IMU MPU-6050, LiDAR TF02, ToF VL53L0X, HC-SR04, encoders Hall integrados en motores)} & \\[1ex]
 
 \textbf{MISC — Otros (Tornillería, cables, adhesivos)} & 0.500 \\
 \hline
-\textbf{SUBTOTAL (sin margen)} & 8.356 \\
-\textbf{Margen de diseño (20\% del subtotal)} & 1.671 \\
+\textbf{SUBTOTAL (sin margen)} & 8.505 \\
+\textbf{Margen de diseño (20\% del subtotal)} & 1.701 \\
 \hline
-\textbf{MASA TOTAL (con margen)} & \textbf{10.027} \\
+\textbf{MASA TOTAL (con margen)} & \textbf{10.206} \\
 \hline
 \textbf{LÍMITE DE MASA (campaña / proyecto)} & \textbf{10.500} \\
-\textbf{MARGEN vs. LÍMITE} & \textbf{+0.473} \\
+\textbf{MARGEN vs. LÍMITE} & \textbf{+0.294} \\
 \hline
 \end{tabular}
 \end{table}
@@ -687,15 +687,15 @@ Este presupuesto se organiza estrictamente por los \textbf{7 subsistemas} del Ro
 \cline{2-4}
  & \textbf{SCIENCE} & \textbf{CRUISE} & \textbf{SAFE} & \\
 \hline
-\textbf{GNC} (RPi5 load, LiDAR, Cámara, IMU) & 14.50 & 5.50 & 0.50 & Percepción y IA activas. \cite{nasa_cm} \\
-\textbf{C\&DH} (RPi4 aux., Arduino, SSD) & 9.50 & 4.00 & 2.50 & Orquestación y ruteo de datos. \cite{nasa_cm} \\
-\textbf{PROP} (Motores NFP-5840 ×6 + Drivers) & 115.20 & 38.40 & 0.00 & Rating nominal 1.6A/motor @ 12V. \cite{nasa_cm} \\
-\textbf{TRAC} (Servomotor MG996R) & 3.00 & 1.00 & 0.00 & Dirección activa en exploración. \cite{nasa_cm} \\
-\textbf{COMMS} (FPV TS832 + NinoTNC) & 3.10 & 0.50 & 0.50 & Excluye Kenwood (externo). \cite{nasa_cm} \\
-\textbf{EPS} (Pérdidas DC/DC + BMS) & 21.80 & 7.40 & 0.50 & Eficiencia calculada del 85\%. \cite{nasa_cm} \\
+\textbf{GNC} (RPi5 + OV5647 + TF02 + VL53L0X + MPU-6050 + HC-SR04) & 14.50 & 5.50 & 0.50 & Percepción YOLOv8n-seg + rango táctico activo. \\
+\textbf{C\&DH} (RPi5 OBC única + Arduino Mega + SSD/microSD) & 7.00 & 3.00 & 2.00 & Orquestación y ruteo de datos; sin RPi4 auxiliar (single-node). \\
+\textbf{PROP} (Motores NFP-5840 ×6 + drivers mixtos L298N+BTS7960) & 115.20 & 38.40 & 0.00 & Rating nominal 1.6A/motor @ 12V; dead-band 15\% activo. \\
+\textbf{TRAC} (Servomotor MG996R) & 3.00 & 1.00 & 0.00 & Dirección activa en exploración. \\
+\textbf{COMMS} (Wi-Fi 2.4\,GHz nativo RPi5 + FPV TS832 auxiliar) & 2.60 & 0.50 & 0.50 & UHF [FUTURO] no contabilizado; CSP \texttt{csp\_if\_udp} sobre WiFi. \\
+\textbf{EPS} (Pérdidas DC/DC + INA3221 + ACS712 ×6) & 21.10 & 7.10 & 0.40 & Eficiencia calculada del 85\%; sin BMS centralizado. \\
 \textbf{STR} (pasivo) & 0 & 0 & 0 & Estructura pasiva. \\
 \hline
-\textbf{TOTAL por modo} & \textbf{167.10} & \textbf{56.80} & \textbf{4.00} &  \\
+\textbf{TOTAL por modo} & \textbf{163.40} & \textbf{55.50} & \textbf{3.40} &  \\
 \hline
 \end{tabular}}
 \end{table}
@@ -711,29 +711,29 @@ Este presupuesto se organiza estrictamente por los \textbf{7 subsistemas} del Ro
 \hline
 \textbf{Modo Operacional} & \textbf{Potencia Total \,[W]} \\
 \hline
-\textbf{SCIENCE (Exploración activa)} & 167.10 \\
-\textbf{CRUISE (Tránsito nominal)} & 56.80 \\
-\textbf{SAFE (Modo seguro)} & 4.00 \\
+\textbf{SCIENCE (Exploración activa)} & 163.40 \\
+\textbf{CRUISE (Tránsito nominal)} & 55.50 \\
+\textbf{SAFE (Modo seguro)} & 3.40 \\
 \hline
-\textbf{Consumo pico considerado (SCIENCE)} & 167.10 \\
-\textbf{Margen de diseño (energía), 20\% sobre pico} & 33.42 \\
+\textbf{Consumo pico considerado (SCIENCE)} & 163.40 \\
+\textbf{Margen de diseño (energía), 20\% sobre pico} & 32.68 \\
 \hline
 \end{tabular}
 \end{table}
 
-\paragraph{Análisis de Autonomía (Pack 4S2P - 101.78 Wh).}
-Considerando el banco de baterías LG MJ1 (101.78 Wh nominales), la autonomía estimada sin margen de descarga (100\% DoD) es:
+\paragraph{Análisis de Autonomía (3 bancos 18650 NMC --- capacidad total \textbf{TBD}).}
+La arquitectura EPS desplegada (decisión de diseño 2026-05-17) emplea 3 bancos independientes de celdas 18650 NMC sin BMS centralizado; la capacidad total por banco y la configuración serie/paralelo quedan \textbf{TBD} pendiente PDF cableado v2. Las estimaciones de autonomía previas (basadas en pack 4S2P LG MJ1 = 101.78\,Wh) deben recalcularse una vez consolidada la nueva arquitectura. Como referencia provisional, asumiendo capacidad agregada equivalente ($\sim$100\,Wh) y los nuevos consumos por modo:
 \begin{itemize}
-    \item \textbf{Modo SCIENCE:} ~36 minutos (operación continua de 6 motores a torque nominal).
-    \item \textbf{Modo CRUISE:} ~1.8 horas (desplazamiento nominal y telemetría).
-    \item \textbf{Modo SAFE:} ~25.4 horas (supervivencia y monitoreo de enlace).
+    \item \textbf{Modo SCIENCE:} $\sim$37 minutos (100\,Wh / 163.4\,W; operación continua de 6 motores a torque nominal).
+    \item \textbf{Modo CRUISE:} $\sim$1.8 horas (100\,Wh / 55.5\,W; desplazamiento nominal y telemetría).
+    \item \textbf{Modo SAFE:} $\sim$29.4 horas (100\,Wh / 3.4\,W; supervivencia y monitoreo de enlace).
 \end{itemize}
-Nota: El aislamiento eléctrico de los transceptores UHF (Kenwood) es crítico para mantener estos perfiles de autonomía.
+Estas cifras se reemplazarán por medidas reales tras consolidación de la BOM EPS (capacidad real por banco) y registro de telemetría INA3221 + ACS712 en campañas. La integración UHF queda \textbf{[FUTURO]} y no afecta el perfil de autonomía actual.
 
 \paragraph{Notas de integración (por cerrar en ICD/BOM).}
 \begin{itemize}
   \item \textbf{Distribución EPS}: documentar eficiencias de cada convertidor DC/DC (rail 5\,V/12\,V), pérdidas en PDU y criterio de \emph{derating}; capturar en ICD con pruebas de banco. \cite{nasa_cm}
-  \item \textbf{Perfiles de carga por modo}: instrumentar telemetría V/I (INA219) en campañas y registrar series para estimar \emph{typical}/\emph{peak} por subsistema; alimentar esta tabla y el análisis de autonomía. \cite{nasa_cm}
+  \item \textbf{Perfiles de carga por modo}: instrumentar telemetría de tensión bus con INA3221 (3 canales, modo bus-only) y de corriente por motor con ACS712 (Hall, 6 unidades) en campañas; registrar series para estimar \emph{typical}/\emph{peak} por subsistema y alimentar esta tabla y el análisis de autonomía. \cite{nasa_cm}
   \item \textbf{Cargas pico de PROP}: establecer casos límite (arranque en pendiente, evitación reactiva, Fault Stop) y medir demanda dinámica para validar requisitos de movilidad y tiempos de paro. \cite{nasa_cm}
   \item \textbf{COMMS}: definir perfiles de transmisión (duty-cycle TM/CMD, vídeo FPV opcional) y su impacto por modo (SCIENCE/CRUISE/SAFE). \cite{nasa_cm}
 \end{itemize}
