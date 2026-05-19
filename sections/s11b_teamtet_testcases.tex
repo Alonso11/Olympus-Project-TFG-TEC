@@ -70,17 +70,18 @@
 \begin{tcblock}
   \item \TCID{VT-SyRS-010}
   \item \TCMethod{T/D}
-  \item \TCObj{Verificar adquisición por CSI y FOV horizontal $\ge$ 120°.}
-  \item \TCPre{Cámara CSI instalada y operativa; software de adquisición activo.}
-  \item \TCSetup{Patrón/escena de calibración para estimar FOV (metodología definida en procedimiento); registro de imágenes.}
+  \item \TCObj{Verificar adquisición por CSI con cámara OV5647 y medir FOV horizontal real.}
+  \item \TCPre{Cámara OV5647 instalada (CSI, RPi5) y operativa; software de adquisición activo (V4L2).}
+  \item \TCSetup{Patrón/escena de calibración para estimar FOV; registro de imágenes. \textbf{Nota HW al 2026-05-18}: lente stock OV5647 = 54° horizontal; el target de 120° requiere reemplazo por lente M12 wide-angle (decisión pendiente --- ver TBD/flag lente OV5647).}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
       \item Iniciar stream/captura CSI y almacenar N imágenes (TBD: N).
       \item Estimar FOV horizontal usando el método de calibración definido.
+      \item Documentar resultado contra target y decidir si procede swap de lente o se ajusta GNC-REQ-001 al FOV real.
     \end{enumerate}
-  \item \TCData{Imágenes; parámetros de calibración; cálculo/resultado de FOV.}
-  \item \TCAccept{FOV horizontal $\ge$ 120°.}
-  \item \TCTrace{UC-01 (Analizar terreno); RF-001/GNC-REQ-001.}
+  \item \TCData{Imágenes; parámetros de calibración; cálculo/resultado de FOV; configuración de lente.}
+  \item \TCAccept{FOV horizontal medido y trazado contra target $\ge$120° (TBD: aceptar/reabrir GNC-REQ-001 según resultado).}
+  \item \TCTrace{UC-01 (Analizar terreno); RF-001/GNC-REQ-001; flag lente OV5647.}
 \end{tcblock}
 
 \paragraph{SyRS-011 — Clasificación de transitabilidad ($\ge$95\%)}
@@ -100,21 +101,22 @@
   \item \TCTrace{UC-01 (Procesar/Planificar); RF-002/GNC-REQ-002.}
 \end{tcblock}
 
-\paragraph{SyRS-012 — Evitación reactiva (0 colisiones; obstáculos $\ge$20 cm)}
+\paragraph{SyRS-012 — Evitación reactiva por distancia frontal (0 colisiones)}
 \begin{tcblock}
   \item \TCID{VT-SyRS-012}
   \item \TCMethod{D/T}
-  \item \TCObj{Demostrar evitación sin colisiones con obstáculos $\ge$ 20 cm en recorrido de verificación.}
-  \item \TCPre{Módulo de evitación habilitado; entorno con obstáculos medidos.}
-  \item \TCSetup{Circuito con K obstáculos $\ge$20 cm; video; logs de eventos obstacle\_detected/cleared.}
+  \item \TCObj{Demostrar evitación sin colisiones cuando un obstáculo cae bajo los umbrales de distancia frontal del LLC (HC-SR04 $<$200\,mm o TF02 $<$150\,mm, o $<$50\,mm en CLB mode con VL53L0X).}
+  \item \TCPre{LLC v2.20 con \texttt{state\_machine} activo (Standby$\rightarrow$Explore por GCS); sensores HC-SR04/TF02/VL53L0X integrados; HLC con \texttt{WaypointTracker.should\_retreat} habilitado.}
+  \item \TCSetup{Circuito con K obstáculos colocados de forma que el barrido del rover los enfrente; medición de distancia real (cinta/lidar manual); video; logs de TLM (\texttt{dist\_mm}, \texttt{stall\_mask}, \texttt{safety}); eventos HLC \texttt{retreat}/\texttt{stop}.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Ejecutar navegación autónoma a través del circuito.
-      \item Registrar detecciones y maniobras de evasión.
+      \item Ejecutar navegación autónoma a través del circuito (\texttt{EXP:25:25}).
+      \item Registrar las distancias reportadas y las maniobras de evasión/retreat ($<$300\,mm HLC, $<$200/150/50\,mm LLC emergency).
+      \item Confirmar paro seguro o desvío en cada obstáculo.
     \end{enumerate}
-  \item \TCData{Video; logs; conteo de colisiones (=0).}
-  \item \TCAccept{0 colisiones; todos los obstáculos $\ge$20 cm evitados.}
-  \item \TCTrace{UC-01 (Evitar obstáculos); RF-003; EVT-MOB001.}
+  \item \TCData{Video; logs TLM (\texttt{dist\_mm} por sensor); eventos HLC; conteo de colisiones (=0).}
+  \item \TCAccept{0 colisiones; todo obstáculo dispara retreat HLC ($<$300\,mm) o emergency stop LLC ($<$200/150/50\,mm).}
+  \item \TCTrace{UC-01 (Evitar obstáculos); RF-003; RF-005.}
 \end{tcblock}
 
 \paragraph{SyRS-013 — Compensación de slip (encoders vs. ground truth) \textit{[actualizado — CR-002]}}
@@ -135,21 +137,22 @@
   \item \TCTrace{UC-01; RF-004-R1; CR-002.}
 \end{tcblock}
 
-\paragraph{SyRS-014 — Fault Stop por slip >20\% en <5 s}
+\paragraph{SyRS-014 — Fault Stop por stall persistente del encoder ($\le$500\,ms) \textit{[actualizado --- CR-002]}}
 \begin{tcblock}
   \item \TCID{VT-SyRS-014}
   \item \TCMethod{T}
-  \item \TCObj{Verificar activación de Fault Stop al exceder slip>20\% y tiempo <5 s.}
-  \item \TCPre{Monitoreo de slip activo; mecanismo de stop implementado.}
-  \item \TCSetup{Superficie que induzca slip; registro de slip y comandos de stop; medición de tiempos.}
+  \item \TCObj{Verificar activación de Fault Stop al detectar \textbf{stall persistente} (ausencia de avance del encoder de rueda durante \texttt{STALL\_THRESHOLD = 50} ciclos $\times$ 20\,ms = 1\,s) y, una vez detectado, que la transición a \texttt{SafetyState::FaultStall} y el corte del PWM ocurren en $\le$500\,ms. \textbf{Nota CR-002}: RF-004 (slip $>$20\%) fue superseded; la implementación real no calcula porcentaje de slip sino que detecta stall por ausencia de cambio en \texttt{QuadratureEncoder} bajo comando de movimiento no-cero.}
+  \item \TCPre{LLC v2.20 con \texttt{MotorWithEncoder} y \texttt{state\_machine} activos; \texttt{STALL\_THRESHOLD} configurado (default 50); logging TLM con \texttt{stall\_mask} y \texttt{safety}.}
+  \item \TCSetup{Superficie/condición que bloquee la rueda (cuña/freno físico) sin dañar el driver; comando de movimiento sostenido (\texttt{EXP:50:50}); registro de TLM y timestamps de transición.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Inducir condición de slip >20\% durante desplazamiento.
-      \item Medir tiempo desde detección hasta comando/estado de stop.
+      \item Enviar comando \texttt{EXP:50:50} con la rueda libre y confirmar avance.
+      \item Bloquear la rueda física (mantener comando activo).
+      \item Medir desde el bloqueo hasta: (a) primer frame TLM con \texttt{stall\_mask != 0}, (b) transición \texttt{safety = "FAULT"}, (c) PWM a 0\,\%.
     \end{enumerate}
-  \item \TCData{Log de slip; timestamps; estado de paro.}
-  \item \TCAccept{Fault Stop activado en <5 s desde slip>20\%.}
-  \item \TCTrace{UC-01; RF-005.}
+  \item \TCData{Log TLM con \texttt{stall\_mask}, \texttt{safety}, PWM; timestamps de bloqueo, detección y paro; estado final.}
+  \item \TCAccept{Detección de stall en $\sim$1\,s ($\pm$200\,ms) y paro (PWM=0) en $\le$500\,ms tras detección. Total bloqueo$\rightarrow$paro $\le$1.5\,s.}
+  \item \TCTrace{UC-01; RF-004-R1; RF-005; PROP-REQ-002; CR-002.}
 \end{tcblock}
 
 \paragraph{SyRS-015 — Detención de ruedas $\le$500 ms tras Fault Stop}
@@ -186,22 +189,22 @@
   \item \TCTrace{RF-006; COMM-REQ-001; §9.1.1/§9.4.1.}
 \end{tcblock}
 
-\paragraph{SyRS-017 — Telemetría EPS V/I $\ge$1 Hz y $\pm$1\%}
+\paragraph{SyRS-017 — Telemetría EPS V (INA3221) e I (ACS712) $\ge$1 Hz y $\pm$1\%}
 \begin{tcblock}
   \item \TCID{VT-SyRS-017}
   \item \TCMethod{T/A}
-  \item \TCObj{Verificar frecuencia de muestreo y precisión de V/I reportados.}
-  \item \TCPre{INA219 (u otro) activo; canal de telemetría hacia C\&DH operativo.}
-  \item \TCSetup{Instrumento de referencia para V/I (TBD si no existe); logging de telemetría.}
+  \item \TCObj{Verificar frecuencia de muestreo y precisión de tensión bus (INA3221 ×3 canales) e intensidad por motor (ACS712 ×6) reportadas en TLM.}
+  \item \TCPre{Driver INA3221 activo (modo bus-only, I2C 0x40-0x43, integrado en LLC 2026-05-17); ACS712 conectados al ADC del Arduino Mega; canal de telemetría hacia C\&DH operativo.}
+  \item \TCSetup{Instrumento de referencia (multímetro calibrado, pinza amperimétrica) para V/I; logging de TLM en RPi5 con timestamps.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Registrar V/I durante una ventana de tiempo (TBD).
-      \item Calcular frecuencia efectiva (muestras/s).
-      \item Comparar contra instrumento de referencia para estimar error.
+      \item Registrar campos \texttt{batt\_mv} (INA3221 canales 1-3) y corrientes ACS712 (campos por motor) durante una ventana (TBD).
+      \item Calcular frecuencia efectiva por canal (muestras/s).
+      \item Comparar contra instrumento de referencia para estimar error relativo.
     \end{enumerate}
-  \item \TCData{Serie temporal V/I; cálculo de frecuencia; error vs referencia.}
-  \item \TCAccept{$\ge$1 Hz y $\pm$1\%.}
-  \item \TCTrace{EPS-REQ-001; UC-01 (monitorización).}
+  \item \TCData{Serie temporal V (3 bancos) e I (6 motores); cálculo de frecuencia; error vs referencia.}
+  \item \TCAccept{$\ge$1\,Hz y $\pm$1\% en todos los canales activos.}
+  \item \TCTrace{EPS-REQ-001; UC-01 (monitorización); session\_2026\_05\_17\_ina3221.}
 \end{tcblock}
 
 \paragraph{SyRS-018 — Enlace 2.4 GHz estable $\ge$50 m (LoS)}
@@ -243,9 +246,9 @@
 \begin{tcblock}
   \item \TCID{VT-SyRS-040}
   \item \TCMethod{T/A}
-  \item \TCObj{Medir latencia por ciclo de agente durante UC-01.}
-  \item \TCPre{Instrumentación de tiempos por ciclo habilitada.}
-  \item \TCSetup{Carga representativa de UC-01; logging de timestamps; definición de estadístico (p95 o similar).}
+  \item \TCObj{Medir latencia por ciclo del HLC durante UC-01 (frame OV5647 $\rightarrow$ YOLOv8n-seg $\rightarrow$ decisión MSM $\rightarrow$ comando UART).}
+  \item \TCPre{Instrumentación de timestamps por etapa habilitada en \texttt{olympus\_hlc.sources.vision\_gcs} y \texttt{engine.py}. \textbf{Estado al 2026-05-18}: instrumentación pendiente (flag SYS-FUN-031).}
+  \item \TCSetup{Carga representativa de UC-01; logging de timestamps por etapa en RPi5; definición de estadístico (p95). Baseline YOLOv8n-seg COCO: $\sim$205\,ms/frame, $\sim$4.9\,FPS en RPi5 CPU.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
       \item Ejecutar UC-01 durante una ventana (TBD).
@@ -314,9 +317,9 @@
 \begin{tcblock}
   \item \TCID{VT-SyRS-051}
   \item \TCMethod{T}
-  \item \TCObj{Verificar configuración y efecto de latencia simulada 0–5 s.}
-  \item \TCPre{Mecanismo de inyección disponible.}
-  \item \TCSetup{Herramienta de medición de retardo (p.ej., timestamps en TM/CMD); configuración de delay.}
+  \item \TCObj{Verificar configuración y efecto de latencia simulada 0–5 s en el lazo TM/CMD GCS$\leftrightarrow$rover (CON-002).}
+  \item \TCPre{Mecanismo de inyección disponible en \texttt{gcs\_drive.py} o middleware CSP. \textbf{Estado al 2026-05-18}: inyección de latencia \emph{no implementada} en el stack actual (flag CON-002 abierto); este test queda en \emph{deferred} hasta cerrar la implementación.}
+  \item \TCSetup{Herramienta de medición de retardo (timestamps en TM/CMD); configuración de delay.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
       \item Configurar delay a 0 s y medir retardo.
@@ -328,59 +331,62 @@
   \item \TCTrace{CON-002; ConOps/Interfaces.}
 \end{tcblock}
 
-\paragraph{SyRS-052 — Interfaces internas críticas (CSI/I2C/PWM/bus datos)}
+\paragraph{SyRS-052 — Interfaces internas críticas (CSI/UART/I2C/PWM/UART rover-MCU)}
 \begin{tcblock}
   \item \TCID{VT-SyRS-052}
   \item \TCMethod{I/D}
-  \item \TCObj{Demostrar que las interfaces internas críticas existen y son funcionales.}
+  \item \TCObj{Demostrar que las interfaces internas críticas existen y son funcionales según la arquitectura desplegada.}
   \item \TCPre{Rover integrado.}
-  \item \TCSetup{Inspección N2/IBD; pruebas de humo: captura CSI, lectura I2C V/I, comando PWM/CTRL a actuador (sin carga peligrosa).}
+  \item \TCSetup{Inspección N2/IBD; pruebas de humo: (a) captura CSI con OV5647 en RPi5; (b) lectura UART 115200 del TF02 en RPi5; (c) lectura I2C de INA3221, VL53L0X, MPU-6050 en el Arduino Mega; (d) trigger/echo HC-SR04 en GPIO del Mega; (e) comando PWM a drivers L298N+BTS7960 (sin carga peligrosa); (f) lectura ADC de ACS712 ×6 en el Mega; (g) enlace UART rover (Mega$\leftrightarrow$RPi5) con \texttt{PING$\rightarrow$PONG}.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Verificar en N2/IBD las conexiones CSI/I2C/PWM/bus datos.
-      \item Ejecutar smoke tests de cada interfaz (lectura/captura/actuación).
+      \item Verificar en N2/IBD las conexiones CSI (RPi5), UART TF02 (RPi5), I2C sensores (Mega), GPIO HC-SR04 (Mega), PWM drivers (Mega), ADC ACS712 (Mega), UART rover-MCU.
+      \item Ejecutar smoke tests de cada interfaz: \texttt{make i2c-scan PORT=/dev/ttyACM0} (0x29 VL53L0X, 0x40-0x43 INA3221, 0x68 MPU-6050), captura CSI con \texttt{libcamera-still}, \texttt{PING} sobre CSP, comando \texttt{EXP:25:25} y verificación de PWM en osciloscopio.
     \end{enumerate}
-  \item \TCData{Checklist; logs de lectura/captura/actuación.}
+  \item \TCData{Checklist; logs de lectura/captura/actuación; salida \texttt{i2c-scan}; captura CSI; \texttt{PONG}; trazas PWM.}
   \item \TCAccept{Todas las interfaces críticas verificadas como presentes y operativas.}
-  \item \TCTrace{Cuadro N2 (Cuadro 5); §9.5; UC-01.}
+  \item \TCTrace{Cuadro N2 (ver \S\ref{tab:n2_fisica}); \S\ref{sec:system_interfaces}; UC-01.}
 \end{tcblock}
 
-\paragraph{SyRS-060 — Modos y transiciones por eventos}
+\paragraph{SyRS-060 — Modos y transiciones por eventos (7 estados RoverState + dimensión paralela SafetyState)}
 \begin{tcblock}
   \item \TCID{VT-SyRS-060}
   \item \TCMethod{D/T}
-  \item \TCObj{Verificar modos (Standby, Exploración, HomingRetreat, SafeMode, Final) y transiciones por eventos.}
-  \item \TCPre{Máquina de estados implementada; logging activo.}
-  \item \TCSetup{GCS para inyección de comandos; método de inyección de fallas (TBD si no existe).}
+  \item \TCObj{Verificar los \textbf{7 estados \texttt{RoverState}} desplegados (\texttt{Standby}, \texttt{Explore}, \texttt{Avoid}, \texttt{Retreat}, \texttt{Climb}, \texttt{Fault}, \texttt{Safe}) y la \textbf{dimensión paralela \texttt{SafetyState}} (\texttt{Normal}, \texttt{Warn}, \texttt{Limit}, \texttt{FaultStall}) implementadas en el módulo \texttt{state\_machine} del LLC v2.20, junto con las transiciones por evento (comandos ASCII y disparos de sensores).}
+  \item \TCPre{Firmware LLC v2.20 flasheado (\texttt{make flash-mixed}); HLC \texttt{olympus\_hlc.msm} activo; logging de TLM con campos \texttt{state} y \texttt{safety}.}
+  \item \TCSetup{GCS para inyección de comandos (\texttt{gcs\_drive.py}); método de inyección de fallas (bloqueo físico de rueda para stall, obstáculo a $<$200\,mm para emergency stop, comando \texttt{BNK:0} para SafeMode).}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item cmd\_start\_exploration: verificar transición desde Standby.
-      \item cmd\_pause\_exploration: verificar retorno a Standby.
-      \item cmd\_homing\_retreat: verificar entrada a HomingRetreat (si last\_safe\_waypoint\_known aplica).
-      \item Inyectar sw\_fault\_critical/power\_anomaly\_detected: verificar SafeMode.
-      \item cmd\_end\_mission: verificar Final.
+      \item \texttt{EXP:25:25}: verificar transición Standby$\rightarrow$Explore con \texttt{SafetyState=Normal}.
+      \item Obstáculo $<$200\,mm: verificar Explore$\rightarrow$Avoid (HC-SR04) o retreat (TF02 $<$150\,mm).
+      \item \texttt{CLB:30:30}: verificar Explore$\rightarrow$Climb con threshold VL53L0X $<$50\,mm activo.
+      \item Bloqueo rueda persistente: verificar \texttt{SafetyState} escala Normal$\rightarrow$Warn$\rightarrow$Limit$\rightarrow$FaultStall, transición a Fault.
+      \item \texttt{BNK:0} desde GCS: verificar entrada a Safe (corte de relay) y bloqueo de comandos excepto \texttt{STB/PING/RST/BNK:0}.
+      \item \texttt{RST}: verificar Safe$\rightarrow$Standby.
+      \item \texttt{STB}: verificar parada controlada desde cualquier estado activo.
     \end{enumerate}
-  \item \TCData{Logs de estado/evento; timestamps; evidencia de modos.}
-  \item \TCAccept{Transiciones ocurren conforme a la tabla de transiciones.}
-  \item \TCTrace{§7.3.8; UC-01.}
+  \item \TCData{Logs TLM (\texttt{state}, \texttt{safety}); timestamps; evidencia de transición en cada paso.}
+  \item \TCAccept{Las 7 transiciones evidenciadas; \texttt{SafetyState} progresa gradualmente bajo carga.}
+  \item \TCTrace{\S\ref{subsec:uc01_states}; UC-01; LLC v2.20 \texttt{state\_machine/mod.rs}.}
 \end{tcblock}
 
-\paragraph{SyRS-061 — HomingRetreat a último waypoint seguro}
+\paragraph{SyRS-061 — Retreat táctico HLC al detectar obstáculo $<$300\,mm}
 \begin{tcblock}
   \item \TCID{VT-SyRS-061}
   \item \TCMethod{D/T}
-  \item \TCObj{Verificar retiro a lastSafeWaypoint al detectar condiciones adversas.}
-  \item \TCPre{Registro de waypoint seguro implementado; condición adversa detectable (definición/severidad TBD si no existe).}
-  \item \TCSetup{Escenario que dispare conditions\_adverse\_detected; logging de selección de waypoint.}
+  \item \TCObj{Verificar el \textbf{retreat táctico} implementado en \texttt{olympus\_hlc.monitors.WaypointTracker.should\_retreat}: cuando \texttt{tlm.dist\_mm $<$ RETREAT\_DIST\_MM (300\,mm) AND msm\_state != CLIMB AND not SafeMode.active}, el HLC emite RET (override) antes de que el LLC dispare el FAULT de emergencia. \textbf{Nota CR-002/flag 9}: la guarda \texttt{severity\_allows\_retreat} multi-nivel del SRS conceptual no está implementada (queda TBD-OP-01); la implementación actual es binaria distance-based.}
+  \item \TCPre{HLC con \texttt{WaypointTracker} habilitado; LLC reportando \texttt{dist\_mm} en TLM; SafeMode no activo; estado MSM = EXPLORE.}
+  \item \TCSetup{Escenario con obstáculo móvil acercándose entre 400\,mm y 200\,mm; logging de evento HLC \texttt{retreat\_triggered} y TLM continua.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Ejecutar UC-01 hasta registrar un waypoint seguro.
-      \item Disparar conditions\_adverse\_detected (según definición).
-      \item Verificar transición a HomingRetreat y llegada safe\_waypoint\_reached.
+      \item Ejecutar UC-01 (\texttt{EXP:25:25}) hasta que el \texttt{WaypointTracker} registre al menos 1 waypoint con \texttt{safety=NORMAL}.
+      \item Acercar obstáculo gradualmente; verificar que el HLC emite RET cuando \texttt{dist\_mm} cruza 300\,mm.
+      \item Verificar que el LLC NO dispara FAULT (la decisión HLC es proactiva, antes del umbral LLC de 200\,mm).
+      \item Si el obstáculo persiste y \texttt{dist\_mm $<$ 200\,mm}, verificar que el LLC entra a Fault.
     \end{enumerate}
-  \item \TCData{Logs de waypoint; evento adverso; transición; llegada.}
-  \item \TCAccept{HomingRetreat ejecutado y waypoint alcanzado.}
-  \item \TCTrace{§7.3.8; UC-01.}
+  \item \TCData{Logs de waypoint; secuencia de \texttt{dist\_mm}; evento RET; estado MSM; transiciones.}
+  \item \TCAccept{HLC dispara RET a $<$300\,mm; LLC mantiene Explore hasta $<$200\,mm donde escala a Fault.}
+  \item \TCTrace{\S\ref{subsec:uc01_states}; UC-01; \texttt{olympus\_hlc/monitors.py::WaypointTracker.should\_retreat}; TBD-OP-01.}
 \end{tcblock}
 
 \paragraph{SyRS-070 — Almacenamiento local ($\ge$2 h de logs/TM)}
@@ -400,38 +406,43 @@
   \item \TCTrace{CDH-REQ-002; ConOps downlink/análisis.}
 \end{tcblock}
 
-\paragraph{SyRS-080 — Entrada a SafeMode por fallas críticas}
+\paragraph{SyRS-080 — Entrada a SafeMode por las 3 condiciones implementadas}
 \begin{tcblock}
   \item \TCID{VT-SyRS-080}
   \item \TCMethod{D/T}
-  \item \TCObj{Verificar transición Any$\rightarrow$SafeMode ante sw\_\allowbreak fault\_\allowbreak critical o power\_\allowbreak anomaly\_\allowbreak detected.}
-  \item \TCPre{Eventos de falla disponibles; logging activo.}
-  \item \TCSetup{Método de inyección de falla SW/EPS (TBD si no existe).}
+  \item \TCObj{Verificar transición Any$\rightarrow$SafeMode ante las \textbf{tres condiciones implementadas} en \texttt{olympus\_hlc.monitors.SafeMode.update()}: (a) batería crítica (\texttt{batt\_mv $<$ BATT\_CRITICAL\_MV}), (b) LLC en FAULT (\texttt{tlm.safety == "FAULT"}), (c) temperatura crítica (\texttt{temp\_c $\ge$ TEMP\_CRIT\_C = 60\,$^{\circ}$C}). Una vez activo, solo \texttt{STB/PING/RST/BNK:0} son admitidos; salida sólo por \texttt{RST} explícito.}
+  \item \TCPre{HLC desplegado con \texttt{SafeMode} activo; LLC reportando \texttt{batt\_mv}, \texttt{safety}, \texttt{temp\_c}; logging completo.}
+  \item \TCSetup{(a) Fuente de alimentación variable para inducir \texttt{batt\_mv $<$ BATT\_CRITICAL\_MV}; (b) bloqueo físico de rueda para forzar LLC=FAULT; (c) inducción térmica controlada (calefactor/sauna) hasta $\ge$60\,$^{\circ}$C cerca del sensor (cuidado con HW).}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Inyectar sw\_fault\_critical y verificar SafeMode.
-      \item Inyectar power\_anomaly\_detected y verificar SafeMode.
+      \item Reducir alimentación hasta cruzar \texttt{BATT\_CRITICAL\_MV}; verificar entrada a SafeMode con \texttt{reason} = "batería crítica".
+      \item \texttt{RST} para salir; bloquear rueda persistente para llevar LLC a FAULT; verificar entrada SafeMode con \texttt{reason} = "LLC en FAULT".
+      \item \texttt{RST}; inducir \texttt{temp\_c $\ge$ TEMP\_CRIT\_C}; verificar entrada SafeMode con \texttt{reason} = "temperatura crítica".
+      \item En cada caso, verificar bloqueo de comandos: enviar \texttt{EXP:25:25} y comprobar que es rechazado; solo \texttt{STB/PING/RST/BNK:0} pasan.
     \end{enumerate}
-  \item \TCData{Evento; logs de transición; estado final.}
-  \item \TCAccept{Transición a SafeMode demostrada en ambos casos.}
-  \item \TCTrace{EVT-CDH-010/EVT-EPS-005; §7.3.8.}
+  \item \TCData{Evento de activación; \texttt{reason} string; logs de transición; verificación de \texttt{blocks\_command()}.}
+  \item \TCAccept{Las 3 condiciones llevan a SafeMode; comandos no esenciales rechazados; salida solo por RST.}
+  \item \TCTrace{SYS-FUN-040; SYS-FUN-041; \S\ref{subsec:uc01_states}; \texttt{monitors.py::SafeMode}.}
 \end{tcblock}
 
-\paragraph{SyRS-081 — Protecciones eléctricas (BMS/protección EPS)}
+\paragraph{SyRS-081 — Protecciones eléctricas distribuidas (sin BMS centralizado)}
 \begin{tcblock}
   \item \TCID{VT-SyRS-081}
   \item \TCMethod{I/T}
-  \item \TCObj{Confirmar presencia y funcionamiento básico de protecciones EPS.}
-  \item \TCPre{EPS integrado.}
-  \item \TCSetup{Inspección física; prueba controlada de condición anómala (TBD: procedimiento seguro).}
+  \item \TCObj{Confirmar presencia y funcionamiento de las protecciones EPS \textbf{distribuidas} desplegadas (decisión de diseño 2026-05-17): (a) \textbf{fusibles por banco} en la PDU, (b) \textbf{ACS712 por motor} con disparo \texttt{OC\_FAULT} en LLC, (c) \textbf{INA3221} para monitoreo de tensión bus por banco, (d) \textbf{relay BNK:0} accionable por GCS para corte de emergencia. \textbf{Nota CR-003}: no se utiliza BMS centralizado (Daly 4S 20A retirado); el balanceo de celdas se realiza externamente durante la carga.}
+  \item \TCPre{EPS integrado con 3 bancos 18650 NMC; LLC v2.20 con drivers de INA3221 y ACS712 activos; relay BNK:0 cableado al pin de control LLC; \texttt{OC\_FAULT\_BTS} calibrado (ver memoria \texttt{session\_2026\_04\_29\_llc\_protection}).}
+  \item \TCSetup{Inspección física de fusibles, ACS712, INA3221 y relay; multímetro/pinza amperimétrica de referencia; carga programable para inducir sobrecorriente controlada.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Inspeccionar BMS y protecciones instaladas.
-      \item Ejecutar prueba controlada (segura) que evidencie protección/aislamiento según procedimiento.
+      \item Inspeccionar fusibles por banco (valor nominal); fotografiar.
+      \item Verificar telemetría \texttt{batt\_mv} (3 canales INA3221) en TLM; comparar con multímetro.
+      \item Verificar telemetría corrientes ACS712 (6 canales) bajo carga nominal.
+      \item Inducir sobrecorriente controlada en un motor hasta cruzar \texttt{OC\_FAULT\_BTS}; verificar disparo en LLC y entrada a Fault.
+      \item Comandar \texttt{BNK:0} desde GCS; verificar corte del relay (potencia a motores = 0) en $\le$500\,ms.
     \end{enumerate}
-  \item \TCData{Checklist; evidencia fotográfica; resultado de prueba.}
-  \item \TCAccept{Protecciones presentes y evidencia de funcionamiento conforme al procedimiento.}
-  \item \TCTrace{EPS y N2; §8.2.1.7.}
+  \item \TCData{Checklist; evidencia fotográfica; TLM V/I; trazas de OC\_FAULT y BNK:0; tiempos.}
+  \item \TCAccept{Las 4 protecciones distribuidas presentes y operativas; \texttt{OC\_FAULT} y \texttt{BNK:0} disparan correctamente.}
+  \item \TCTrace{EPS-REQ-001; EPS-REQ-002a/b; PROP-REQ-002; \S\ref{sec:hw_selected}; ICD-LLC-001.}
 \end{tcblock}
 
 \paragraph{SyRS-090 — Restricción CON-001 (lab-only/sitio análogo)}
