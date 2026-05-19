@@ -521,8 +521,8 @@
 \begin{tcblock}
   \item \TCID{VT-SRS-002}
   \item \TCMethod{T}
-  \item \TCObj{Verificar que el software aplica latencia configurable 0–5 s al intercambio TM/CMD.}
-  \item \TCPre{Mecanismo de inyección de latencia disponible.}
+  \item \TCObj{Verificar que el software aplica latencia configurable 0–5 s al intercambio TM/CMD (CON-002).}
+  \item \TCPre{Mecanismo de inyección de latencia disponible en \texttt{gcs\_drive.py} o middleware CSP. \textbf{Estado al 2026-05-18}: \emph{no implementado} en el stack HLC actual (flag CON-002 abierto); este test queda en \emph{deferred} hasta cerrar la implementación.}
   \item \TCSetup{Medición de retardo basada en timestamps; configuración de delay.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
@@ -535,22 +535,24 @@
   \item \TCTrace{CON-002; §9.4.1.}
 \end{tcblock}
 
-\paragraph{SRS-010 — Implementación máquina de estados UC-01 (incluye history)}
+\paragraph{SRS-010 — Implementación máquina de estados UC-01 (MSM flat de 7 estados)}
 \begin{tcblock}
   \item \TCID{VT-SRS-010}
   \item \TCMethod{D/T}
-  \item \TCObj{Demostrar que el software implementa estados/transiciones y pseudoestado history.}
-  \item \TCPre{Máquina de estados habilitada; logging activo.}
-  \item \TCSetup{GCS para cmd\_start/cmd\_pause/cmd\_homing\_retreat; escenarios de salida/retorno para activar history.}
+  \item \TCObj{Demostrar que el software implementa los 7 \texttt{RoverState} y las transiciones por ACK del Arduino. \textbf{Nota CR-003}: el pseudoestado \emph{history} del SRS conceptual \textbf{no está implementado} en el HLC desplegado (\texttt{olympus\_hlc.msm.RoverMSM}: máquina plana sin substates ni history). Las transiciones se registran únicamente al recibir \texttt{ACK} confirmado del LLC; el SRS conceptual de history queda diferido y se rastrea por separado mediante el logging de transiciones (ver SRS-061).}
+  \item \TCPre{HLC desplegado con \texttt{RoverMSM} activo; LLC confirmando ACKs; logging activo.}
+  \item \TCSetup{GCS para enviar \texttt{EXP}, \texttt{STB}, \texttt{RST}, \texttt{BNK:0}; observación de transiciones espejo.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Iniciar exploración, avanzar hasta un subestado interno.
-      \item Forzar salida a HomingRetreat (condición adversa) y retornar con \texttt{safe\_\allowbreak waypoint\_\allowbreak reached}.
-      \item Verificar reingreso por history al último subestado activo.
+      \item \texttt{EXP:25:25}: verificar transición Standby$\rightarrow$Explore confirmada por ACK.
+      \item Obstáculo $<$200\,mm: verificar Explore$\rightarrow$Avoid o Fault (depende de sensor).
+      \item \texttt{STB}: parar; \texttt{RST}: reset a Standby.
+      \item Validar que \texttt{RoverMSM.transition()} se ejecuta sólo tras ACK (no especulativo).
+      \item Documentar la ausencia de history: tras Retreat$\rightarrow$Standby$\rightarrow$Explore se vuelve siempre al estado raíz Explore, sin recuperar subestado interno previo.
     \end{enumerate}
-  \item \TCData{Trazas de estados (origen/destino/evento).}
-  \item \TCAccept{Transiciones válidas y reingreso por history evidenciado.}
-  \item \TCTrace{§7.3.8; UC-01.}
+  \item \TCData{Trazas de estados (origen/destino/evento/timestamp); logs de ACK.}
+  \item \TCAccept{7 transiciones válidas evidenciadas; espejo \texttt{RoverMSM} consistente con ACK del LLC. History no aplicable (deferred).}
+  \item \TCTrace{\S\ref{subsec:uc01_states}; UC-01; \texttt{olympus\_hlc/msm.py::RoverMSM}.}
 \end{tcblock}
 
 \paragraph{SRS-011 — Consumo/producción de eventos del diccionario formal}
@@ -643,9 +645,9 @@
 \begin{tcblock}
   \item \TCID{VT-SRS-030}
   \item \TCMethod{T/A}
-  \item \TCObj{Verificar desempeño software: latencia $\le$2 s por ciclo con estadístico definido.}
-  \item \TCPre{Profiling activo; carga representativa UC-01.}
-  \item \TCSetup{Ejecución UC-01; logging de tiempos por ciclo; cálculo de p95/p99.}
+  \item \TCObj{Verificar desempeño software del HLC: latencia $\le$2\,s por ciclo (frame OV5647 $\rightarrow$ YOLOv8n-seg $\rightarrow$ decisión MSM $\rightarrow$ comando UART) con estadístico p95. \textbf{Baseline al 2026-05-18}: YOLOv8n-seg COCO en RPi5 CPU $\sim$205\,ms/frame ($\sim$4.9\,FPS); margen amplio vs umbral 2\,s.}
+  \item \TCPre{Profiling activo; carga representativa UC-01. \textbf{Estado}: instrumentación de timestamps por etapa pendiente (flag SYS-FUN-031).}
+  \item \TCSetup{Ejecución UC-01; logging de tiempos por etapa en RPi5; cálculo de p95/p99.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
       \item Ejecutar UC-01 por una ventana (TBD).
@@ -690,21 +692,22 @@
   \item \TCTrace{CDH-REQ-001.}
 \end{tcblock}
 
-\paragraph{SRS-060 — Falla crítica: transición a SafeMode + registro}
+\paragraph{SRS-060 — Falla crítica: transición a SafeMode + registro (3 condiciones impl.)}
 \begin{tcblock}
   \item \TCID{VT-SRS-060}
   \item \TCMethod{D/T}
-  \item \TCObj{Verificar que sw\_fault\_critical provoca SafeMode y se registra evidencia.}
-  \item \TCPre{Mecanismo de inyección de falla SW (TBD si no existe).}
-  \item \TCSetup{Inyección de sw\_fault\_critical; logging.}
+  \item \TCObj{Verificar que cualquiera de las 3 condiciones implementadas en \texttt{olympus\_hlc.monitors.SafeMode.update()} provoca entrada a SafeMode y que el \texttt{reason} se registra en logs HLC: (a) \texttt{batt\_mv < BATT\_CRITICAL\_MV}, (b) \texttt{tlm.safety == "FAULT"}, (c) \texttt{temp\_c >= TEMP\_CRIT\_C}. Ver también SyRS-080.}
+  \item \TCPre{HLC desplegado con \texttt{SafeMode} activo; LLC v2.20 reportando \texttt{batt\_mv}, \texttt{safety}, \texttt{temp\_c}; logging completo.}
+  \item \TCSetup{Mecanismo de inyección de las 3 condiciones (fuente variable, bloqueo rueda, inducción térmica); logging HLC.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
-      \item Inyectar sw\_fault\_critical.
-      \item Verificar transición a SafeMode y presencia de fault\_code/module\_id/severity en logs (según payload).
+      \item Inducir cada condición (a), (b), (c) en pruebas separadas.
+      \item Verificar entrada a SafeMode y presencia del \texttt{reason} string en logs (\texttt{"batería crítica (X mV < Y mV)"}, \texttt{"LLC en FAULT (safety=FAULT)"}, \texttt{"temperatura crítica (T °C >= 60 °C)"}).
+      \item Verificar \texttt{just\_activated == True} sólo en el ciclo de activación; verificar \texttt{blocks\_command()} para comandos no esenciales.
     \end{enumerate}
-  \item \TCData{Evento; logs; estado final.}
-  \item \TCAccept{SafeMode + evidencia registrada.}
-  \item \TCTrace{EVT-CDH-010; §7.3.8; UC-01.}
+  \item \TCData{Evento; logs HLC con \texttt{reason}; estado final; tiempos.}
+  \item \TCAccept{Las 3 condiciones llevan a SafeMode con \texttt{reason} correcto registrado.}
+  \item \TCTrace{SYS-FUN-040; SYS-FUN-041; \S\ref{subsec:uc01_states}; UC-01; \texttt{monitors.py::SafeMode}.}
 \end{tcblock}
 
 \paragraph{SRS-061 — Auditabilidad (logs de transiciones)}
