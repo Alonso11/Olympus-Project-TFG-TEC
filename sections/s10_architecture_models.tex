@@ -308,14 +308,6 @@ BCM2712 Quad-Core A76 @ 2.4GHz; 4GB/8GB RAM; 2x USB3.0, PCIe 2.0; MIPI CSI-2; 5V
 COTS
 \\
 C\&DH &
-OBC Auxiliar (Raspberry Pi 4) &
-\textbf{TBD} &
-SO \emph{Linux embebido (Yocto Project)}; soporte de servicios, backup, telemetría &
-0.047 &
-2.5--8.0 &
-COTS
-\\
-C\&DH &
 Almacenamiento SSD/microSD &
 \textbf{TBD} &
 $\ge$ 2 h de TM/logs; interfaz USB3 &
@@ -336,25 +328,33 @@ COTS
 % EPS
 % ---------------------
 EPS &
-Batería Li-ion 18650 (Pack 4S2P) &
-LG INR18650MJ1 &
-Li-ion 4S2P (14.54V nom); Capacidad 7000mAh (3500mAh/celda); Descarga max. 10A/celda; 49g/celda &
-0.392 &
+Banco de Baterías 18650 NMC (×3) &
+\textbf{TBD} (LG/Samsung 18650 NMC) &
+Arquitectura de 3 bancos independientes (rail principal + 2 rails secundarios); celdas Li-ion NMC 18650; capacidad y configuración serie/paralelo por banco \textbf{TBD} pendiente PDF cableado v2; \textbf{sin BMS centralizado} (balanceo externo en carga) &
+\textbf{TBD} &
 --- &
 COTS
 \\
 EPS &
-BMS Daly 4S 20A &
-Daly-4S-20A &
-Para Li-ion 4S (14.8V nom / 16.8V max); 20A cont.; Balanceo pasivo (30mA); protecciones OC/OV/OT &
-0.100 &
+Monitor de tensión INA3221 &
+INA3221 (Texas Instruments) &
+3 canales de medición de tensión bus (uno por banco); modo bus-only (sin shunt R\_SHUNT); I2C 0x40-0x43; integrado en LLC (driver Rust 2026-05-17) &
+0.002 &
 < 0.001 &
+COTS
+\\
+EPS &
+Sensor de corriente ACS712 (×6) &
+ACS712-30A &
+Sensor Hall efecto, una unidad por motor; salida analógica 66\,mV/A; disparo \texttt{OC\_FAULT} en LLC (umbral provisional 15\,A, pendiente calibración con I\_stall NFP-5840) &
+0.036 &
+0.05--0.1 &
 COTS
 \\
 EPS &
 DC-DC Buck Regulados &
 \textbf{TBD} &
-5V/12V; conversión 4S→cargas internas; Eficiencia $\ge$ 85\% &
+5V/12V; conversión desde bancos $\rightarrow$ cargas internas; Eficiencia $\ge$ 85\% &
 \textbf{TBD} &
 \textbf{TBD} &
 COTS
@@ -388,19 +388,19 @@ Worm Gear (Self-locking); 12V DC; 40 RPM; Torque nominal 15.5 kg$\cdot$cm &
 COTS
 \\
 PROP &
-Driver Dual H-Bridge L298N &
+Driver Dual H-Bridge L298N (×1) &
 L298N (Red) &
-Dual H-Bridge; 2A cont./3A peak; $\le$ 46V DC; PWM+DIR &
+Dual H-Bridge; 2A cont./3A peak; $\le$ 46V DC; PWM+DIR. \textbf{Asignación}: motores frontales FR/FL únicamente (configuración mixed-drivers, LLC \texttt{1845c4a}) &
 0.026 &
 0.18 &
 COTS
 \\
 PROP &
-Driver High-Power BTS7960 &
-BTS7960 (Alt) &
-H-Bridge; 43A peak; 5.5--27V DC; Protecciones OC/OV/OT &
-0.066 &
-0.10 &
+Driver High-Power BTS7960 (×4) &
+BTS7960 (BTN7971) &
+H-Bridge; 43A peak; 5.5--27V DC; Protecciones OC/OV/OT. \textbf{Asignación}: motores centrales y traseros CR/CL/RR/RL (configuración mixed-drivers, LLC \texttt{1845c4a}); dead-band 15\% activo &
+0.264 &
+0.40 &
 COTS
 \\
 \hline
@@ -436,8 +436,8 @@ COTS
 \\
 TRAC &
 Rocker-Bogie simplificado &
-\textbf{TBD} &
-Suspensión pasiva; despeje objetivo $\ge$ 10 cm &
+\textbf{TBD} (heredado POAS) &
+Suspensión pasiva tubular de PVC; despeje al suelo objetivo $\ge$ 10\,cm \textbf{(TBD — pendiente medición en piezas finales tras ensamblaje)} &
 \textbf{TBD} &
 0 &
 DEV
@@ -473,15 +473,15 @@ COTS
 COMMS &
 Transmisor/Receptor FPV (5.8GHz) &
 AKK TS832 / RC832 &
-5.8GHz 48CH; Potencia 600mW; Alcance $\ge$ 3km; Voltaje 7--16V; Conector RP-SMA &
+5.8GHz 48CH; Potencia 600mW; Alcance $\ge$ 3km; Voltaje 7--16V; Conector RP-SMA. \textbf{Canal auxiliar} de monitoreo humano; no consumido por el pipeline GNC ni por el stack CSP &
 0.107 &
 2.6 (TX) &
 COTS
 \\
 COMMS &
-Radio UHF (Kenwood) &
+Radio UHF (Kenwood) \textbf{[FUTURO]} &
 TM-D710GA/TS-2000 &
-Transceptor UHF para telemetría crítica; \textbf{Alimentación Externa} &
+Transceptor UHF para telemetría crítica; \textbf{Alimentación Externa}. \textbf{[FUTURO]} Componente conceptual incluido para diseño extensible; \textbf{no integrado} en el stack actual --- la comunicación rover-GCS desplegada opera sobre Wi-Fi 2.4\,GHz con CSP \texttt{csp\_if\_udp} (HLC commit \texttt{3e99f8f}) &
 1.500 &
 Externa &
 COTS
@@ -500,55 +500,63 @@ DEV
 % ---------------------
 GNC &
 Cámara CSI (Raspberry Pi v1.3) &
-RPi Cam v1.3 &
-Sensor OV5647 (5 MP); video 1080p30; interfaz CSI; requiere lente gran angular para FOV $\ge$ 120° &
+OV5647 (sensor) / RPi Cam v1.3 &
+Sensor OV5647 (5 MP); video 1080p30; interfaz CSI sobre RPi5; lente \textbf{stock 54° (no 120°)} montada al 2026-05-18. \textbf{TBD}: confirmar si se reemplaza por lente M12 wide-angle ($\ge$ 120°) o se ajusta GNC-REQ-001 al FOV real &
 0.003 &
 1.25 &
 COTS
 \\
 GNC &
-IMU (modelo académico) &
-\textbf{TBD} &
-9DOF; salida I2C/SPI; 100–200 Hz &
-0.003 &
-0.05--0.15 &
+IMU MPU-6050 &
+MPU-6050 (InvenSense) &
+6-DOF (giro+acelerómetro), I2C 0x68; 100--200\,Hz; conectado al Arduino Mega (LLC); INT-04b validado 2026-04-12 (responde a 0x68) &
+0.005 &
+0.05--0.10 &
 COTS
 \\
 GNC &
-LiDAR TF-Luna &
-TF-Luna &
-Rango 0.2--8 m; Interfaz UART/I2C directa a Raspberry Pi 5 (IA) &
-0.005 &
-0.35--0.75 &
+LiDAR TF02 &
+Benewake TF02 &
+Rango 0.40--22\,m (acc $\pm$5\,cm); interfaz UART 115200\,bps directa a Raspberry Pi 5; integrado con fix ISR USART2 FIFO (LLC v2.17 \texttt{6dc27ec}, validado 2026-04-26 SIG=7) &
+0.045 &
+0.60--1.00 &
+COTS
+\\
+GNC &
+ToF VL53L0X &
+VL53L0X (STMicroelectronics) &
+Rango 0--2\,m (Time-of-Flight láser); interfaz I2C 0x29; conectado al Arduino Mega (LLC) en cara frontal; sensor de corte de emergencia ($\le$50\,mm en CLB mode), pendiente pull-ups validados &
+0.001 &
+0.02--0.04 &
 COTS
 \\
 GNC &
 Sensor Ultrasónico HC-SR04 &
 HC-SR04 &
-Rango 2--400 cm; interfaz Trigger/Echo directa a Raspberry Pi 5 (IA) &
+Rango 2--400\,cm; interfaz Trigger/Echo \textbf{en GPIO del Arduino Mega (LLC)} para mantener el corte de emergencia ($\le$200\,mm) fuera del camino crítico UART &
 0.009 &
 0.075 &
 COTS
 \\
 GNC &
-Encoders de rueda &
-\textbf{TBD} &
-Odometría para slip/estimación EKF &
-\textbf{TBD} &
-0.10--0.30 &
-DEV
+Encoders cuadratura (×6) &
+Integrado NFP-5840 (Hall) &
+Encoder de efecto Hall en cada motor NFP-5840-31ZY-EN (PPR \textbf{TBD} pendiente calibración \texttt{TICKS\_PER\_REV}); fase B en D44--D49; consumido por \texttt{MotorWithEncoder} en LLC v2.20 (lazo cerrado por rueda) &
+--- (incl. motor) &
+0.05--0.10 &
+COTS
 \\
 
 % ---------------------
 % STRUCTURAL
 % ---------------------
 STR &
-Chasis impreso (PLA MAX) &
-\textbf{TBD} &
-Estructural portante; material PLA MAX (alta resistencia a impactos); temp. deformación 57 °C &
+Chasis tubular híbrido (PVC + 3D) &
+\textbf{TBD} (heredado POAS) &
+Estructura portante: \textbf{tubería de PVC} (perfiles de la suspensión rocker-bogie heredada de POAS) + \textbf{acoples e insertos impresos en PLA MAX} (alta resistencia a impactos, temp. deformación 57\,$^{\circ}$C) + paneles de acrílico para protección visible &
 \textbf{TBD} &
 0 &
-COTS
+DEV
 \\
 STR &
 Bahía de aviónica sellada &
@@ -576,11 +584,8 @@ DEV
 El proyecto adopta \emph{Yocto Project} como base del sistema operativo embebido en C\&DH/GNC.
 Queda desautorizada cualquier referencia previa a distribuciones genéricas (p.\,ej.\ Ubuntu).
 
-\paragraph{COMMS UHF (componentes de integración).}
-TNC por hardware (\emph{NinoTNC 9600A}, KISS a 9600\,GFSK), transceptor UHF de laboratorio
-(\emph{Kenwood TM‑D710GA / TS‑2000}), y antenas UHF (Eggbeater para nodo móvil, Yagi para
-estación/retransmisor). Conexiones: C\&DH$\leftrightarrow$TNC (\textbf{USB KISS}), TNC$\leftrightarrow$Radio
-(audio/PTT), Radio$\leftrightarrow$Antena (RF). Alimentación desde EPS (5\,V TNC, 12\,V Radio).
+\paragraph{COMMS UHF (componentes de integración) \textbf{[FUTURO]}.}
+\textit{Esta arquitectura UHF se documenta como diseño extensible para una futura iteración del rover; no está integrada en el stack desplegado, el cual opera exclusivamente sobre Wi-Fi 2.4\,GHz con CSP (\texttt{csp\_if\_udp} nativo, HLC commit \texttt{3e99f8f}).} Diseño objetivo: TNC por hardware (\emph{NinoTNC 9600A}, KISS a 9600\,GFSK), transceptor UHF de laboratorio (\emph{Kenwood TM‑D710GA / TS‑2000}), y antenas UHF (Eggbeater para nodo móvil, Yagi para estación/retransmisor). Conexiones planeadas: C\&DH$\leftrightarrow$TNC (\textbf{USB KISS}), TNC$\leftrightarrow$Radio (audio/PTT), Radio$\leftrightarrow$Antena (RF). Alimentación desde EPS (5\,V TNC, 12\,V Radio).
 
 % Notas de integración
 \noindent\textbf{Notas.} El TNC se conecta a C\&DH por \textbf{USB} (KISS). El transceptor UHF se
