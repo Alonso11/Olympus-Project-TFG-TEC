@@ -764,29 +764,29 @@ Esta sección define la \textbf{Estructura de Descomposición Física (PBS)} del
 
 \noindent\textbf{PBS--L1 (Subsistemas --- 7 bloques)} \emph{(composición del sistema; ver BDD $\S$\ref{sec:architecture})} \cite{nasa_cm}
 \begin{itemize}
-  \item \textbf{STR} Structural (chasis, bahía aviónica, \emph{mounts}).
-  \item \textbf{TRAC} Tracción (ruedas, hubs, suspensión pasiva).
-  \item \textbf{PROP} Propulsión (motores DC, drivers H-bridge, disipación).
-  \item \textbf{C\&DH} Command \& Data Handling (RPi5, RPi4, MCU, almacenamiento, bus de datos).
-  \item \textbf{EPS} Energía (pack 18650 4S, BMS Daly 4S/20A, DC/DC, PDU/fusibles, e-stop).
-  \item \textbf{COMMS} Comunicaciones (Wi‑Fi 2.4\,GHz, FPV opc., antenas y \emph{mounts}).
-  \item \textbf{GNC} Guía, Navegación y Control (cámara CSI v1.3, IMU, TF-Luna LiDAR opc., HC-SR04, encoders).
+  \item \textbf{STR} Structural (chasis tubular PVC heredado POAS + acoples impresos PLA MAX, bahía aviónica, paneles acrílicos, \emph{mounts}).
+  \item \textbf{TRAC} Tracción (ruedas, hubs impresos PLA MAX, suspensión rocker-bogie pasiva, rodamientos F687ZZ).
+  \item \textbf{PROP} Propulsión (motores DC NFP-5840-31ZY-EN ×6, drivers mixtos L298N×1 + BTS7960×4, acoples motor-eje, disipación).
+  \item \textbf{C\&DH} Command \& Data Handling (RPi5 OBC única, MCU Arduino Mega 2560 R3, almacenamiento SSD/microSD, bus de datos UART/I2C/USB).
+  \item \textbf{EPS} Energía (3 bancos 18650 NMC sin BMS centralizado, INA3221 monitor V bus, ACS712 ×6 sensado I por motor, DC/DC, PDU/fusibles, relay e-stop \texttt{BNK:0}).
+  \item \textbf{COMMS} Comunicaciones (Wi‑Fi 2.4\,GHz nativo RPi5 con CSP \texttt{csp\_if\_udp}, FPV TS832/RC832 auxiliar, antenas y \emph{mounts}; UHF [FUTURO] no integrado).
+  \item \textbf{GNC} Guía, Navegación y Control (cámara CSI OV5647, IMU MPU-6050, LiDAR TF02, ToF VL53L0X, HC-SR04 en Arduino Mega, encoders Hall integrados NFP-5840).
 \end{itemize}
 
 \noindent\textbf{PBS--L2 (Ensamblajes por subsistema)} \emph{(ejemplos representativos; ver $\S$\ref{sec:architecture})} \cite{nasa_cm}
 \begin{itemize}
-  \item \textbf{STR}: Chasis estructural; Bahía de aviónica; Placas de refuerzo; Brackets de sensores/antenas.
-  \item \textbf{TRAC}: Conjunto rueda+hub ($\times$N); Conjunto suspensión pasiva (rocker/bogie).
-  \item \textbf{PROP}: Conjunto motor+reductora ($\times$N); Conjunto driver de motor (L298N); Conjunto disipación.
-  \item \textbf{C\&DH}: OBC principal (RPi5); OBC auxiliar (RPi4); MCU I/O; Módulo de almacenamiento; Segmento del bus de datos.
-  \item \textbf{EPS}: Pack 18650 4S; Módulo BMS Daly 4S/20A (Li-ion); Conjunto DC/DC 5/12V; PDU+fusibles/e-stop; Módulo de sensado V/I (INA219).
-  \item \textbf{COMMS}: NIC Wi‑Fi / dongle; FPV TX/RX (opcional); Antenas + \emph{mounts}.
-  \item \textbf{GNC}: Cámara CSI v1.3; IMU; LiDAR TF-Luna (opcional); Sensor Ultrasónico HC-SR04; Encoders de rueda.
+  \item \textbf{STR}: Chasis tubular PVC + acoples 3D; Bahía de aviónica; Placas de refuerzo; Brackets de sensores/antenas.
+  \item \textbf{TRAC}: Conjunto rueda+hub ($\times$6); Conjunto suspensión pasiva (rocker-bogie heredada POAS).
+  \item \textbf{PROP}: Conjunto motor+reductora ($\times$6, NFP-5840); Conjunto driver L298N (×1, FR/FL); Conjunto driver BTS7960 (×4, CR/CL/RR/RL); Conjunto disipación.
+  \item \textbf{C\&DH}: OBC principal (RPi5, única); MCU I/O (Arduino Mega 2560 R3); Módulo de almacenamiento (microSD/SSD); Segmento del bus de datos.
+  \item \textbf{EPS}: 3 Bancos 18650 NMC; Monitor de tensión INA3221 (I2C, 3 canales); Sensor de corriente ACS712 (×6, Hall); Conjunto DC/DC 5/12V; PDU+fusibles+relay \texttt{BNK:0}.
+  \item \textbf{COMMS}: NIC Wi‑Fi 2.4\,GHz (nativo RPi5); FPV TX/RX (auxiliar humano); Antenas + \emph{mounts}; \textbf{[FUTURO]}: TNC NinoTNC, transceptor UHF, antenas UHF.
+  \item \textbf{GNC}: Cámara CSI OV5647 (sensor v1.3); IMU MPU-6050 (I2C); LiDAR TF02 (UART); ToF VL53L0X (I2C); Sensor HC-SR04 (GPIO Arduino Mega); Encoders Hall NFP-5840 ($\times$6).
 \end{itemize}
 
 \noindent\textbf{PBS--L3 (Componentes/ítems COTS/DEV)} \emph{(detalles cerrados en BOM/ICD; ver $\S$\ref{sec:hw_selected} y $\S$\ref{subsec:physical_view})} \cite{nasa_cm}
 \begin{itemize}
-  \item Ej.: Rodamientos F687ZZ; cables/conectores por bus; tornillería/inserciones; sensores específicos; tarjeta INA219; etc. \emph{(P/N y masa/potencia $\rightarrow$ BOM; pines/buses/voltajes $\rightarrow$ ICD)}.
+  \item Ej.: Rodamientos F687ZZ; cables/conectores por bus; tornillería/inserciones; sensores específicos; tarjeta INA3221; tarjetas ACS712 (×6); etc. \emph{(P/N y masa/potencia $\rightarrow$ BOM; pines/buses/voltajes $\rightarrow$ ICD)}.
 \end{itemize}
 
 % ------------------------------------------------------------
