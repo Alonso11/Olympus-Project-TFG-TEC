@@ -1,0 +1,53 @@
+% Elaborado por Fabian Gomez
+% Version 1.0
+
+\section{Terms, Definitions, Acronyms}\label{sec:terms}
+
+Esta sección establece la terminología y las abreviaturas utilizadas a lo largo del SyRS/\allowbreak SRS para asegurar consistencia semántica y evitar ambigüedades, especialmente en requisitos (RF/\allowbreak RNF/\allowbreak CON), ConOps, arquitectura MBSE/\allowbreak SysML e ingeniería de V\&V. \cite{omg_sysml_mbse, nasa_cm}
+Los términos aquí definidos se emplean con significado único dentro del documento; cuando se usa un término en inglés (p. ej., ConOps, V\&V, BDD), se incluye por alineamiento con la práctica del proyecto y la notación ya presente en los borradores. \cite{omg_sysml_mbse, nasa_cm, segoldmine_ppi}
+
+\subsection{Terms and Definitions}
+
+A continuación se definen los términos clave del SyRS/SRS:
+
+\begin{description}
+    \item[ELANav (Biblioteca embebida para la navegación de sistemas espaciales de misión crítica):] Proyecto de investigación del Tecnológico de Costa Rica (Escuela de Ingeniería Electrónica, coordinador: Johan Carvajal Godínez, 2025--2027) que desarrolla una biblioteca de software embebido basada en el paradigma de agentes de software, con capacidades de redundancia y adaptabilidad para sistemas espaciales de misión crítica. El Rover Olympus actúa como plataforma de validación para esta biblioteca en escenarios análogos.
+    \item[Rover Olympus:] Plataforma rover académica diseñada como banco de pruebas para validar ELANav; integra hardware COTS y se organiza en 7 subsistemas (STR, TRAC, PROP, C\&DH, EPS, COMMS, GNC).
+    \item[Caso de Uso (Use Case):] Descripción operacional de una interacción sistema--actores con objetivos, flujo nominal y contingencias; en este SyRS el caso núcleo es UC-01. \cite{ieee_29148}
+    \item[UC-01 (Exploración de superficie):] Operación en la cual el rover analiza el terreno y navega de forma autónoma, manteniendo percepción continua, evitación de obstáculos y compensación de deslizamiento, reportando telemetría a estación terrena.
+    \item[ConOps (Concept of Operations):] Descripción del concepto de operación del sistema a nivel de misión (fases, escenarios, ciclo diario, restricciones operacionales) que contextualiza los requisitos y criterios de V\&V. \cite{nasa_se_handbook}
+    \item[Sitio Análogo (Analog Site):] Terreno de prueba en la Tierra utilizado para emular condiciones relevantes de superficie planetaria (p.\,ej., terreno volcánico, regolito simulado, pendientes y obstáculos) para validación del rover.
+    \item[Slip Ratio / Deslizamiento:] Diferencia entre velocidad teórica del eje motriz y velocidad real de avance del rover en superficie; el umbral operativo aplicable se especifica en el requisito de detección/compensación correspondiente (ver \S\ref{sec:requirements}).
+    \item[Estación Terrena (Ground Control Station, GCS):] Sistema externo operado por el Rover Planner/Ground Operator para enviar comandos/objetivos (uplink) y recibir telemetría/datos (downlink) durante las campañas en entorno análogo.
+    \item[CSP (CubeSat Space Protocol):] Protocolo utilizado para encapsulamiento de telemetría y comandos (TM/CMD) sobre el enlace rover--estación terrena, con verificación de integridad asociada. \cite{csp_spec}
+    \item[V\&V (Verification and Validation):] Conjunto de actividades para verificar que el sistema cumple sus requisitos (RF/RNF/CON) y validar que satisface su propósito operacional en escenarios representativos (entorno análogo), usando métodos T/A/D/I. \cite{ieee_29148}
+    \item[Yocto Project:] Conjunto de herramientas y metadatos para construir imágenes de \emph{Linux embebido} a la medida. Se adopta como base del SO en C\&DH/GNC (imagen propia del proyecto).
+    \item[Store-and-forward:] Estrategia de red en la que un nodo intermedio recibe, almacena temporalmente y reenvía paquetes (retransmisor CSP) para salvar obstrucciones de LoS.
+    \item[N\textsuperscript{2} (N-squared) Diagram:] Matriz de interfaces de tamaño $N \times N$ utilizada en MBSE/SE para visualizar y auditar todas las interacciones entre los $N$ bloques (subsistemas o funciones) de un sistema. Los bloques se ubican en la diagonal; las salidas de un bloque se listan en la fila correspondiente y las entradas en la columna; cada celda fuera de la diagonal representa una interfaz unidireccional. Se emplea en \S\ref{sec:system_interfaces} para registrar el flujo físico y lógico entre los 7 subsistemas del rover. \cite{nasa_se_handbook}
+    % TODO verificar store-and-forward: stack HLC actual (commit 3e99f8f) usa csp_if_udp nativo sin nodo relay implementado — confirmar si es aspiracional o quitar de la lista.
+\end{description}
+
+\subsection{Acronyms and Abbreviations}
+
+Acrónimos y abreviaturas principales. Los acrónimos SysML (BDD/IBD) provienen de \cite{omg_sysml_mbse}; los métodos T/A/D/I provienen de \cite{ieee_29148}.
+
+\begin{itemize}
+    \item \textbf{STR:} Structural (subsistema estructural). \textit{REQ ID prefix:} \texttt{STR-}.
+    \item \textbf{TRAC:} Tracción (subsistema de tracción). \textit{REQ ID prefix:} \texttt{TRAC-}.
+    \item \textbf{PROP:} Propulsión (subsistema de propulsión). \textit{REQ ID prefix:} \texttt{PROP-}.
+    \item \textbf{C\&DH:} Command \& Data Handling (computación y manejo de comandos/datos a bordo). \textit{REQ ID prefix:} \texttt{CDH-}.
+    \item \textbf{EPS:} Electrical Power System (subsistema de potencia). \textit{REQ ID prefix:} \texttt{EPS-}.
+    \item \textbf{GNC:} Guidance, Navigation \& Control (guiado/navegación/control). \textit{REQ ID prefix:} \texttt{GNC-}.
+    \item \textbf{COMMS:} Communications (subsistema de comunicaciones). \textit{REQ ID prefix:} \texttt{COMM-}.
+    \item \textbf{BDD:} Block Definition Diagram (SysML).
+    \item \textbf{IBD:} Internal Block Diagram (SysML).
+    \item \textbf{PBS:} Physical Breakdown Structure (descomposición física/ensambles).
+    \item \textbf{ASM:} Assembly --- identificadores de ensamble físico (ASM-xxxx) usados para trazabilidad física e integración.
+    \item \textbf{COTS:} Commercial Off-The-Shelf (componentes comerciales).
+    \item \textbf{GCS:} Ground Control Station (estación terrena).
+    \item \textbf{TM/CMD:} Telemetry / Commands (telemetría y comandos).
+    \item \textbf{T/A/D/I:} Test / Analysis / Demonstration / Inspection (métodos de verificación).
+    \item \textbf{AX.25:} Protocolo de enlace de datos (derivado de HDLC) usado en radio UHF con modulación GFSK a 9600\,bps y encapsulado \emph{KISS}.
+    \item \textbf{KISS:} Encapsulamiento ligero para transportar tramas AX.25 sobre un puerto serie (USB/UART) entre TNC y OBC.
+    \item \textbf{RDP (Reliable Datagram Protocol):} Protocolo de transporte fiable (CSP-RDP) con handshake y ACKs para TM/CMD crítica.
+\end{itemize}

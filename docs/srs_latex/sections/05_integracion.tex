@@ -1,0 +1,41 @@
+% Elaborado por Fabian Gomez
+% Version 1.0
+
+\section{Integración del Prototipo}
+
+Esta sección define el proceso de materialización del Rover Olympus, desde la verificación de componentes individuales hasta la carga de la imagen de sistema operativo personalizada.
+
+\subsection{Niveles de Integración y Ensamblaje}
+La integración se realiza de forma modular siguiendo el desglose definido en el PBS (§P-01):
+
+\begin{enumerate}
+    \item \textbf{Nivel 1 (Componentes COTS):} Verificación funcional de los controladores L298, cámaras CSI, sensores IR/DHT22 y motores DC con encoders.
+    \item \textbf{Nivel 2 (Integración de Software):} Generación y despliegue de la imagen \textbf{Embedded Linux (Yocto Project)} en la Raspberry Pi 5, incluyendo los agentes de ELANav.
+    \item \textbf{Nivel 3 (Sistema Completo):} Montaje de los ensamblajes ASM-1000 a ASM-4000 sobre el chasis y validación de la Matriz de Conectividad N$^2$.
+\end{enumerate}
+
+\subsection{Protocolo de Integración de Hardware y Software}
+Para asegurar la integridad del sistema, se sigue una secuencia de validación progresiva alineada con los requerimientos técnicos:
+
+\begin{table}[H]
+    \centering
+    \caption{Secuencia de integración y validación progresiva v3.11.}
+    \scriptsize
+    \begin{tabularx}{\textwidth}{|l|X|l|}
+        \hline
+        \rowcolor{AgencyBlue!10} \textbf{Etapa} & \textbf{Actividad Crítica} & \textbf{Referencia SyRS} \\ \hline
+        \textbf{Mecánica} & Ensamble del chasis y motores ASM-1000. & \cref{rf:class} (Dimensiones) \\ \hline
+        \textbf{Potencia} & Verificación del bus 12-24V y Smart BMS. & \cref{con:eps} \\ \hline
+        \textbf{Software} & Flasheo de imagen Yocto y arranque de agentes. & \cref{rnf:proc} \\ \hline
+        \textbf{Percepción} & Calibración de cámaras CSI y sensores IR. & \cref{rf:lidar} \\ \hline
+        \textbf{Control} & Validación de lazo cerrado con L298 y encoders. & \cref{rf:slip} \\ \hline
+    \end{tabularx}
+\end{table}
+
+\subsection{Proceso de Despliegue de Software (Yocto Workflow)}
+La integración del núcleo de autonomía ELANav sigue un flujo de integración continua:
+\begin{itemize}
+    \item \textbf{BitBake Build:} Compilación de la receta personalizada que incluye el kernel Linux minimalista y las dependencias de agentes.
+    \item \textbf{SD Flashing:} Creación del medio de arranque para la Raspberry Pi 5.
+    \item \textbf{Post-Build Validation:} Prueba de latencia de agentes (\cref{rnf:proc}) y verificación de encapsulamiento CSP (\cref{rf:csp}).
+\end{itemize}

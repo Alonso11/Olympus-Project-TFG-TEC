@@ -1,0 +1,187 @@
+% Elaborado por Fabian Gomez
+% Version 1.0
+
+% =========================================================
+% Procedimientos de V&V (COMMS) - Rover Olympus
+% =========================================================
+\section*{Procedimientos de V\&V para COMMS}
+\addcontentsline{toc}{section}{Procedimientos de V\&V para COMMS}
+\label{sec:vv_procedures_comms}
+
+\subsection*{Convenciones y alcance}
+Este anexo define procedimientos prácticos para verificar/validar el subsistema COMMS bajo los
+dos medios soportados: (a) Wi-Fi 2.4\,GHz + UDP/IP + CSP, y (b) UHF 430–440\,MHz + AX.25/KISS + CSP
+(\,GFSK 9600\,bps\,). Cubre \emph{smoke tests}, V\&V de enlace directo UHF (RDP), V\&V vía retransmisor
+(\emph{store-and-forward}) y una caracterización informativa RDP vs modo no fiable.
+
+\paragraph{TBDs de campaña (completar antes de ejecutar).}
+\begin{itemize}
+  \item Direcciones IP: \texttt{IP\_ROVER}, \texttt{IP\_GCS}. Puertos UDP CSP: \texttt{PORT\_ROVER}, \texttt{PORT\_GCS}.
+  \item Baudios KISS: \texttt{BAUD\_KISS} (REC. 115200\,bps). Dispositivo: \texttt{/dev/ttyACMx}.
+  \item Parámetros RDP: \texttt{timeout\_RDP}, \texttt{max\_retries} (RECOMENDADO 500\,ms / 3).
+  \item IDs CSP: \texttt{CSP\_ID\_GCS}, \texttt{CSP\_ID\_ROVER}, \texttt{CSP\_ID\_RELAY}.
+  \item Antenas/cableado RF/PTT: conector/coax, potencia de TX y orientación (si usa Yagi).
+\end{itemize}
+
+\paragraph{Nomenclatura de artefactos.}
+\begin{itemize}
+  \item Capturas UDP: \texttt{pcap/\{fecha\}/udp\_csp\_\{testID\}.pcap}
+  \item Logs KISS serie: \texttt{logs/\{fecha\}/kiss\_\{nodo\}\_\{testID\}.txt}
+  \item Bitácora de consignas: \texttt{logs/\{fecha\}/checklist\_\{testID\}.md}
+  \item Evidencia gráfica (opcional): \texttt{evidence/\{fecha\}/screenshots/\*.png}
+\end{itemize}
+
+% =========================================================
+%  PREPARACIÓN GENERAL
++% =========================================================
+\subsection*{PR-SETUP-COMMS-00 — Preparación de entorno}
+\textbf{Objetivo:} dejar listos ambos medios, parámetros CSP/RDP y artefactos de captura.
+
+\paragraph{Checklist.}
+\begin{enumerate}
+  \item Confirmar IPs y puertos UDP (ROVER/GCS) y conectividad Wi-Fi (ping).
+  \item Establecer \texttt{timeout\_RDP} y \texttt{max\_retries} en el fichero de configuración del stack CSP.
+  \item Conectar TNC (USB/UART) y radio UHF; fijar \texttt{BAUD\_KISS} y modo TNC.
+  \item Verificar antenas (Eggbeater para nodo móvil; Yagi para estación/relay) y coax; asegurar fijaciones.
+  \item Configurar IDs CSP (GCS/ROVER/RELAY) y tabla de rutas: directo preferente; ruta vía Relay disponible.
+  \item Preparar directorios de evidencia y sincronizar hora (ROVER/GCS/Relay).
+\end{enumerate}
+
+% =========================================================
+%  SMOKE TESTS
+% =========================================================
+\subsection*{PR-SMOKE-UDP — Smoke test UDP/IP + CSP (Wi-Fi)}
+\textbf{Objetivo:} validar transporte CSP sobre UDP/IP, latencia inyectada y captura pcap.
+
+\paragraph{Pasos.}
+\begin{enumerate}
+  \item En GCS, iniciar captura \texttt{pcap} en la interfaz Wi-Fi con filtro por puertos CSP.
+  \item Enviar desde GCS un paquete CSP de prueba al ROVER (CMD eco o ping de servicio) y verificar respuesta.
+  \item Activar inyección de latencia (0–5\,s) y repetir (validar tiempos en pcap).
+  \item Registrar artefactos: \texttt{udp\_csp\_\{testID\}.pcap} y \texttt{checklist\_\{testID\}.md}.
+\end{enumerate}
+
+\paragraph{Criterio de aceptación.}
+\begin{itemize}
+  \item Paquetes CSP visibles y decodificables en pcap; tiempos consistentes con la latencia configurada.
+\end{itemize}
+
+\subsection*{PR-SMOKE-KISS — Smoke test KISS/AX.25 + CSP (UHF)}
+\textbf{Objetivo:} validar enlace serie KISS, framing AX.25 (CRC-16), PTT y recepción básica.
+
+\paragraph{Pasos.}
+\begin{enumerate}
+  \item Abrir consola serie al TNC con \texttt{BAUD\_KISS}; habilitar logging KISS.
+  \item Enviar un paquete CSP mínimo a través de \texttt{if\_kiss}; confirmar PTT y transmisión en el radio.
+  \item Verificar recepción/decodificación en el extremo; revisar CRC-16 AX.25 OK.
+  \item Ajustar \texttt{TXDELAY}/nivel de audio si se observen errores; repetir hasta éxito.
+  \item Registrar artefactos: logs KISS/bitácora.
+\end{enumerate}
+
+\paragraph{Criterio de aceptación.}
+\begin{itemize}
+  \item Tramas KISS sin errores de framing; AX.25 con CRC válido; RX en el extremo.
+\end{itemize}
+
+% =========================================================
+%  V&V-COMMS-01 — UHF/RDP DIRECTO
+% =========================================================
+\subsection*{PR-VV-COMMS-01 — UHF/RDP directo (Rover$\leftrightarrow$GCS)}
+\textbf{Objetivo:} demostrar TM/CMD fiable por UHF con CSP/RDP punto–punto.
+
+\paragraph{Setup.}
+\begin{itemize}
+  \item Rutas CSP: directo ROVER$\leftrightarrow$GCS activas; Relay \emph{no} participa.
+  \item Parámetros: \texttt{timeout\_RDP}=\textbf{TBD} (rec. 500\,ms), \texttt{max\_retries}=\textbf{TBD} (rec. 3).
+  \item Tamaños de trama: \{32, 64, 128, 256\}\,B; Repeticiones: N=\textbf{TBD} (rec. 10 por tamaño).
+\end{itemize}
+
+\paragraph{Pasos.}
+\begin{enumerate}
+  \item Iniciar logs KISS en ambos extremos y, opcionalmente, pcap en GCS si hay pasarela IP.
+  \item Para cada tamaño, enviar N tramas RDP desde GCS al ROVER y viceversa (alternar dirección).
+  \item Documentar \#envíos, \#recepciones, \#ACKs, \#reintentos, tiempos de \emph{round-trip}.
+  \item Guardar artefactos: \texttt{kiss\_GCS/ROVER\_\{testID\}.txt}, pcap si aplica, checklist.
+\end{enumerate}
+
+\paragraph{Criterio de aceptación.}
+\begin{itemize}
+  \item Éxito $\ge 95\%$ por tamaño; RDP con ACKs coherentes (reintentos $\leq$ \texttt{max\_retries}).
+\end{itemize}
+
+% =========================================================
+%  V&V-COMMS-02 — UHF VÍA RELAY (STORE-AND-FORWARD)
+% =========================================================
+\subsection*{PR-VV-COMMS-02 — UHF vía retransmisor (store-and-forward)}
+\textbf{Objetivo:} validar flujo Rover$\rightarrow$Relay$\rightarrow$GCS con rutas CSP y reenvío real.
+
+\paragraph{Setup.}
+\begin{itemize}
+  \item Habilitar rutas CSP: ROVER$\rightarrow$RELAY$\rightarrow$GCS y GCS$\rightarrow$RELAY$\rightarrow$ROVER.
+  \item Asegurar posición/ganancia para favorecer el uso del Relay (p.\,ej.\ orientar Yagi o ubicar Relay en mejor LoS).
+  \item Parámetros y tamaños de trama: mismos que PR-VV-COMMS-01.
+\end{itemize}
+
+\paragraph{Pasos.}
+\begin{enumerate}
+  \item Activar logs KISS en ROVER, RELAY y GCS; iniciar bitácora.
+  \item Enviar N tramas por tamaño (ambas direcciones) obligando tránsito por RELAY (verificar en logs).
+  \item Registrar en RELAY: \#recibidas, \#reenviadas, \#ACKs (hacia origen y/o destino), tiempos de permanencia.
+  \item Guardar artefactos: \texttt{kiss\_RELAY\_\{testID\}.txt}, \texttt{kiss\_ROVER/GCS\_\{testID\}.txt}.
+\end{enumerate}
+
+\paragraph{Criterio de aceptación.}
+\begin{itemize}
+  \item Éxito $\ge 95\%$ por tamaño de trama; evidencias de reenvío en RELAY (llegada y salida por KISS) y ACKs RDP.
+\end{itemize}
+
+% =========================================================
+%  V&V-COMMS-03 — CARACTERIZACIÓN (INFORMATIVO)
+% =========================================================
+\subsection*{PR-VV-COMMS-03 — Caracterización RDP vs no fiable (informativo)}
+\textbf{Objetivo:} comparar tiempo total por 10 tramas y tasa de entrega entre RDP y modo no fiable.
+
+\paragraph{Setup.}
+\begin{itemize}
+  \item Usar enlace que haya mostrado estabilidad (directo o vía Relay).
+  \item Tamaños: \{32, 64, 128, 256\}\,B; Repeticiones: 10.
+\end{itemize}
+
+\paragraph{Pasos.}
+\begin{enumerate}
+  \item Para cada tamaño, medir tiempo total para 10 tramas con RDP y registrar \#entregadas/\#perdidas.
+  \item Repetir en modo no fiable y registrar métricas equivalentes.
+  \item Conservar logs KISS/pcap y bitácora con tabla de resultados.
+\end{enumerate}
+
+\paragraph{Resultado esperado (no requisito).}
+\begin{itemize}
+  \item RDP con entrega completa (o $\ge 95\%$) y tiempo mayor que el modo no fiable; el no fiable puede perder tramas
+        en tamaños altos (p.\,ej.\ 64/256\,B), dependiendo del canal.
+\end{itemize}
+
+% =========================================================
+%  FORMATO DE EVIDENCIAS Y TRAZABILIDAD
+% =========================================================
+\subsection*{Evidencias y trazabilidad}
+\paragraph{Mínimos a adjuntar por testID.}
+\begin{itemize}
+  \item Capturas \texttt{pcap} (si aplica), logs KISS (ROVER/GCS/RELAY), checklist firmado, parámetros efectivos (IPs/puertos/baudios/IDs/timeout/retries).
+  \item Tabla de resultados: \#enviadas, \#recibidas, \#ACKs, \#reintentos, éxito \% por tamaño.
+  \item Observaciones (calidad de RF, ajustes de \texttt{TXDELAY}/audio, orientación de antenas).
+\end{itemize}
+
+\paragraph{Vinculación con requisitos.}
+\begin{itemize}
+  \item RF-006, COMM-REQ-001/002 (Wi-Fi + CSP, integridad): PR-SMOKE-UDP.
+  \item COMM-REQ-003/004/005 (UHF + CSP/RDP, integridad dual, conmutación/relay): PR-SMOKE-KISS, PR-VV-COMMS-01/02.
+\end{itemize}
+
+% =========================================================
+%  SEGURIDAD Y CONSIDERACIONES REGULATORIAS
+% =========================================================
+\subsection*{Seguridad/Regulatorio (operación terrestre)}
+\begin{itemize}
+  \item Confirmar uso experimental y normativas para la banda 430–440\,MHz.
+  \item Operar con potencias de TX adecuadas, evitar interferencias y respetar entornos compartidos.
+\end{itemize}
