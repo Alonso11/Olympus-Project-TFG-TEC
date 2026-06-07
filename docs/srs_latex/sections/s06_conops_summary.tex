@@ -1,0 +1,575 @@
+% Elaborado por Fabian Gomez
+% Version 1.0
+
+\section{Concept of Operations (ConOps) Summary}\label{sec:conops}
+
+Esta sección resume el Concepto de Operaciones (ConOps) del Rover Olympus y establece cómo se emplea el sistema en el ciclo de vida operativo, con foco en la ejecución del UC‑01 (Exploración de superficie) como caso núcleo de validación en entornos análogos.
+El ConOps resume fases de misión, escenarios nominales y contingencias, así como el patrón de interacción Tierra–Rover durante campañas en sitio análogo. El ciclo diario operacional (uplink → ejecución autónoma → downlink → hibernación/idle) se define en §\ref{subsec:daily_ops}. El entorno operacional y las restricciones del sitio análogo se documentan en §\ref{subsec:operational_environment} y §\ref{subsec:operational_constraints}, respectivamente.
+El ConOps se utiliza como fuente primaria de derivación y justificación de requisitos (RF/RNF/CON) y como base para la planificación de Verificación y Validación (V\&V) del sistema, manteniendo trazabilidad hacia UC‑01 y los demás Casos de Uso top‑level.
+
+\subsection{Mission Phases (Fases de la Misión)}\label{subsec:mission_phases}
+El ciclo de vida operativo se divide en seis fases críticas, desde la inicialización en sitio análogo hasta el fin de la misión (EOM).
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=0.85, every node/.style={scale=0.7}]
+        \tikzstyle{phase} = [rectangle, draw, fill=blue!10, rounded corners, text width=3.5cm, align=center, minimum height=1cm, line width=1pt]
+        \tikzstyle{arrow} = [thick,->,>=stealth]
+    
+        \node [phase] (landing)    at (0,0)     {Fase 1: Inicialización y Estabilización};
+        \node [phase] (deploy)     at (6,0)   {Fase 2: Despliegue y Salida};
+        \node [phase] (commission) at (12,0)    {Fase 3: Comisionamiento};
+        \node [phase] (ops)        at (6,-3)  {Fase 4: Operación Nominal};
+        \node [phase] (survival)   at (12,-3)   {Fase 5: Supervivencia};
+        \node [phase] (eom)        at (9,-6) {Fin de Misión};
+    
+        \draw [arrow] (landing) -- (deploy)       node[midway, above] {Salud OK};
+        \draw [arrow] (deploy)  -- (commission)   node[midway, above] {En superficie};
+        \draw [arrow] (commission.south) -- ++(0,-1) -- ++(-6,0) -- (ops.north) node[pos=0.5, above] {Sistemas OK};
+        \draw [arrow] (ops) -- (survival)         node[midway, above] {Condición extrema};
+        \draw [arrow] (survival.south) -- ++(0,-0.5) -- ++(-6,0) -- (ops.south) node[pos=0.5, below] {Normalidad};
+        \draw [arrow] (ops.south) -- ++(0,-0.5) -| (eom.west) node[pos=0.1, left] {EOM};
+        \draw [arrow] (survival.south) -- ++(0,-0.5) -| (eom.east);
+    \end{tikzpicture}
+    \caption{Ciclo de vida de la misión y transiciones de fase.}
+    \label{fig:mission_phases}
+\end{figure}
+
+El ciclo de vida operativo del Rover Olympus se estructura en fases (Fig.~\ref{fig:mission_phases}) que permiten organizar modos, responsabilidades y criterios de preparación para la validación del UC-01 en sitio análogo. Las fases se expresan como transiciones lógicas (no como \emph{fases de vuelo} reales), ya que Olympus es una plataforma terrestre de validación que emula el ciclo de una misión lunar de referencia conforme al Objetivo Específico 1 del TFG.
+
+\begin{itemize}
+    \item \textbf{Fase 1: Inicialización y Estabilización} (análoga al ``Aterrizaje y Estabilización'' de la misión lunar de referencia): Establecer condición ``en superficie'' del rover en el sitio análogo y estabilidad del sistema (energía, cómputo, comunicación).
+    \item \textbf{Fase 2: Despliegue y Salida:} Habilitar subsistemas críticos (TRAC, PROP, COMMS, GNC, C\&DH) y preparar al rover para iniciar actividades en el entorno análogo.
+    \item \textbf{Fase 3: Comisionamiento:} Calibraciones, chequeos funcionales, verificación de interfaces internas/externas y pruebas previas a operación nominal (pre‑V\&V).
+    \item \textbf{Fase 4: Operación Nominal:} Ejecutar campañas de operación (incluyendo UC‑01 como caso principal), recolectar telemetría y evidencias V\&V, y operar bajo latencia simulada cuando aplique.
+    \item \textbf{Fase 5: Supervivencia / Modo Seguro:} Preservar integridad del sistema ante condiciones adversas (p. ej., degradación de enlace, restricciones de energía, condiciones ambientales del sitio) y permitir recuperación a operación nominal cuando sea viable.
+    \item \textbf{Fase 6: Fin de Misión (EOM / Decommissioning):} Cierre controlado de la campaña y transición a un estado final (ver UC-05 \emph{Safe Deactivation / Passivation} en \S\ref{sec:use_cases}).
+\end{itemize}
+
+\section{System Use Cases}\label{sec:use_cases}
+
+\subsection{Visión general del sistema}\label{subsec:use_cases_overview}
+Conforme al contexto del sistema descrito en §\ref{sec:system_context}, los comportamientos esperados del Rover Olympus desde la perspectiva externa se capturan mediante casos de uso de alto nivel para la operación en superficie. Los actores y sistemas externos aplicables (Operador/GCS, Entorno físico e Infraestructura de comunicaciones, entre otros) se definen formalmente en §\ref{subsec:actors_systems}. La lista de casos de uso top-level se presenta en §\ref{subsec:use_cases_top_level}.
+
+\subsection{Casos de uso top-level}\label{subsec:use_cases_top_level}
+
+A partir de la interacción de estos actores con el sistema, se han definido los siguientes casos de uso de alto nivel, los cuales se representan gráficamente en la Figura~\ref{fig:usecase_top}:
+
+\begin{description}
+  \item[\textbf{UC-01: Exploración de superficie}]
+Permite que el rover recorra una región de la superficie de forma autónoma, analizando el terreno, navegando de manera segura y recopilando telemetría y datos de navegación. Este caso de uso implica una alta autonomía y es el foco principal del presente trabajo.
+
+  \item[\textbf{UC-02: Navegación dirigida}]
+El rover recibe desde el Operador una orden para desplazarse hasta un punto específico de interés. El sistema calcula y ejecuta la trayectoria hacia ese objetivo, utilizando sus capacidades de navegación y evitación de obstáculos.
+
+  \item[\textbf{UC-03: Recolección de muestras}] \emph{[Conceptual --- fuera del alcance del prototipo TFG; sin actuador de recolección en la configuración actual.]}
+El rover recoge muestras del terreno (por ejemplo, suelo o roca), las prepara y las almacena para su análisis posterior, ya sea a bordo o en laboratorios en Tierra. Este caso de uso puede activarse durante la exploración o a partir de una orden directa del Operador.
+
+  \item[\textbf{UC-04: Modo regreso a casa (Homing)}]
+Permite que el rover regrese a un punto seguro predefinido (por ejemplo, el punto base de despliegue inicial o una región protegida previamente declarada) cuando se detectan condiciones de riesgo (batería baja, condiciones ambientales adversas, pérdida de comunicación prolongada, etc.) o cuando el Operador lo ordena explícitamente.
+
+  \item[\textbf{UC-05: Safe Deactivation / Passivation}]
+Al final de la vida útil de la misión o ante un fallo crítico no recuperable, el rover ejecuta una secuencia controlada de \emph{passivation}: descarga segura de energía almacenada, desactivación de actuadores, persistencia del último estado en logs y entrada a un modo de mínima emisión. Esta práctica es coherente con las provisiones de \emph{Planetary Protection} para misiones robóticas \cite{nasa_planetary_protection} y reemplaza el concepto de ``autodestrucción'' (no aplicable a una plataforma terrestre de validación y desaconsejado para misiones espaciales por el riesgo de contaminación del sitio).
+\end{description}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\paperheight]{figures/OLympus USES CASES-USECASE_TOP.drawio.png}
+    \caption{Diagrama de Casos de Uso Top-Level: Modos de operación y actores externos.}
+    \label{fig:usecase_top}
+\end{figure}
+
+
+Aunque todos estos casos de uso son relevantes para la operación global del Rover Olympus, en este documento nos centraremos en el caso de uso \textbf{Exploración de superficie} (UC-01), el cual se detalla a continuación y sirve como base para el modelado de los diagramas de comportamiento; los demás (UC-02 a UC-05) se mantienen a nivel conceptual conforme a la decisión de \emph{tailoring} declarada en \S\ref{sec:conops} (priorización del caso núcleo).
+
+%---------------------------------------------------------------
+\subsection{Caso de uso: Exploración de superficie}\label{sec:uc01}
+
+\subsubsection{Descripción general}\label{subsec:uc01_description}
+
+El caso de uso \textbf{Exploración de superficie} describe cómo el Rover Olympus explora una región del terreno
+de forma mayoritariamente autónoma, mientras interactúa con el Entorno físico y con el Operador a través
+de la infraestructura de comunicaciones. 
+
+Durante la exploración, el rover:
+\begin{itemize}
+  \item analiza el terreno y el entorno inmediato,
+  \item determina rutas seguras,
+  \item navega evitando obstáculos,
+  \item recopila y procesa datos de percepción y de navegación,
+  \item almacena dichos datos para su análisis posterior,
+  \item y se comunica periódicamente con el Operador para enviar información y recibir posibles actualizaciones.
+\end{itemize}
+
+Este caso de uso es el más complejo de los casos de uso de alto nivel,
+ya que integra varios subsistemas (sensado, navegación, gestión de energía, comunicaciones, etc.) 
+y exige una toma de decisiones en tiempo real bajo condiciones de entorno cambiantes.
+
+\subsubsection{Actores involucrados}\label{subsec:uc01_actors}
+Los actores involucrados en este caso de uso se definen formalmente en §\ref{subsec:actors_systems}. En particular, UC-01 involucra al Operador/GCS como actor primario y al Entorno físico y la Infraestructura de comunicaciones como actores/sistemas externos relevantes (ver §\ref{subsec:actors_systems} y el contexto operacional en §\ref{subsec:operational_context}).
+
+\subsubsection{Objetivo del caso de uso}
+
+El objetivo de \textbf{Exploración de superficie} es permitir que el Rover Olympus explore una región objetivo del sitio análogo de forma segura y eficiente, maximizando la cantidad y calidad de datos de navegación y percepción recopilados, al mismo tiempo que se preserva la integridad del sistema y se respetan las restricciones de la misión.
+
+\subsubsection{Precondiciones y postcondiciones}
+
+\begin{description}
+  \item[\textbf{Precondiciones:}]
+  \begin{itemize}
+    \item El rover se encuentra en una posición inicial válida dentro de la zona autorizada de exploración.
+    \item Los subsistemas críticos (energía, locomoción, sensado y comunicaciones) están operativos.
+    \item Existen parámetros de misión definidos por el Operador (zona objetivo, duración máxima, límites de riesgo, etc.).
+  \end{itemize}
+
+  \item[\textbf{Postcondiciones de éxito:}]
+  \begin{itemize}
+    \item La zona de interés ha sido explorada de acuerdo con los criterios establecidos.
+    \item Los datos recopilados han sido almacenados a bordo y/o transmitidos a Tierra.
+    \item El rover mantiene un estado seguro para continuar con otras operaciones o regresar a un punto seguro.
+  \end{itemize}
+\end{description}
+
+\subsubsection{Flujo principal de eventos}\label{subsec:uc01_flow}
+
+El flujo nominal de UC-01 consiste en un ciclo iterativo de (i) recepción de objetivo/parámetros (uplink), (ii) análisis de entorno, (iii) planificación/selección de ruta segura, (iv) navegación con adquisición y gestión de datos, y (v) comunicación periódica de telemetría/datos (downlink), repitiéndose mientras las condiciones sean aceptables. Las decisiones y bifurcaciones (p.\,ej., ruta no segura, contingencias y salida a modos de seguridad/Homing) se detallan en el diagrama de actividad y su explicación en \S\ref{subsec:uc01_activity}, y se ejecutan en \emph{runtime} por el \emph{Master State Machine} (MSM) del LLC, cuya definición formal aparece en \S\ref{subsec:uc01_states}.
+
+\subsubsection{Descomposición funcional del caso de uso}
+
+La complejidad de \textbf{Exploración de superficie} se refleja en su descomposición en varios sub-casos de uso
+o funciones internas (ver Figura~\ref{fig:usecase_uc01_det}), que se modelan mediante relaciones \texttt{\textless\textless include\textgreater\textgreater} en el diagrama de casos de uso:
+
+\begin{description}
+  \item[\textbf{Analizar el terreno}]
+  El rover utiliza sus sensores (cámara OV5647, LiDAR de largo alcance TF02, ToF VL53L0X, ultrasónico HC-SR04 e IMU MPU-6050) para caracterizar el entorno inmediato, identificando pendientes, rocas, obstáculos y zonas transitables.
+
+  \item[\textbf{Recopilar datos del entorno}]
+  Incluye la adquisición de datos de percepción (imágenes RGB de la cámara OV5647 y medidas de distancia de los sensores ToF/ultrasónicos/LiDAR) y datos de navegación (posición y velocidad estimadas por encoders, inclinación de la IMU MPU-6050).
+
+  \item[\textbf{Procesar la información}] 
+  El rover filtra y procesa los datos recopilados para extraer información relevante, 
+  como la transitabilidad del terreno, riesgos potenciales o puntos de interés adicionales.
+
+  \item[\textbf{Determinar y navegar por una ruta segura}] 
+  A partir de la información procesada, el rover calcula rutas seguras y ejecuta la locomoción a lo largo de dichas rutas,
+  ajustando su trayectoria en tiempo real para evitar obstáculos y respetar las restricciones de la misión.
+
+  \item[\textbf{Comunicar con operador}] 
+  Comprende el envío periódico de datos y telemetría al Control de Misión, 
+  así como la recepción de comandos y actualizaciones de parámetros a través de la infraestructura de comunicaciones.
+
+  \item[\textbf{Evitar obstáculos}] 
+  Función especializada que detecta obstáculos en la trayectoria prevista 
+  y ejecuta maniobras de evasión manteniendo la seguridad del rover.
+
+    \item[\textbf{Monitorizar estado del rover}]
+  Supervisión continua de variables internas (batería, temperatura, estado de actuadores, integridad de sensores, etc.) para detectar condiciones de riesgo que puedan requerir la activación de un modo seguro o la transición a otro caso de uso (por ejemplo, UC-04 \emph{Homing} o, ante fallo crítico no recuperable, UC-05 \emph{Safe Deactivation / Passivation}; estas transiciones se modelan en el state machine de \S\ref{subsec:uc01_states}).
+  \end{description}
+  
+
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.5\paperheight]{figures/OLympus USES CASES-Caso_terreno.drawio.png}
+      \caption{Descomposición funcional del UC-01: Funciones internas y relaciones de inclusión.}
+      \label{fig:usecase_uc01_det}
+  \end{figure}
+
+  
+  Esta descomposición muestra cómo el caso de uso \textbf{Exploración de superficie} integra múltiples capacidades 
+   
+del Rover Olympus y justifica que se considere el caso de uso más complejo dentro de las operaciones de superficie.
+
+
+\subsubsection{Diagrama de actividad del caso de uso ``Exploración de superficie''}\label{subsec:uc01_activity}
+
+El diagrama de actividad asociado al caso de uso \textbf{Exploración de superficie} (ver Figura~\ref{fig:activity_uc01}) modela el
+comportamiento dinámico del Rover Olympus cuando se encuentra ejecutando este caso de uso.
+Dicho diagrama representa el flujo de acciones que el rover realiza de forma cíclica mientras
+explora una región del terreno, así como las decisiones que pueden conducir a la continuación
+de la exploración o a la activación de modos de seguridad.
+
+\begin{landscape}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\paperheight]{figures/OLympus USES CASES-activity_diagram.drawio.png}
+    \caption{Diagrama de Actividad: Flujo de eventos y toma de decisiones en el UC-01.}
+    \label{fig:activity_uc01}
+\end{figure}
+\end{landscape}
+
+La actividad se inicia cuando el Operador ordena iniciar la exploración de una determinada zona.
+A partir de este punto, el flujo principal puede describirse de la siguiente manera:
+
+\begin{enumerate}
+  \item \textbf{Analizar terreno}: el rover emplea sus sensores para observar el entorno inmediato y
+        caracterizar el terreno (pendientes, obstáculos, zonas transitables, etc.).
+
+  \item \textbf{Procesar información del terreno}: los datos obtenidos se procesan para extraer
+        información útil sobre la transitabilidad del terreno y los posibles riesgos.
+
+  \item \textbf{Determinar ruta segura}: con base en la información procesada, el sistema de
+        navegación calcula una ruta que cumpla con los criterios de seguridad y las restricciones
+        de misión.
+
+  \item \textbf{Decisión: ¿ruta segura?} Si la ruta calculada no se considera segura, el flujo
+        pasa a la acción \textit{Ajustar parámetros de exploración}, donde el rover modifica ciertos
+        parámetros (por ejemplo, límites de pendiente o distancia a obstáculos) y regresa a
+        \textit{Analizar terreno} para replantear la trayectoria. Si la ruta es segura, el flujo
+        avanza a la fase de navegación.
+
+  \item \textbf{Navegar por el terreno}: el rover ejecuta los comandos de locomoción para seguir
+        la ruta planificada, avanzando por la superficie en dirección a la zona de interés.
+
+  \item \textbf{Recopilar datos del entorno}: durante la navegación, el rover adquiere datos
+        de percepción (imágenes, distancias) y datos de navegación (posición,
+        velocidad, inclinación, entre otros).
+
+  \item \textbf{Almacenar datos}: los datos obtenidos se procesan y almacenan en el sistema a bordo
+        para su posterior análisis y para su eventual transmisión a Tierra.
+
+  \item \textbf{Ejecución en paralelo (comunicación y control autónomo)}: a continuación, el flujo
+        se bifurca mediante un nodo \textit{fork} en dos ramas que pueden ejecutarse en paralelo:
+        \begin{itemize}
+          \item \textit{Comunicación con la Tierra}: el rover comunica periódicamente datos y
+                telemetría de estado al Operador a través de la infraestructura de comunicaciones,
+                y puede recibir actualizaciones de parámetros o nuevas instrucciones.
+          \item \textit{Control autónomo de la navegación}: el rover controla su navegación de forma
+                autónoma, adaptándose a las condiciones cambiantes del entorno, ajustando su ruta
+                y su comportamiento, y evitando zonas peligrosas o dirigiéndose a áreas de interés
+                científico.
+        \end{itemize}
+        Una vez completadas ambas ramas, el flujo se sincroniza de nuevo mediante un nodo
+        \textit{join}.
+
+  \item \textbf{Decisión: ¿condiciones adversas o falla crítica?} Tras la ejecución paralela, se
+        evalúan las condiciones del entorno y el estado interno del rover. Si no se detectan
+        condiciones adversas ni fallas críticas, el flujo regresa al paso \textit{Analizar terreno},
+        cerrando así el bucle de exploración y permitiendo que el rover continúe explorando de
+        forma iterativa.
+
+  \item En caso de que se detecten \textbf{condiciones extremadamente adversas} (por ejemplo,
+        condiciones ambientales adversas, terrenos demasiado peligrosos) o una \textbf{falla crítica} en el
+        sistema, el flujo se desvía hacia la acción \textit{Activar modo espera o regreso a punto
+        seguro (Homing)}, lo que implica abandonar el ciclo normal de exploración para pasar a un
+        modo de seguridad. Este evento marca la finalización de la actividad de exploración de
+        superficie y la transición hacia otro comportamiento del sistema centrado en preservar la
+        integridad del rover.
+\end{enumerate}
+
+
+\subsubsection{Máquina de estados: Exploración de superficie}\label{subsec:uc01_states}
+
+Esta máquina de estados modela el comportamiento del \textit{Rover Olympus} durante el caso de uso \textit{Exploración de superficie}, describiendo cómo el sistema transita entre \textbf{modos de operación} en respuesta a \textbf{eventos} (triggers) y, cuando aplica, \textbf{guardas} (condiciones booleanas). \cite{UMLStateMachinesConcepts1,UMLStateMachinesConcepts2}
+
+\paragraph{Descripción de la máquina de estados}\label{para:uc01_states_desc}
+\begin{sloppypar}
+El objetivo del diagrama es representar el ciclo de exploración autónoma
+(percepción\allowbreak --\allowbreak planificación\allowbreak --\allowbreak
+desplazamiento\allowbreak --\allowbreak adquisición/\allowbreak gestión de
+datos\allowbreak --\allowbreak comunicaciones) y los desvíos ante condiciones
+adversas (retreat) o fallas críticas (safing).
+\cite{UMLStateMachinesConcepts1,UMLStateMachinesConcepts2}
+\end{sloppypar}
+
+\textbf{Principio de modelado:}
+A diferencia de un diagrama de actividades, una máquina de estados enfatiza los \textbf{estados como condiciones/modos relativamente estables} y las \textbf{transiciones disparadas por eventos}; las acciones internas se expresan como \texttt{entry/} y \texttt{do/} dentro del estado, en lugar de modelarse como estados secuenciales equivalentes a “pasos”. \cite{UMLStateMachinesConcepts1,UMLStateMachinesConcepts2}
+
+\textbf{Nota sobre historia (H):}
+El estado compuesto \textit{Exploración activa} incluye un pseudoestado de \textit{historia} (\texttt{H}), utilizado para reanudar el subestado previo del ciclo de exploración tras un \textit{HomingRetreat} cuando las condiciones de riesgo se han normalizado (criterio \textbf{TBD}). \cite{UMLStateMachinesConcepts2}
+
+\begin{landscape}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.6cm and 2.0cm,
+        every node/.style={font=\small},
+        state/.style={rectangle, rounded corners=4pt, draw=black, thick,
+                      minimum width=2.4cm, minimum height=0.9cm,
+                      align=center, fill=blue!8},
+        composite/.style={rectangle, rounded corners=4pt, draw=black, very thick,
+                          double, double distance=2pt,
+                          minimum width=2.8cm, minimum height=1.0cm,
+                          align=center, fill=blue!12},
+        safety/.style={rectangle, rounded corners=3pt, draw=black, thick,
+                       minimum width=2.0cm, minimum height=0.8cm,
+                       align=center, fill=orange!12, font=\footnotesize},
+        terminal/.style={rectangle, rounded corners=4pt, draw=red!70!black, very thick,
+                         minimum width=2.4cm, minimum height=0.9cm,
+                         align=center, fill=red!10},
+        init/.style={circle, draw=black, fill=black, minimum size=4pt, inner sep=0pt},
+        arrow/.style={-{Stealth[length=2mm]}, thick},
+        ev/.style={font=\scriptsize\ttfamily, fill=white, inner sep=1pt}
+    ]
+
+    % ============== PANEL IZQUIERDO: RoverState (7 estados) ==============
+    \node[font=\bfseries] (titR) at (0,2.4) {Dimensión 1 --- \texttt{RoverState} (7 estados)};
+
+    \node[init] (init) at (-5.5,0.6) {};
+    \node[state] (standby) [right=0.8cm of init] {Standby};
+    \node[composite] (explore) [right=2.2cm of standby] {Explore\\[-1pt]\scriptsize\textit{(compuesto)}};
+    \node[state] (avoid)   [above=1.3cm of explore] {Avoid};
+    \node[state] (climb)   [right=1.6cm of explore] {Climb};
+    \node[state] (retreat) [below=1.3cm of explore] {Retreat};
+    \node[terminal] (safe)  at ($(climb)+(2.6,1.4)$) {Safe};
+    \node[terminal] (fault) at ($(climb)+(2.6,-1.4)$) {Fault};
+
+    % Transiciones RoverState
+    \draw[arrow] (init) -- (standby);
+    \draw[arrow] (standby.east) -- node[ev, above]{EXP} (explore.west);
+    \draw[arrow] (explore.north west) to[bend left=15] node[ev, above]{STB} (standby.north east);
+
+    \draw[arrow] (explore.north) -- node[ev, right]{dist$<$200\,mm} (avoid.south);
+    \draw[arrow] (avoid.west) to[bend left=20] node[ev, above]{clear} (explore.north west);
+
+    \draw[arrow] (explore.east) -- node[ev, above]{CLB} (climb.west);
+    \draw[arrow] (climb.south) to[bend left=25] node[ev, below]{CLB end} (explore.south east);
+
+    \draw[arrow] (explore.south) -- node[ev, right]{dist$<$300\,mm / stall} (retreat.north);
+    \draw[arrow] (retreat.west) to[bend right=20] node[ev, below]{wp\_reached} (standby.south);
+
+    \draw[arrow, dashed, red!70!black] (explore.north east) to[bend left=15] node[ev, above, sloped]{BATT/TEMP/FAULT} (safe.west);
+    \draw[arrow, dashed, red!70!black] (explore.south east) to[bend right=15] node[ev, below, sloped]{stall persist / OC} (fault.west);
+    \draw[arrow] (safe.north) to[out=180, in=90, looseness=1.4] node[ev, above]{RST} (standby.north);
+    \draw[arrow] (fault.south) to[out=180, in=270, looseness=1.4] node[ev, below]{RST} (standby.south);
+
+    % ============== PANEL DERECHO: SafetyState (4 niveles) ==============
+    \node[font=\bfseries] (titS) at (10.5,2.4) {Dimensión 2 --- \texttt{SafetyState} (paralelo)};
+
+    \node[safety, fill=green!15]  (normal) at (10.5, 0.9) {Normal};
+    \node[safety, fill=yellow!25] (warn)   [below=0.5cm of normal] {Warn};
+    \node[safety, fill=orange!30] (limit)  [below=0.5cm of warn]   {Limit};
+    \node[safety, fill=red!25]    (faultS) [below=0.5cm of limit]  {FaultStall};
+
+    \draw[arrow] (normal.south) -- node[ev, right]{HW alerta} (warn.north);
+    \draw[arrow] (warn.south)   -- node[ev, right]{cerca umbral} (limit.north);
+    \draw[arrow] (limit.south)  -- node[ev, right]{persistente} (faultS.north);
+    \draw[arrow, dashed, green!50!black] (faultS.east) to[bend left=60] node[ev, right]{recover/reset} (normal.east);
+
+    % Nota explicativa
+    \node[font=\scriptsize\itshape, align=left, text width=4.2cm] at (10.5,-3.4)
+      {Modula límites operacionales\\(velocidad máx, rampas) sin\\cambiar \texttt{RoverState}.\\Independiente del Panel 1.};
+
+    % Marco visual separador
+    \draw[gray!50, dashed] (8.6,-3.0) -- (8.6,2.7);
+
+    % Leyenda
+    \node[font=\scriptsize, align=left, text width=8cm] at (1.5,-3.6)
+      {\textbf{Leyenda:} \begin{tabular}{@{}l@{ }l@{\quad}l@{ }l@{}}
+        \tikz\node[state, minimum width=0.7cm, minimum height=0.3cm]{}; & estado simple &
+        \tikz\node[composite, minimum width=0.7cm, minimum height=0.3cm]{}; & estado compuesto \\
+        \tikz\node[terminal, minimum width=0.7cm, minimum height=0.3cm]{}; & estado de seguridad &
+        \tikz[baseline]{\draw[arrow, dashed, red!70!black] (0,0.5ex) -- (0.8,0.5ex);} & disparo crítico \\
+      \end{tabular}};
+
+    \end{tikzpicture}
+    \caption{Máquina de estados del Rover Olympus: dimensión \texttt{RoverState} (7 estados, panel izquierdo) y dimensión paralela \texttt{SafetyState} (4 niveles, panel derecho). Refleja la implementación real del módulo \texttt{state\_machine} en LLC v2.20.}
+    \label{fig:maquina_estados}
+\end{figure}
+\end{landscape}
+
+\textbf{Estados top-level (modos de operación):} El \emph{Master State Machine} del LLC define los siguientes \texttt{RoverState} (notación de implementación entre paréntesis):
+\begin{itemize}
+  \item \textbf{Standby} (\texttt{Standby}): modo de espera operacional; el rover permanece disponible para recibir programación o comandos. Ejecuta \texttt{do/ esperar\_cmd\_o\_schedule()}. \cite{UMLStateMachinesConcepts1}
+  \item \textbf{Exploración activa} (\texttt{Explore}; estado compuesto): agrupa el ciclo interno de exploración mediante subestados (Evaluar, Planificar, etc.), reduciendo complejidad mediante jerarquía. \cite{CompositeStates1,UMLStateMachinesConcepts2}
+  \item \textbf{EvitarObstaculo} (\texttt{Avoid}): subestado de evitación reactiva activado cuando un sensor de proximidad detecta un obstáculo dentro del umbral de emergencia (\texttt{HC\_EMERGENCY\_MM = 200\,mm} o \texttt{TOF\_EMERGENCY\_MM = 150\,mm} en el LLC); ejecuta hard-stop y maniobra de desviación antes de retomar el ciclo. \cite{UMLStateMachinesConcepts2}
+  \item \textbf{Escalada} (\texttt{Climb}): modo de superación de obstáculos con umbrales relajados de proximidad (\texttt{CLB\_HC\_EMERGENCY\_MM = 60\,mm}, \texttt{CLB\_TOF\_EMERGENCY\_MM = 50\,mm}, \texttt{CLB\_STALL\_THRESHOLD = 150} ciclos) para superar rampas o rocas cercanas; activado por comando \texttt{CLB} del operador. \cite{UMLStateMachinesConcepts1}
+  \item \textbf{HomingRetreat} (\texttt{Retreat}): modo de retirada corta al último waypoint seguro; activado por detección de slip persistente (RF-004-R1: \texttt{SLIP\_STALL\_FRAMES = 2} en el HLC) o por comando \texttt{cmd\_homing\_retreat} del operador. Incluye \texttt{entry/ seleccionar\_lastSafeWaypoint()} y \texttt{do/ navegar\_a\_lastSafeWaypoint(); evitar\_peligros()}. \cite{UMLStateMachinesConcepts2,SafeModeContext1}
+  \item \textbf{SafeMode} (\texttt{Safe}): modo de preservación (safing); prioriza seguridad del sistema, minimiza actividad no esencial y favorece diagnósticos y comunicación mínima. Activado por anomalía de batería (LLC \texttt{batt\_mv < 12\,V}), temperatura ambiente $>$ \texttt{AMBIENT\_SAFE\_C}, EMC u otro fallo recuperable. \cite{SafeModeContext1,UMLStateMachinesConcepts2}
+  \item \textbf{Fault} (\texttt{Fault}): estado de falla crítica no recuperable; el rover detiene actuadores y emite telemetría mínima hasta orden de \texttt{RST} y diagnóstico off-line. Equivale al pseudoestado \emph{Final} en UML cuando no se prevé recuperación dentro de la misma campaña. \cite{UMLStateMachinesConcepts2}
+\end{itemize}
+
+\textbf{Dimensión paralela --- SafetyState:} Independientemente del \texttt{RoverState}, el LLC mantiene un \texttt{SafetyState} de cuatro niveles --- \texttt{Normal}, \texttt{Warn}, \texttt{Limit}, \texttt{FaultStall} --- que modula los límites operacionales (velocidad máxima permitida, agresividad de las rampas) sin cambiar de \texttt{RoverState}. Esta separación permite degradar el desempeño de forma gradual (p.\,ej., reducir velocidad al detectar sobrecorriente en un motor) antes de invocar SafeMode o Fault.
+
+\textbf{Eventos y guardas (visión general):}
+Las transiciones se disparan por \textbf{eventos} (p.\,ej.,
+\texttt{cmd\_\allowbreak start\_\allowbreak exploration},
+\texttt{link\_\allowbreak lost},
+\texttt{waypoint\_\allowbreak reached})
+y pueden estar condicionadas por \textbf{guardas} (p.\,ej.,
+\texttt{[severity\_\allowbreak allows\_\allowbreak retreat]},
+\texttt{[last\_\allowbreak safe\_\allowbreak waypoint\_\allowbreak known]},
+\texttt{[has\_\allowbreak data\_\allowbreak to\_\allowbreak send]}).
+Las guardas representan condiciones booleanas evaluables; cuando aún no existen
+requisitos cuantificados, dichas condiciones se mantienen como \textbf{TBD}
+para evitar suposiciones no verificables.
+\cite{UMLStateMachinesConcepts2,UMLStateMachinesConcepts1}
+
+\paragraph{Diccionario de eventos (formal)}\label{para:uc01_events}
+Este diccionario define un \textbf{subconjunto inicial} de los eventos (triggers) utilizados por la máquina de estados del Rover Olympus para el caso de uso \textit{Exploración de superficie}.
+La información se deriva del BDD (funciones por subsistema).
+Los eventos conceptuales aquí descritos se realizan a nivel de implementación sobre el protocolo ASCII del ICD rover--GCS (comandos \texttt{EXP}, \texttt{CLB}, \texttt{STB}, \texttt{RST}, entre otros), definido en \S\ref{sec:system_interfaces}.
+Los eventos se especifican como \textit{Command, Signal, Status, Fault, Time}. 
+Las condiciones cuantitativas (umbrales, timeouts, políticas) se marcan como \textbf{TBD} hasta disponer de requisitos verificables.
+Este diccionario se ampliará para cubrir la totalidad de eventos del diagrama (incluyendo \texttt{cmd\_end\_mission}, \texttt{cmd\_enter\_safe\_mode}, \texttt{energy\_critical}, eventos internos y eventos de recuperación/gestión de enlace). 
+Las guardas basadas en severidad (p.\,ej., \texttt{severity\_allows\_retreat}, \texttt{severity\_requires\_replan},
+
+\texttt{severity\_requires\_retreat}) y políticas de reintento (\texttt{retry\_allowed}, \texttt{retry\_exhausted}) se consideran TBD y se definirán mediante parámetros configurables en el software, documentados en el ICD de software y reflejados en los procedimientos de prueba correspondientes. Hasta entonces, estas guardas se implementarán como constantes configurables (config files) y su valor por defecto se definirá en la configuración de campaña.
+
+\textbf{Implementación actual del gating de retreat (HLC v0).} En el stack HLC desplegado (\texttt{olympus\_hlc.monitors.WaypointTracker} y \texttt{olympus\_hlc.engine}), las guardas de severidad multi-nivel anteriores aún no están implementadas. La decisión de retreat táctico se reduce a la conjunción \texttt{tlm.dist\_mm > 0 AND tlm.dist\_mm < RETREAT\_DIST\_MM (300\,mm)}, evaluada solo si \texttt{msm\_state != CLIMB} (se suprime durante escalada porque CLB usa \texttt{CLB\_TOF\_EMERGENCY\_MM = 50\,mm}) y siempre que \texttt{SafeMode} no esté activo (SafeMode bloquea todo comando excepto \texttt{STB}, \texttt{PING}, \texttt{RST}, \texttt{BNK:0}). La prioridad ejecutada en \texttt{engine.update()} es \texttt{SafeMode > retreat táctico > slip}. La cuantificación multi-nivel de severidad queda como gap (TBD-OP-01) y se contempla integrar mediante ELANav cuando esté disponible.
+
+\begin{landscape}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{3pt}
+
+\begin{longtable}{|p{2.0cm}|p{3.5cm}|p{1.4cm}|p{2.8cm}|p{3.2cm}|p{8.5cm}|}
+\caption{Diccionario de eventos (formal) — Rover Olympus}\label{tab:diccionario_eventos}\\
+\hline
+\textbf{ID} & \textbf{Evento} & \textbf{Tipo} & \textbf{Origen} & \textbf{Consumidor(es)} & \textbf{Descripción / Efecto esperado / Datos (payload)} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{ID} & \textbf{Evento} & \textbf{Tipo} & \textbf{Origen} & \textbf{Consumidor(es)} & \textbf{Descripción / Efecto esperado / Datos (payload)} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{6}{r}{\textit{Continúa en la siguiente página}}\\
+\endfoot
+
+\hline
+\endlastfoot
+
+% ---- Modo/Operación ----
+EVT-CMD-001 & cmd\_start\_exploration & Command & Operator/\allowbreak COMMS/\allowbreak C\&DH & C\&DH, GNC, COMMS, EPS & 
+Inicia Exploración de superficie. Efecto: Standby $\rightarrow$ ExploracionActiva. 
+Payload: mission\_phase, area\_of\_interest\_id, policy\_id(\textbf{TBD}), constraints\_ref(\textbf{TBD}). \\
+\hline
+
+EVT-CMD-002 & cmd\_pause\_exploration & Command & Operator/\allowbreak COMMS/\allowbreak C\&DH & C\&DH, GNC &
+Pausa exploración (no SafeMode). Efecto: ExploracionActiva $\rightarrow$ Standby (o Paused opcional). 
+Payload: reason\_code, resume\_policy(\textbf{TBD}). \\
+\hline
+
+EVT-CMD-004 & cmd\_homing\_retreat & Command & Operator o lógica (C\&DH/GNC) & GNC, TRAC, PROP &
+Retreat al último waypoint seguro (Homing A). Efecto: ExploracionActiva $\rightarrow$ HomingRetreat.
+Payload: last\_safe\_waypoint\_id, retreat\_policy\_id(\textbf{TBD}). \\
+\hline
+
+EVT-STS-003 & conditions\_adverse\_detected & Signal & GNC/EPS/C\&DH & StateMachine &
+Condiciones adversas detectadas (definición \textbf{TBD}). Efecto: ExploracionActiva $\rightarrow$ HomingRetreat.
+Payload: cause\_hint(\textbf{TBD}), severity(\textbf{TBD}). \\
+\hline
+
+% ---- COMMS ----
+EVT-COM-001 & comms\_window\_open & Status & COMMS & C\&DH, StateMachine &
+Ventana de comunicación disponible. Efecto: habilita/activa estado Comunicar si hay datos/telemetría.
+Payload: window\_id, duration(\textbf{TBD}). \\
+\hline
+
+EVT-COM-004 & link\_lost & Fault & COMMS & C\&DH, StateMachine &
+Pérdida de enlace detectada. Efecto: transición a \texttt{GestionEnlace} y degradación según política (\textbf{TBD}).
+Payload: last\_link\_quality(\textbf{TBD}), timestamp, cause\_hint(\textbf{TBD}). \\
+\hline
+
+EVT-COM-005 & link\_restored & Status & COMMS & C\&DH, StateMachine &
+Enlace recuperado. Efecto: salir de Recovery $\rightarrow$ Comunicar o retomar ciclo.
+Payload: link\_quality(\textbf{TBD}), timestamp. \\
+\hline
+
+EVT-COM-009 & uplink\_received & Signal & COMMS & C\&DH, StateMachine &
+Uplink recibido (comandos/actualizaciones). Efecto: C\&DH enruta cmd\_received/cmd\_routed; puede disparar replanificación.
+Payload: cmd\_batch\_id, priority(\textbf{TBD}). \\
+\hline
+
+% ---- C&DH ----
+EVT-CDH-003 & telemetry\_due & Time & C\&DH & StateMachine, COMMS &
+Telemetría/logs deben emitirse. Efecto: preparar downlink\_ready; priorizar Comunicar si hay ventana.
+Payload: tm\_profile\_id(\textbf{TBD}), log\_level(\textbf{TBD}). \\
+\hline
+
+EVT-CDH-007 & storage\_near\_full & Status & C\&DH & StateMachine, COMMS &
+Almacenamiento cercano al límite. Efecto: priorizar downlink / compresión / retención según política (\textbf{TBD}).
+Payload: free\_space\_bytes, percent\_free. \\
+\hline
+
+EVT-CDH-010 & sw\_fault\_critical & Fault & C\&DH & StateMachine, EPS, COMMS &
+Falla lógica crítica. Efecto: Any $\rightarrow$ SafeMode. Payload: fault\_code, module\_id, severity, evidence\_ref(\textbf{TBD}). \\
+\hline
+
+% ---- GNC ----
+EVT-GNC-008 & route\_valid & Status & GNC & StateMachine, TRAC, PROP &
+Ruta válida/segura (criterio \textbf{TBD}). Efecto: Planificar $\rightarrow$ Desplazarse.
+Payload: route\_id, risk\_score(\textbf{TBD}). \\
+\hline
+
+EVT-GNC-010 & waypoint\_reached & Status & GNC & StateMachine, C\&DH &
+Waypoint alcanzado. Efecto: Desplazarse $\rightarrow$ Ciencia/Datos o Gestión de datos.
+Payload: waypoint\_id, pose\_estimate, timestamp. \\
+\hline
+
+% ---- Obstáculos ----
+EVT-MOB-001 & obstacle\_detected & Signal & GNC & StateMachine &
+Obstáculo detectado. Efecto: Desplazarse $\rightarrow$ EvitarObstaculo.
+Payload: obstacle\_id(\textbf{TBD}), relative\_pose(\textbf{TBD}), severity(\textbf{TBD}). \\
+\hline
+
+% ---- EPS/PROP ----
+EVT-EPS-005 & power\_anomaly\_detected & Fault & EPS & StateMachine, C\&DH, PROP &
+Condición eléctrica anómala. Efecto: aislamiento de segmento o SafeMode según política (\textbf{TBD}).
+Payload: anomaly\_type(\textbf{TBD}), bus\_id(\textbf{TBD}), measured\_values(\textbf{TBD}), timestamp. \\
+\hline
+
+\end{longtable}
+\end{landscape}
+
+
+
+\subsubsection{Daily Operations Cycle (Ciclo Diario)}\label{subsec:daily_ops}
+
+El ciclo diario operacional describe el patrón típico de interacción entre GCS (operador) y el Rover Olympus durante campañas en sitio análogo.
+
+\begin{enumerate}
+    \item \textbf{Uplink (Planificación / Comandos):} El operador envía objetivos o comandos de alto nivel (p.\,ej., meta/área a explorar) y parámetros de ejecución.
+    \item \textbf{Ejecución autónoma:} El rover ejecuta navegación autónoma local (percepción, clasificación de transitabilidad, evitación de obstáculos, detección de slip y retracción) y gestiona contingencias (fault stop, retorno a comunicación). En la configuración actual de validación el stack de navegación es el del HLC de Olympus; en la integración prevista con el proyecto matriz será ejecutado por la biblioteca ELANav.
+    \item \textbf{Downlink (Telemetría / Datos):} El rover transmite telemetría y datos de desempeño (logs, estados, métricas relevantes) para análisis posterior.
+    \item \textbf{Hibernación / Idle} \emph{[Conceptual --- modo de bajo consumo no implementado en la configuración actual; el rover retorna a Standby entre ventanas]:} reposo operativo previsto entre ventanas de actividad o condiciones del sitio.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=0.8, every node/.style={scale=0.8}]
+        \tikzstyle{act} = [rectangle, draw, fill=green!10, minimum width=2.5cm, minimum height=0.8cm]
+        \node [act] (up) at (0,0) {UPLINK};
+        \node [act] (ex) at (3.5,0) {EJECUCIÓN};
+        \node [act] (dw) at (7,0) {DOWNLINK};
+        \node [act] (sl) at (10.5,0) {HIBERNACIÓN};
+        \draw [thick,->] (up) -- (ex); \draw [thick,->] (ex) -- (dw); \draw [thick,->] (dw) -- (sl);
+        \draw [thick,->] (sl.north) -- ++(0,0.5) -| (up.north);
+    \end{tikzpicture}
+    \caption{Ciclo diario típico: Interacción Tierra-Rover.}
+    \label{fig:daily_cycle}
+\end{figure}
+
+\subsubsection{Operational Context Diagram (Contexto Operacional)}\label{subsec:operational_context}
+
+El contexto operacional para UC-01 consolida las entidades externas y las interfaces principales durante operación en sitio análogo. La frontera del sistema y entidades externas se definen en \S\ref{subsec:system_boundary}, y los actores/sistemas externos se detallan en \S\ref{subsec:actors_systems}. La Figura~\ref{fig:operational_context} resume dichas relaciones para facilitar la lectura del UC-01 y su interacción TM/CMD.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=3cm, auto, scale=0.7, every node/.style={scale=0.7}]
+      \node [rectangle, draw, fill=orange!5, text width=3cm, align=center, minimum height=1.2cm] (op) at (5,0) {Operador\\(Estación Control)};
+      \node [ellipse, draw, fill=gray!5, text width=2.5cm, align=center] (env) at (0,3) {Entorno\\(Terreno)};
+      \node [rectangle, draw, fill=blue!5, text width=3.5cm, align=center, minimum height=1.5cm, line width=1.5pt] (rov) at (0,0) {\textbf{ROVER OLYMPUS}};
+      \node [rectangle, draw, fill=green!5, text width=2.5cm, align=center] (com) at (-5,0) {Infraestructura\\Enlace};
+      \draw[<->, thick] ( rov.east) -- (op.west) node[midway, above] {TM/CMD};
+      \draw[->, thick] (env) -- (rov.north) node[midway, right] {Física};
+      \draw[<->, thick] (rov.west) -- (com.east) node[midway, above] {Link};
+    \end{tikzpicture}
+    \caption{Diagrama de contexto: Entidades externas e interfaces de misión.}
+    \label{fig:operational_context}
+\end{figure}
+
+\subsubsection{Operational Constraints in Analog Sites}\label{subsec:operational_constraints}
+
+Las siguientes restricciones operacionales describen condiciones específicas del sitio análogo que deben considerarse durante operación y validación:
+
+
+\begin{enumerate}
+    \item \textbf{Geometría y mecánica del terreno:} Pendientes de hasta 20° y transiciones de suelo con obstáculos; estas condiciones pueden inducir slip y atascos (ver caracterización del entorno en \S\ref{subsec:operational_environment}).
+    \item \textbf{Iluminación y visibilidad:} Presencia de zonas de sombra o baja iluminación que afecta percepción visual y clasificación de transitabilidad (ver §\ref{subsec:operational_environment}).
+    \item \textbf{Comunicaciones con latencia simulada (CON‑002):} Inyección de latencia 0–5 s en el enlace para emular retardo operacional (ver §\ref{subsec:operational_environment} y CON-002 en requisitos).
+    \item \textbf{Condiciones de campaña ``lab-only'' (CON-001):} Marco operativo controlado donde la restricción energética se simplifica respecto a una misión espacial real (ver CON-001 en requisitos).
+\end{enumerate}

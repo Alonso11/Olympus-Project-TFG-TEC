@@ -1,0 +1,102 @@
+% Elaborado por Fabian Gomez
+% Version 1.0
+
+\section{Requirements Organization and Notation}
+
+\begin{sloppypar}
+Esta sección define cómo se redactan, identifican, documentan y agrupan los requisitos del SyRS/SRS del Rover Olympus para asegurar: (i) claridad y ausencia de ambigüedad, (ii) verificabilidad mediante V\&V (T/A/D/I), y (iii) trazabilidad entre ConOps/\allowbreak Casos de Uso (UC-01\ldots UC-05), arquitectura MBSE/\allowbreak SysML (7 subsistemas, PBS/\allowbreak ASM, N2) y evidencias de pruebas.
+\end{sloppypar}  
+La sección de \emph{System Requirements} (\S\ref{sec:requirements}) contiene la ``definición maestra'' de los requisitos RF/RNF/CON; otras secciones solo referencian IDs cuando sea necesario para contexto o trazabilidad.
+
+\subsection{Requirement Writing Rules}
+
+Reglas de redacción adoptadas para este SyRS/SRS:
+
+\begin{enumerate}
+    \item \textbf{Modalidad obligatoria:} Todo requisito se redacta usando ``DEBERÁ'' (SHALL) para expresar obligación verificable.
+    \item \textbf{Verificabilidad:} Todo requisito DEBERÁ ser verificable por al menos un método T/A/D/I, y cuando aplique, incluir un criterio cuantitativo o condición observacional que permita determinar cumplimiento/no cumplimiento.
+    \item \textbf{No ambigüedad:} Se prohíben requisitos ambiguos o no medibles (p. ej., ``rápido'', ``robusto'', ``óptimo'') sin una métrica o criterio de aceptación asociado.
+    \item \textbf{Singularidad y atomicidad:} Cada requisito DEBERÁ expresar una sola necesidad (un ``solo verbo de obligación''), evitando requisitos compuestos que dificulten verificación y trazabilidad.
+    \item \textbf{Consistencia y no contradicción:} Un requisito no debe contradecir otros requisitos o restricciones; ante conflictos entre borradores, se consolida una redacción única coherente manteniendo el ID y la métrica original.
+    \item \textbf{Criterios de ``buen requisito'' (calidad de requisito):} Los requisitos deben ser necesarios, correctos, completos (a nivel del SyRS), consistentes, factibles, no ambiguos y verificables; además deben usar terminología consistente con el glosario del documento. Este checklist sigue las buenas prácticas de ISO/IEC/IEEE 29148 y NASA SE \cite{nasa_msfc_hdbk_3173}.
+\end{enumerate}
+
+\subsection{Requirement Attributes}
+
+Para asegurar trazabilidad, gestión y verificabilidad, cada requisito (RF/RNF/CON) mantiene un conjunto mínimo de atributos (documentados explícitamente en el texto o en la matriz V\&V del proyecto):
+
+\textbf{Atributos mínimos adoptados:}
+\begin{itemize}
+    \item \textbf{ID:} Identificador único (RF‑xxx, RNF‑xxx, CON‑xxx) que no cambia entre revisiones.
+    \item \textbf{Texto del requisito:} Declaración con ``DEBERÁ/SHALL'' y terminología consistente.
+    \item \textbf{Prioridad:} Criticidad (p. ej., CRÍTICO/ALTO/BAJO) según impacto en UC‑01 y campaña de validación.
+    \item \textbf{Fuente:} Origen del requisito (ConOps, ELANav, restricciones del experimento) para justificar su necesidad.
+    \item \textbf{Método de verificación:} T/A/D/I asociado y criterio de aceptación (métrica) cuando aplique, enlazado a la matriz de cumplimiento V\&V.
+\end{itemize}
+
+\subsection{Requirement Grouping Strategy}
+
+\begin{enumerate}
+    \item \textbf{Agrupación primaria por tipo de requisito:}
+    \begin{itemize}
+        \item \textbf{Requisitos funcionales (RF):} describen capacidades del sistema para ejecutar UC‑01 y casos relacionados (percepción, autonomía, comunicación, seguridad/FDIR).
+        \item \textbf{Requisitos de interfaz:} describen restricciones y comportamientos de interacción (rover–GCS, buses internos, protocolos).
+        \item \textbf{Requisitos de desempeño (RNF orientados a performance):} describen métricas cuantitativas (latencia, precisión, etc.).
+        \item \textbf{Requisitos no funcionales (RNF de calidad):} confiabilidad/resiliencia/recuperación u otros atributos de calidad aplicables.
+        \item \textbf{Restricciones (CON):} limitaciones de diseño/implementación y simplificaciones experimentales (p. ej., CON‑001, CON‑002).
+    \end{itemize}
+
+    \item \textbf{Agrupación secundaria por dominio/función del sistema:}
+    \begin{itemize}
+        \item \textbf{Dentro de funcionales:} movilidad/\allowbreak locomoción, navegación/\allowbreak autonomía, percepción/\allowbreak sensado, comunicaciones, seguridad y gestión de fallas.
+        \item \textbf{Dentro de interfaces:} externas (GCS/enlace) y internas (buses, N2/PBS).
+    \end{itemize}
+
+    \item \textbf{Enfoque UC‑01 como eje transversal:} Cada grupo debe mantener trazabilidad explícita hacia UC‑01 (y donde aplique, UC‑02/UC‑04/UC‑05) para que la matriz de V\&V y el plan de pruebas puedan organizarse por escenarios operacionales.
+\end{enumerate}
+
+\subsection{Software Criticality Classification}\label{subsec:sw_criticality}
+
+Esta subsección clasifica los componentes de software del Rover Olympus por nivel de criticidad, conforme a una equivalencia simplificada de NASA-STD-8739.8B (Software Assurance and Safety Standard). La clasificación determina el rigor mínimo de V\&V requerido y justifica el esfuerzo de verificación documentado en \S\ref{sec:vv} \cite{nasa_std_8739_8}.
+
+\textbf{Clases de criticidad adoptadas:}
+\begin{itemize}
+    \item \textbf{Mission-Critical (Class B equiv.):} Un fallo en el software puede causar pérdida de misión, daño estructural al rover o riesgo para el entorno. Requiere unit tests, code review de lógica de seguridad e integration test con hardware.
+    \item \textbf{Mission-Essential (Class C equiv.):} Un fallo degrada la misión pero existe un mecanismo de protección de nivel inferior (LLC) que actúa como safety net. Requiere integration tests y V\&V en campo.
+\end{itemize}
+
+\begin{landscape}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{| p{5.0cm} | c | p{9.5cm} | p{5.5cm} |}
+\caption{Clasificación de criticidad de software del Rover Olympus \cite{nasa_std_8739_8} (equivalencia simplificada).}
+\label{tab:sw_criticality}\\
+\hline
+\textbf{Componente SW} & \textbf{Clase} & \textbf{Justificación} & \textbf{V\&V mínimo requerido} \\ \hline
+\endfirsthead
+\hline
+\textbf{Componente SW} & \textbf{Clase} & \textbf{Justificación} & \textbf{V\&V mínimo requerido} \\ \hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+
+LLC \newline (Arduino Mega) \newline \texttt{state\_machine/mod.rs} \newline control motores, watchdog, \newline stall detection, fault stop &
+Mission-Critical (Class B equiv.) &
+Controla actuadores físicos en tiempo real. Un fallo puede causar colisión, sobrepar o daño estructural. Implementa el fault stop (RF-005) y stall detection que protegen la integridad del sistema. No existe capa inferior de protección. &
+Unit tests Rust ($\ge$49 casos, branch \texttt{feature/msm-main-integration}); code review de transiciones de estado; integration test con hardware real (motores + encoders); V\&V campo RF-005 \\ \hline
+
+HLC \newline (RPi5 / Yocto) \newline \texttt{olympus\_hlc/msm.py}, \newline \texttt{olympus\_controller.py}, \newline monitors, CSP stack, \newline OlympusLogger \newline \emph{(integración futura: biblioteca ELANav)} &
+Mission-Essential (Class C equiv.) &
+Toma decisiones de navegación (percepción, clasificación, planificación). Un fallo es interceptable por el LLC antes de causar daño físico: el LLC actúa como \emph{safety net} para comandos inválidos. Fallo degrada misión pero no causa pérdida directa de integridad física. &
+Integration tests dry-run; smoke test post-flash; V\&V en campo UC-01 ($\ge$1 run completo); \texttt{cycle\_warn\_ms} watchdog activo \\ \hline
+
+\end{longtable}
+\end{landscape}
+
+\emph{Nota:} la tabla resume los dos componentes principales del estado actual del prototipo; los componentes auxiliares (\texttt{gcs\_drive.py}, \emph{vision pipeline}, \emph{rover-bridge} crate del HLC) heredan la clase del componente que los invoca.
+
+\textbf{Implicación para V\&V:} La separación LLC (Mission-Critical) / HLC (Mission-Essential) justifica que la LLC disponga de una suite de unit tests en Rust y que los cambios a \texttt{state\_\allowbreak machine/\allowbreak mod.rs} requieran code review antes de integración. La HLC se valida principalmente mediante integration tests y campañas de campo.

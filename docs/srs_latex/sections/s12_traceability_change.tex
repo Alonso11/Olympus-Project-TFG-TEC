@@ -1,0 +1,106 @@
+% Elaborado por Fabian Gomez
+% Version 1.0
+
+\section{Traceability and Change Management}\label{sec:traceability}
+
+Esta sección define cómo se mantiene la trazabilidad de los requisitos del SyRS/SRS del Rover Olympus (RF/RNF/CON) a través de los artefactos del proyecto (ConOps, Casos de Uso, arquitectura MBSE/SysML, PBS/ASM, N2 y V\&V), y cómo se gestionan cambios para preservar un baseline coherente.
+
+El objetivo de esta sección es establecer una disciplina de ``baseline único'': (i) una definición maestra por requisito en \S\ref{sec:requirements}; (ii) referencias cruzadas por ID en ConOps/Interfaces/V\&V/Arquitectura; (iii) un proceso de control de cambios proporcional al proyecto académico que evite divergencias entre el documento y el modelo.
+
+La gestión de configuración/cambios es una práctica de ingeniería de sistemas aplicada a lo largo del ciclo de vida para controlar cambios a características funcionales y físicas del producto, asegurar consistencia entre el producto y su documentación/modelos, y mantener visibilidad del estado real de la configuración.
+
+\subsection{Requirements Traceability Strategy}\label{subsec:req-traceability}
+
+Estrategia de trazabilidad (digital thread académico del proyecto): La trazabilidad se mantiene como un hilo continuo desde la intención operacional hasta la evidencia de cumplimiento, con la siguiente cadena principal:
+\begin{enumerate}
+  \item ConOps y Casos de Uso (UC-01..UC-05) $\rightarrow$ Requisitos (RF/RNF/CON)
+  \item Requisitos (RF/RNF/CON) $\rightarrow$ Arquitectura lógica (BDD/IBD de 7 subsistemas)
+  \item Arquitectura lógica $\rightarrow$ Arquitectura física (PBS/ASM) y conectividad (N2)
+  \item Requisitos $\rightarrow$ Plan V\&V (métodos T/A/D/I) $\rightarrow$ Evidencia (resultados)
+\end{enumerate}
+
+\textbf{Regla operativa de baseline:} La Sección~\ref{sec:requirements} contiene la definición maestra de RF/RNF/CON; ConOps, Interfaces, Arquitectura y V\&V solo referencian por ID para evitar múltiples definiciones inconsistentes entre secciones.
+
+\textbf{Enfoque MBSE para trazabilidad:} Se recomienda mantener enlaces trazables entre objetos de requisitos y elementos del modelo SysML (bloques, actividades, estados, interfaces), de modo que el modelo funcione como ``fuente autoritativa'' y habilite revisiones cruzadas (requisitos $\leftrightarrow$ arquitectura $\leftrightarrow$ V\&V).
+
+\subsection{COTS Traceability}\label{subsec:cots-traceability}
+
+\textbf{Objetivo:} Asegurar trazabilidad explícita de la implementación física COTS hacia los requisitos del sistema, de modo que cada función/requisito crítico del UC-01 pueda rastrearse hasta: (i) el ensamble/componente (ASM/PBS), (ii) la interfaz interna (N2), y (iii) la evidencia V\&V correspondiente.
+
+\textbf{Estrategia de trazabilidad COTS (baseline del proyecto):}
+\begin{enumerate}
+  \item \textbf{Mapeo Función/Requisito $\rightarrow$ Ensamble (ASM-xxxx) $\rightarrow$ Ítem COTS:} El PBS/ASM organiza el hardware en ensamblajes y permite mapear qué componentes implementan cada capacidad.
+  \item \textbf{Mapeo Ensamble/Ítem $\rightarrow$ Interfaz interna (N2) $\rightarrow$ Riesgos de integración:} La matriz N2 detalla conexiones (CSI-2, I2C, PWM, UART, DC) y se usa para identificar dependencias e impactos: por ejemplo, RF-006 depende de COMM$\leftrightarrow$C\&DH y de la ruta hasta el enlace; RF-005 depende de GNC/PROP/EPS$\leftrightarrow$C\&DH (y de la cadena GNC$\rightarrow$PROP) para ejecutar el stop en tiempo.
+  \item \textbf{Mapeo Ítem/Interfaz $\rightarrow$ Método V\&V $\rightarrow$ Evidencia:} La trazabilidad COTS concluye en evidencia verificable: pruebas de adquisición CSI (RF-001), pruebas de clasificación (RF-002), demostraciones sin colisiones (RF-003), análisis/pruebas encoder-odometría (RF-004-R1, CR-002), pruebas de activación fault stop (RF-005) y pruebas/inspección CSP (RF-006), usando criterios cuantitativos definidos.
+\end{enumerate}
+
+\subsection{Minimal Configuration and Change Control (Tailored)}\label{subsec:cm-tailored}
+
+Esta subsección define un proceso mínimo de control de configuración y cambios (CM/CC) proporcional al contexto académico, para preservar consistencia entre: SyRS/SRS (\S\ref{sec:requirements}), modelo MBSE/SysML (BDD/IBD, comportamiento), PBS/ASM, matriz N2, ICDs y V\&V.
+
+\paragraph{Configuration Items (CIs) mínimos.}
+Los siguientes artefactos se consideran \textit{Configuration Items} (CIs) bajo control de cambios:
+\begin{itemize}
+  \item \textbf{CI-REQ}: SyRS/SRS (definición maestra de requisitos en \S\ref{sec:requirements}).
+  \item \textbf{CI-MODEL}: Modelo SysML (BDD/IBD/Interfaces, Activity/State).
+  \item \textbf{CI-PBS}: PBS/ASM + BOM COTS (mapeo función$\rightarrow$COTS).
+  \item \textbf{CI-N2}: Matriz N2 de conectividad (interfaces físicas y lógicas).
+  \item \textbf{CI-ICD}: ICD de comunicaciones (Rover--GCS) e ICD interno (buses/pines mínimos).
+  \item \textbf{CI-VV}: Matrices de verificación y procedimientos VT-* (SyRS/SRS).
+  \item \textbf{CI-CODE}: Repositorios de software (tags/releases) y configuración de campaña.
+  \item \textbf{CI-DATA}: Datasets/ground truth y scripts de evaluación (si aplican a métricas de percepción).
+\end{itemize}
+
+\paragraph{Proceso mínimo de cambio (CR $\rightarrow$ Impacto $\rightarrow$ Aprobación $\rightarrow$ Baseline).}
+Todo cambio propuesto DEBERÁ registrarse como una \textit{Change Request} (CR) con un identificador único (CR-xxx) y seguir el flujo:
+\begin{enumerate}
+  \item \textbf{Registro CR}: motivo, descripción, CIs afectados, prioridad, relación con UC-01 y riesgo.
+  \item \textbf{Impact analysis}: identificar impacto en requisitos (CI-REQ), arquitectura/IBD/N2 (CI-MODEL/CI-N2), implementación física (CI-PBS), interfaces/ICD (CI-ICD) y V\&V (CI-VV).
+  \item \textbf{Aprobación (mini-CCB)}: Responsable SE + líder I\&T + líder SW aprueban/rechazan. Si afecta requisitos, se actualiza CI-REQ (\S\ref{sec:requirements}) y su trazabilidad a V\&V.
+  \item \textbf{Implementación}: aplicar cambios en los CIs correspondientes, referenciando CR-xxx en commits/notas.
+  \item \textbf{Regresión V\&V}: ejecutar pruebas VT afectadas y actualizar evidencia (CI-VV).
+  \item \textbf{Baseline update}: etiquetar la versión (tag/release), actualizar historial de revisiones y congelar baseline para campaña.
+\end{enumerate}
+
+\paragraph{Plantilla mínima de CR (recomendada).}
+\begin{itemize}
+  \item \textbf{CR-ID}: CR-xxx
+  \item \textbf{Motivo}: (p.\,ej., inconsistencia, riesgo de integración, mejora V\&V)
+  \item \textbf{CIs afectados}: CI-REQ/CI-MODEL/CI-PBS/CI-N2/CI-ICD/CI-VV/CI-CODE/CI-DATA
+  \item \textbf{Impacto en requisitos}: IDs afectados (SyRS-xxx/SRS-xxx/RF/RNF/CON)
+  \item \textbf{Impacto en V\&V}: VT-IDs afectados y cambio en criterios/procedimientos
+  \item \textbf{Decisión mini-CCB}: Aprobado/Rechazado + fecha + responsables
+\end{itemize}
+
+\subsection{Change Register}\label{subsec:change-register}
+
+El siguiente registro documenta los \emph{Change Requests} (CR) aprobados que han modificado el baseline del SyRS/SRS desde su versión inicial. Cada CR enlaza los CIs afectados y, donde aplica, los commits de aplicación en el repositorio del proyecto.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
+\hline
+\textbf{CR-ID} & \textbf{Fecha} & \textbf{Descripción y Motivo} & \textbf{CIs afectados} & \textbf{Decisión CCB} \\ \hline
+
+CR-001 & 2025-12 &
+Establecimiento del baseline inicial del SyRS/SRS Rover Olympus (versión 4.0). Estructura conforme a ISO/IEC/IEEE 29148. &
+CI-REQ, CI-MODEL, CI-VV &
+Aprobado \\ \hline
+
+CR-002 & 2026-04-04 &
+RF-004 (Compensación de Slip por EKF) \textbf{SUPERSEDED} por RF-004-R1 (Detección de Slip Encoder-Based). El EKF fue descartado del scope TFG por ausencia de IMU dedicada en la configuración de vuelo; la detección se implementa en LLC (encoders) + HLC (\texttt{SlipMonitor} con \texttt{SLIP\_STALL\_FRAMES = 2}). &
+CI-REQ, CI-CODE (LLC + HLC), CI-VV &
+Aprobado \\ \hline
+
+CR-003 & 2026-05-17 &
+Auditoría integral del SRS por consistencia con código (LLC v2.20 \texttt{mixed-drivers}+INA3221, HLC libcsp\_udp+OV5647) y con los 4 Objetivos Específicos del TFG. Resulta en correcciones de drift HW (INA226$\rightarrow$INA3221, IMX219$\rightarrow$OV5647, slip\,\%$\rightarrow$stall event-based), unificación de nomenclatura (COMMS, UC IDs), alineación de la máquina de estados (7 estados \texttt{RoverState} + SafetyState), y eliminación de meta-comentarios sobre borradores. &
+CI-REQ (todas las secciones), CI-VV &
+Aprobado \\ \hline
+
+\end{tabularx}
+\caption{Registro de Change Requests (CR) aplicados al baseline.}
+\label{tab:change-register}
+\end{table}
+
+\emph{Nota sobre CCB:} para el contexto académico del TFG, el \emph{Configuration Control Board (mini-CCB)} se compone del estudiante (responsable de ingeniería de sistemas), el coordinador del proyecto ELANav (J. Carvajal Godínez) y el revisor académico designado. Las decisiones se registran en este Change Register.

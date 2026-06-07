@@ -42,40 +42,16 @@ olympus-project/
 │   ├── 📄 olympus_gui.py                 # PyQt Main Interface
 │   └── 📄 olympus_station.py             # Communication and protocol logic
 │
-├── 📂 docs/                              # Main documentation folder
-│   ├── 📄 00-project-charter.md          # Project vision, scope, objectives, stakeholders
-│   ├── 📄 01-requirements-framework.md   # Complete ISO/IEC/IEEE 29148 framework
-│   ├── 📄 02-requirements-specification/ # **CORE SRS FOLDER**
-│   │   ├── 📄 index.md                   # Main SRS document
-│   │   ├── 📄 _traceability-matrix.md    # Live requirements traceability matrix
-│   │   ├── 📂 _use-cases/                # Detailed operational scenarios
-│   │   │   ├── uc-autonomous-navigation.md
-│   │   │   ├── uc-obstacle-avoidance.md
-│   │   │   └── uc-emergency-stop.md
-│   │   └── 📂 _diagrams/                 # System architecture and flow diagrams
-│   │       ├── system-context.mmd
-│   │       ├── navigation-flow.mmd
-│   │       └── safety-architecture.mmd
+├── 📂 docs/                              # Project documentation
+│   ├── 📂 srs_latex/                     # **CORE SRS SOURCE (LaTeX)**
+│   │   ├── 📄 main.tex                   # Main document structure
+│   │   ├── 📂 sections/                  # SRS sections (ISO/IEC/IEEE 29148)
+│   │   ├── 📂 figures/                   # System diagrams and architecture
+│   │   └── 📂 icd/                       # Interface Control Documents
 │   │
-│   ├── 📄 03-architecture-design.md      # System and software architecture
-│   ├── 📄 04-validation.md               # Validation procedures and results
-│   ├── 📄 05-stakeholder-analysis.md     # Detailed stakeholder requirements mapping
-│   └── 📄 06-implementation-roadmap.md   # Project execution plan
+│   └── 📄 validation_results.md          # Summary of V&V activities
 │
-├── 📂 templates/                         # Reusable document templates
-│   ├── srs-template.md
-│   └── traceability-template.md
-│
-├── 📂 project_management/                # Meeting notes, decisions, task tracking
-│   ├── meeting-notes/
-│   ├── stakeholder-interviews/
-│   └── project-kamban.md
-│
-└── 📂 references/                        # Supporting documents and research
-    ├── mars-rover-case-studies.md
-    └── [additional-reference-files.md]
-```
-
+├── 📂 ground_station/                    # Telemetry and control GUI application
 ---
 
 ## Standards and Compliance
