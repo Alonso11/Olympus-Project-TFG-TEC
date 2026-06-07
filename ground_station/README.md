@@ -31,11 +31,13 @@ curl -LsSf https://astral-sh.uv.io/install.sh | sh
 
 ## Running the Application
 
-To start the Ground Station GUI:
+To start the Ground Station GUI (using XCB for compatibility with Wayland/Linux environments):
 
 ```bash
-uv run olympus_gui.py
+QT_QPA_PLATFORM=xcb uv run --with PyQt5 python olympus_gui.py
 ```
+
+*Note: The `--with PyQt5` flag ensures the dependency is available in the ephemeral or project environment during execution.*
 
 ## Features
 
