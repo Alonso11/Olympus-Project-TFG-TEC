@@ -19,6 +19,13 @@ The development cycle is governed by the following engineering pillars:
 - **Architecture Design**: Modular structuring following industry standards.
 - **Validation**: Systematic validation procedures to ensure quality and stakeholder needs are met.
 
+## System Sub-components
+
+The project is divided into several specialized repositories that handle different layers of the system:
+
+- **[Rover Low-Level Controller](https://github.com/Alonso11/rover-low-level-controller)**: Firmware developed in Rust for the ATmega2560. Manages motor control (BTS7960), encoders, ACS712 current sensors, and low-level safety logic.
+- **[Olympus HLC (High-Level Controller)](https://github.com/Alonso11/olympus-hlc-rpi5)**: Embedded Linux system (Yocto Project) for the Raspberry Pi 5. Handles GNC (Guidance, Navigation, and Control), computer vision, traversability analysis, and high-level communications.
+
 ---
 
 ## Repository Structure
