@@ -23,7 +23,8 @@ The development cycle is governed by the following engineering pillars:
 
 The project is divided into several specialized repositories that handle different layers of the system:
 
-- **[Rover Low-Level Controller](https://github.com/Alonso11/rover-low-level-controller)**: Firmware developed in Rust for the ATmega2560. Manages motor control (BTS7960), encoders, ACS712 current sensors, and low-level safety logic.
+- **[Rover Low-Level Controller](https://github.com/Alonso11/rover-low-level-controller)**: Capa de Bajo Nivel (LLC). 
+  Contiene el firmware en Rust para el ATmega2560, incluyendo la máquina de estados MSM y los drivers de sensores.
 - **[Olympus HLC (High-Level Controller)](https://github.com/Alonso11/olympus-hlc-rpi5)**: Embedded Linux system (Yocto Project) for the Raspberry Pi 5. Handles GNC (Guidance, Navigation, and Control), computer vision, traversability analysis, and high-level communications.
 - **Ground Station**: Desktop application based on Python/PyQt for real-time telemetry visualization, manual control, and system monitoring.
 
