@@ -25,6 +25,7 @@ The project is divided into several specialized repositories that handle differe
 
 - **[Rover Low-Level Controller](https://github.com/Alonso11/rover-low-level-controller)**: Firmware developed in Rust for the ATmega2560. Manages motor control (BTS7960), encoders, ACS712 current sensors, and low-level safety logic.
 - **[Olympus HLC (High-Level Controller)](https://github.com/Alonso11/olympus-hlc-rpi5)**: Embedded Linux system (Yocto Project) for the Raspberry Pi 5. Handles GNC (Guidance, Navigation, and Control), computer vision, traversability analysis, and high-level communications.
+- **Ground Station**: Desktop application based on Python/PyQt for real-time telemetry visualization, manual control, and system monitoring.
 
 ---
 
@@ -36,6 +37,10 @@ olympus-project/
 ├── 📄 CHANGELOG.md                       # Document version history and changes
 ├── .github/workflows/                    # CI/CD for documentation quality
 │   └── markdown-check.yml
+│
+├── 📂 ground_station/                    # Telemetry and control GUI application
+│   ├── 📄 olympus_gui.py                 # PyQt Main Interface
+│   └── 📄 olympus_station.py             # Communication and protocol logic
 │
 ├── 📂 docs/                              # Main documentation folder
 │   ├── 📄 00-project-charter.md          # Project vision, scope, objectives, stakeholders
