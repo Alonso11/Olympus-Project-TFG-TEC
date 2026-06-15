@@ -44,8 +44,8 @@ Los requisitos funcionales describen capacidades obligatorias del Rover Olympus 
 \textbf{Soporte de CON-001:}
 \begin{itemize}
     \item \textbf{EPS-REQ-001:} El subsistema de Energía DEBERÁ reportar al C\&DH el voltaje de bus de cada banco de batería con una frecuencia de $\ge$ 1\,Hz y resolución $\le$ 8\,mV (sensor INA3221 en modo bus-only sobre Soft-I$^2$C). La medición de corriente se realiza distribuidamente a nivel de canal de motor mediante ACS712 (ver PROP-REQ-001 y la matriz N2 \S\ref{subsec:internal_interfaces}) y se agrega al frame TLM del LLC.
-    \item \textbf{EPS-REQ-002a:} El LLC DEBERÁ entrar en SafeMode y emitir corte hardware de potencia (relés bancarios D40/D41 \emph{active-low}) al detectar voltaje de cualquier banco $< 12\,$V durante $\ge$ 1 ciclo de telemetría. \emph{Verificación: T (integration test con fuente programable).}
-    \item \textbf{EPS-REQ-002b:} Cada banco de batería 18650 NMC DEBERÁ contar con protección física por sobre-descarga (\emph{under-voltage cutoff} $\ge 2.5\,$V/celda) según especificación del fabricante de celda. [EXTERNO]
+    \item \textbf{EPS-REQ-002a:} El LLC DEBERÁ entrar en SafeMode y emitir corte hardware de potencia (relés bancarios D40/D41 \emph{active-low}) al detectar voltaje de cualquier banco $< 12.8\,$V durante $\ge$ 1 ciclo de telemetría. \emph{Verificación: T (integration test con fuente programable).}
+    \item \textbf{EPS-REQ-002b:} Cada pack de batería LiPo 4S DEBERÁ contar con protección física por sobre/sub-tensión y balanceo por celda mediante un BMS dedicado (BMS Daly 4S 20A; \emph{under-voltage cutoff} por celda gestionado por el BMS). [EXTERNO]
 \end{itemize}
 
 \subsubsection{COMMS (Telecomunicaciones)}
@@ -157,7 +157,7 @@ Se establecen los requerimientos funcionales maestros para los casos de uso secu
 \emph{No se registra como UC top-level; se especifica como modo de operación del MSM (ver \S\ref{subsec:op_modes}).}
 \begin{itemize}
     \item \textbf{SYS-FUN-040:} \textit{[\textbf{SUPERSEDED} por SYS-FUN-040a y SYS-FUN-040b. Texto original preservado para trazabilidad.]} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltajes de batería críticos ($<$ 12V) o fallos de latencia en el C\&DH $>$ 5 s.
-    \item \textbf{SYS-FUN-040a:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltaje de cualquier banco $<$ 12\,V, detectado por el monitor multi-banco INA3221 sobre Soft-I$^2$C del LLC.
+    \item \textbf{SYS-FUN-040a:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante voltaje de cualquier banco $<$ 12.8\,V, detectado por el monitor multi-banco INA3221 sobre Soft-I$^2$C del LLC.
     \item \textbf{SYS-FUN-040b:} El sistema DEBERÁ entrar en \emph{Safe Mode} automáticamente ante fallos de latencia en el C\&DH superiores a 5\,s sin respuesta del ciclo de agente HLC.
     \item \textbf{SYS-FUN-041:} En \emph{Safe Mode}, el sistema DEBERÁ priorizar la telemetría de salud y desenergizar los actuadores de tracción.
 \end{itemize}
@@ -200,7 +200,7 @@ Full &
 
 MODE-002 & \textbf{EXP} \newline Exploration &
 Comando START recibido en STB &
-Obstáculo $\le$ \texttt{HC\_EMERGENCY\_MM = 200\,mm} o $\le$ \texttt{TOF\_EMERGENCY\_MM = 150\,mm} $\rightarrow$ AVD; comando \texttt{CLB} $\rightarrow$ CLB; stall persistente (LLC \texttt{STALL\_THRESHOLD = 50}) o slip persistente HLC (\texttt{SLIP\_STALL\_FRAMES = 2}) $\rightarrow$ RET; link lost $>$10\,s $\rightarrow$ RET; voltaje cualquier banco $<$12\,V (INA3221) o anomalía \texttt{OC\_FAULT} $\rightarrow$ SAFE/FLT &
+Obstáculo $\le$ \texttt{HC\_EMERGENCY\_MM = 200\,mm} o $\le$ \texttt{TOF\_EMERGENCY\_MM = 150\,mm} $\rightarrow$ AVD; comando \texttt{CLB} $\rightarrow$ CLB; stall persistente (LLC \texttt{STALL\_THRESHOLD = 50}) o slip persistente HLC (\texttt{SLIP\_STALL\_FRAMES = 2}) $\rightarrow$ RET; link lost $>$10\,s $\rightarrow$ RET; voltaje cualquier banco $<$12.8\,V (INA3221) o anomalía \texttt{OC\_FAULT} $\rightarrow$ SAFE/FLT &
 Percepción visual (RF-001); clasificación terreno (RF-002); evitación (RF-003); odometría encoders; telemetría continua &
 Activos &
 Full &
@@ -231,7 +231,7 @@ Full &
 SYS-FUN-020 \newline SYS-FUN-021 \\ \hline
 
 MODE-005 & \textbf{FLT} \newline Fault &
-Stall persistente sin recuperación (LLC \texttt{STALL\_THRESHOLD} excedido); timeout AVD; anomalía \texttt{OC\_FAULT} en BTS7960/L298N; LLC heartbeat ausente &
+Stall persistente sin recuperación (LLC \texttt{STALL\_THRESHOLD} excedido); timeout AVD; anomalía \texttt{OC\_FAULT} en BTS7960; LLC heartbeat ausente &
 Reset manual por operador vía GCS $\rightarrow$ STB &
 Solo telemetría de diagnóstico; motores detenidos; FDIR activo &
 Detenidos \newline (freno activo) &
@@ -239,7 +239,7 @@ Health only &
 RF-005 \newline SYS-FUN-040b \\ \hline
 
 MODE-006 & \textbf{SAFE} \newline Safe Mode &
-Voltaje batería $<$12\,V (SYS-FUN-040a) o latencia HLC $>$5\,s (SYS-FUN-040b) &
+Voltaje batería $<$12.8\,V (SYS-FUN-040a) o latencia HLC $>$5\,s (SYS-FUN-040b) &
 Reset manual por operador tras resolución de la condición $\rightarrow$ STB &
 Solo telemetría de salud (EPS, térmica); actuadores desenergizados; logs persistidos &
 Desenergizados &
@@ -270,7 +270,7 @@ SYS-FUN-040a \newline SYS-FUN-040b \newline SYS-FUN-041 \\ \hline
     \ReqShall{El sistema DEBERÁ minimizar la interferencia electromagnética entre los actuadores de potencia y los sensores de navegación mediante blindaje y cableado trenzado.}
     \item[\textbf{Prioridad:}] MEDIO
     \ReqTrace{Mejores prácticas NASA SE}
-    \item[\textbf{Racional:}] Evitar ruidos en la IMU (MPU-6050) y en las lecturas de distancia (HC-SR04, VL53L0X, TF02) causados por los picos de corriente de los motores DC (drivers L298N y BTS7960). Olympus no integra GPS.
+    \item[\textbf{Racional:}] Evitar ruidos en la IMU (MPU-6050) y en las lecturas de distancia (HC-SR04, VL53L0X, TF02) causados por los picos de corriente de los motores DC (drivers BTS7960). Olympus no integra GPS.
     \ReqAccept{Inspection / Test}
 \end{reqblock}
 
@@ -314,7 +314,7 @@ Esta subsección consolida los requisitos ambientales operacionales y de transpo
 \subsubsection{Physical Characteristics (ISO 29148 9.5.11)}
 \begin{itemize}
     \item \textbf{PHY-REQ-001 (Dimensiones):} El rover DEBERÁ tener unas dimensiones nominales de envolvente de 480 x 340 x 320 mm ($\pm$ 10\%).
-    \item \textbf{PHY-REQ-002 (Masa):} La masa total del sistema en configuración de vuelo (incluyendo baterías) NO DEBERÁ exceder los 7.5 kg.
+    \item \textbf{PHY-REQ-002 (Masa):} La masa total del sistema en configuración de vuelo (incluyendo baterías) NO DEBERÁ exceder los 10 kg.
     \item \textbf{PHY-REQ-003 (Centro de Masa):} El centro de masa DEBERÁ situarse por debajo de la línea de los ejes del rocker-bogie para maximizar la estabilidad en pendientes de 20°.
 \end{itemize}
 

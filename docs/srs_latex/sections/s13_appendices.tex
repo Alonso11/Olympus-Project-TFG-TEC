@@ -41,7 +41,7 @@ SYS-FUN-021 & Retreat ante link lost$>$10\,s o slip persistente HLC (\texttt{SLI
 SYS-FUN-030 & Manual override inmediato & SW-logic MSM & Demonstration & S & OPEN \\
 SYS-FUN-031 & Transición autónomo$\rightarrow$manual $\le$500\,ms & CDH-REQ-001 & Test & S & OPEN \\
 SYS-FUN-040 & Safe Mode entry \textit{[SUPERSEDED — 040a+040b]} & -- & -- & -- & SUPERSEDED \\
-SYS-FUN-040a & Safe Mode por voltaje cualquier banco $<$12\,V (INA3221) & EPS-REQ-001 & Test & S & OPEN \\
+SYS-FUN-040a & Safe Mode por voltaje cualquier banco $<$12.8\,V (INA3221) & EPS-REQ-001 & Test & S & OPEN \\
 SYS-FUN-040b & Safe Mode por latencia HLC $>$5\,s & CDH-REQ-001 & Test & S & OPEN \\
 SYS-FUN-041 & Safe Mode: TM salud + motores desenergizados & SYS-FUN-040a/040b & Demonstration & S & OPEN \\
 SYS-FUN-050 & Sync y cierre de logs antes de apagado & INF-REQ-001 & Inspection & S & OPEN \\
@@ -206,10 +206,10 @@ Fallo Soft-I$^2$C / lectura inválida en uno o más bancos &
 Batería sin monitoreo; riesgo sobrecarga/sobre-descarga &
 Major & Remota &
 Lectura Soft-I$^2$C inválida o fuera de rango físico (0--26\,V por banco) &
-Valor inválido $\rightarrow$ alerta HLC; voltaje de cualquier banco $<$12\,V $\rightarrow$ SafeMode (SYS-FUN-040a) &
+Valor inválido $\rightarrow$ alerta HLC; voltaje de cualquier banco $<$12.8\,V $\rightarrow$ SafeMode (SYS-FUN-040a) &
 EPS-REQ-001 \newline SYS-FUN-040a \\ \hline
 
-BTS7960 \newline (drivers motores CR/CL/RR/RL) &
+BTS7960 \newline (drivers motores $\times$6) &
 Sobrecorriente ($>I_{stall}$ NFP-5840 $\approx$ 6.5\,A) o sobre-temperatura del driver &
 Motor bloqueado o driver destruido; pérdida de tracción &
 Critical & Ocasional &
@@ -266,10 +266,10 @@ RF-005 \newline SyRS-060 \\ \hline
 \subsection{Engineering Budgets}\label{subsec:eng_budgets}
 % ============================================================
 
-Este apéndice establece los presupuestos de ingeniería (potencia, masa y enlace RF) del Rover Olympus con valores derivados de hojas de datos del fabricante (\textbf{[DS]}), estimaciones de ingeniería (\textbf{[EST]}) y parámetros pendientes de medición en hardware real (\textbf{[TBM]}). Los valores [TBM] deben resolverse antes del cierre de la campaña V\&V para cerrar los requisitos RNF-007 (MOD $\ge$2\,h) y EPS-REQ-001 (monitoreo multi-banco INA3221) \cite{rpi5_brief, arduino_mega_ds}.
+Este apéndice establece los presupuestos de ingeniería (potencia, masa y enlace RF) del Rover Olympus con valores derivados de hojas de datos del fabricante (\textbf{[DS]}), estimaciones de ingeniería (\textbf{[EST]}), mediciones en hardware real (\textbf{[MED]}) y parámetros pendientes de medición (\textbf{[TBM]}). Los valores [TBM] deben resolverse antes del cierre de la campaña V\&V para cerrar los requisitos RNF-007 (MOD $\ge$2\,h) y EPS-REQ-001 (monitoreo multi-banco INA3221) \cite{rpi5_brief, arduino_mega_ds}.
 
 % ------------------------------------------------------------
-\subsubsection{Power Budget (Bus 12 V — 3 bancos 18650 NMC)}
+\subsubsection{Power Budget (Bus 12 V — 3 bancos LiPo 4S)}
 % ------------------------------------------------------------
 
 \begin{landscape}
@@ -278,7 +278,7 @@ Este apéndice establece los presupuestos de ingeniería (potencia, masa y enlac
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.3}
 \begin{longtable}{| p{2.0cm} | p{4.5cm} | c | r | r | r | r | r | c |}
-\caption{Presupuesto de potencia del Rover Olympus (modo traversal, bus 12\,V, 3 bancos 18650 NMC).
+\caption{Presupuesto de potencia del Rover Olympus (modo traversal, bus 12\,V, 3 bancos LiPo 4S).
   Valores [TBM] requieren banco de motores con corriente medida por ACS712 por canal (INA3221 mide voltaje multi-banco). Criterio RNF-007: energía total $\ge$89.4\,Wh
   $\Rightarrow$ capacidad combinada $\ge$5\,400\,mAh ($\ge$80\,Wh con 10\,\% derating).}
 \label{tab:power_budget}\\
@@ -340,10 +340,10 @@ COMM   & Módulo WiFi integrado     & --    & [DS]  & incluido en RPi5 \\ \hline
 STR    & Chasis / estructura       & {[TBM]} & [TBM] & Medición directa con balanza \\ \hline
 STR    & Ruedas ($\times$6)        & {[TBM]} & [TBM] & \\ \hline
 STR    & Arnés / cableado          & {[TBM]} & [TBM] & Estimado $\approx$200\,g \\ \hline
-EPS    & 18650 NMC ($\times$3 bancos) & {[TBM]} & [TBM] & celdas + portabaterías + protección \\ \hline
+EPS    & LiPo 4S + BMS Daly ($\times$3 bancos) & {[TBM]} & [TBM] & celdas + portabaterías + BMS \\ \hline
 \hline
 \multicolumn{2}{|l|}{\textbf{Electrónica conocida (excl. estructura)}} & $\approx$2\,386 & [DS/EST] & sin arnés ni batería \\ \hline
-\multicolumn{2}{|l|}{\textbf{Total estimado (sistema completo)}}       & 5\,000--7\,000 & [EST] & pendiente medición estructura \\ \hline
+\multicolumn{2}{|l|}{\textbf{Total medido (sistema completo)}}       & $\approx$9\,300 & [MED] & balanza, configuración de campaña (PHY-002 $\le$10\,kg: cumple) \\ \hline
 \end{tabularx}
 \caption{Presupuesto de masa del Rover Olympus. Componentes [TBM] deben medirse con balanza de precisión antes de campaña.}
 \label{tab:mass_budget}

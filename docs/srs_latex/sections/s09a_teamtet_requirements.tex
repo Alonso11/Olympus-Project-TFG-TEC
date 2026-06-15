@@ -229,8 +229,8 @@ Este apartado consolida requerimientos del Sistema (SyRS) y de Software (SRS) ve
 \begin{sloppypar}
 \begin{reqblock}
   \item \ReqID{SyRS-081}
-  \item \ReqShall{El sistema deberá implementar mecanismos de protección eléctrica distribuida ante condiciones anómalas: NTC por celda 18650 NMC, voltaje multi-banco (INA3221), corriente por motor (ACS712), fusibles 10\,A por banco y aislamiento por relés conmutados (LLC D40/D41).}
-  \item \ReqMetric{Presencia y verificación funcional de las protecciones distribuidas; ausencia de BMS dedicado por celda en la configuración actual (ver nota EPS en \S\ref{subsec:internal_interfaces}).}
+  \item \ReqShall{El sistema deberá implementar mecanismos de protección eléctrica distribuida ante condiciones anómalas: NTC por celda LiPo 4S, voltaje multi-banco (INA3221), corriente por motor (ACS712), fusibles 10\,A por banco y aislamiento por relés conmutados (LLC D40/D41).}
+  \item \ReqMetric{Presencia y verificación funcional de las protecciones distribuidas, complementadas por el BMS Daly 4S 20A por pack (ver nota EPS en \S\ref{subsec:internal_interfaces} y CR-005).}
   \item \ReqCond{Integración del subsistema EPS.}
   \item \ReqAccept{Inspección física + verificación funcional de disparo/aislamiento conforme a procedimiento de prueba.}
   \item \ReqTrace{Arquitectura EPS: \S\ref{sec:architecture}; matriz N2: Tab.~\ref{tab:n2_fisica}.}
