@@ -313,6 +313,16 @@ class OlympusStation(QMainWindow):
         ml.addWidget(self.mode_btn)
         pl.addWidget(mode_box)
 
+        # Modelo de visión (YOLO vs lunar — TFG Carlos Alfaro)
+        model_box = QGroupBox("Modelo de visión")
+        mol = QHBoxLayout(model_box)
+        self.model_sel = QComboBox()
+        self.model_sel.addItem("YOLOv8n — detección de objetos", "YOLO")
+        self.model_sel.addItem("Lunar — segmentación de terrain", "LUNAR")
+        self.model_sel.currentIndexChanged.connect(self._on_model_changed)
+        mol.addWidget(self.model_sel)
+        pl.addWidget(model_box)
+
         # Nivel de seguridad — gobierna los overrides autónomos del HLC
         safe_box = QGroupBox("Nivel de seguridad")
         sl = QHBoxLayout(safe_box)
@@ -580,6 +590,12 @@ class OlympusStation(QMainWindow):
         self._logmsg(f"nivel de seguridad → {lvl}")
         self._comm_write("SAFE", lvl)
 
+    def _on_model_changed(self):
+        m = self.model_sel.currentData()
+        self._send("MODEL:" + m)
+        self._logmsg(f"modelo de visión → {m}")
+        self._comm_write("MODEL", m)
+
     def _on_ctrl_status(self, msg):
         # Al (re)conectar el control, re-sincronizar el nivel de seguridad: la
         # station resetea a PLENA por cada cliente nuevo, así que enviamos el que
@@ -587,6 +603,7 @@ class OlympusStation(QMainWindow):
         self._logmsg(msg)
         if "conectado" in msg:
             self._send("SAFE:" + self.safety.currentData())
+            self._send("MODEL:" + self.model_sel.currentData())
 
     def _on_evt(self, e):
         # Eventos del HLC (overrides con razón, cambios de modo, link, etc.).
