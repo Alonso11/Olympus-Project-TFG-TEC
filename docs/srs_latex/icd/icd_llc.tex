@@ -22,9 +22,9 @@ en el firmware LLC (Rust, v2.8).
         (ELANav: percepción, planificación, navegación) y la capa COMMS (CSP/HLC).
   \item \textbf{Nodo B (Arduino Mega)} = control de bajo nivel para PROP
         (motores PWM), TRAC (encoders Hall) y adquisición de sensores
-        (HC-SR04, VL53L0X, INA226, NTC).
+        (HC-SR04, VL53L0X, INA3221, NTC).
   \item \textbf{Fuera de scope de este ICD:} interfaz CSI-2 de la cámara
-        IMX219 (conectada directamente a RPi\,5); lógica de percepción/navegación
+        OV5647 (conectada directamente a RPi\,5); lógica de percepción/navegación
         (GNC); stack COMMS (CSP/UHF/Wi-Fi). Ver ICD-CAM-001 e ICD-COMMS-001.
 \end{itemize}
 
@@ -211,12 +211,12 @@ TLM:<SAF>:<STALL>:<TS>ms:<MV>mV:<MA>mA:<I0>:<I1>:<I2>:<I3>:\\
 
 \verb|<MV>| &
   u16, [mV] &
-  Tensión del bus de batería medida por INA226 (pines D42/D43 soft-I2C).
+  Tensión del bus de batería medida por INA3221 (pines D42/D43 soft-I2C).
   \textbf{0} = sensor no disponible. \\
 
 \verb|<MA>| &
   i32, [mA] &
-  Corriente total de batería con signo medida por INA226.
+  Corriente total de batería con signo medida por INA3221.
   \textbf{0} = sensor no disponible. \\
 
 \verb|<I0>–<I5>| &
@@ -290,8 +290,8 @@ Transiciones autónomas (sin CMD externo):
   \item \textbf{Obstáculo VL53L0X} ($< 150$\,mm): cualquier estado $\rightarrow$ FAULT.
   \item \textbf{Stall de encoder}: motor$_N$ sin pulsos durante $\geq 50$ ciclos a
         velocidad $> 20$\,\% → FAULT, stall\_mask bit$_N = 1$.
-  \item \textbf{Sobrecorriente ACS712}: umbral WARN (1\,200\,mA L298N) o
-        LIMIT (1\,600\,mA L298N) actualiza \verb|SafetyState|; umbral FAULT → FAULT.
+  \item \textbf{Sobrecorriente ACS712}: umbral WARN (1\,200\,mA) o
+        LIMIT (1\,600\,mA) actualiza \verb|SafetyState|; umbral FAULT → FAULT.
 \end{itemize}
 (\emph{Ref. firmware LLC \texttt{main.rs} v2.8, \texttt{state\_machine/mod.rs}})
 
@@ -336,7 +336,7 @@ D0 (RX) / D1 (TX)   & USART0 → RPi\,5 / USB    & IF-LLC-UART \\
 D5, D6, D7, D8, D9, D10 & PWM motores (Timers 2/3/4) & PROP \\
 D22–D37              & GPIO DIR motores           & PROP \\
 D38 (Trigger), D39 (Echo) & HC-SR04 ultrasónico  & GNC \\
-D42 (SDA), D43 (SCL) & Soft I2C → VL53L0X + INA226 & GNC / EPS \\
+D42 (SDA), D43 (SCL) & Soft I2C → VL53L0X + INA3221 & GNC / EPS \\
 D18–D21, D2, D3      & INT encoder Hall (FR..RL)  & TRAC \\
 A0–A5                & ACS712 corriente motores   & EPS \\
 A6                   & LM335 temperatura ambiente & GNC \\
@@ -352,8 +352,8 @@ A7–A12               & NTC temperatura baterías   & EPS \\
 \begin{itemize}
   \item \textbf{ASM-042} (MCU Arduino Mega 2560 R3):
         [DATA] USART0 $\leftrightarrow$ RPi\,5 (IF-LLC-UART);
-        [CTRL] PWM+DIR $\rightarrow$ L298N (PROP);
-        [DATA] soft-I2C $\rightarrow$ VL53L0X / INA226;
+        [CTRL] PWM+DIR $\rightarrow$ BTS7960 (PROP);
+        [DATA] soft-I2C $\rightarrow$ VL53L0X / INA3221;
         [DATA] GPIO $\rightarrow$ HC-SR04;
         [DATA] GPIO ISR $\leftarrow$ encoders Hall (TRAC);
         [DATA] ADC $\leftarrow$ ACS712 / LM335 / NTC.

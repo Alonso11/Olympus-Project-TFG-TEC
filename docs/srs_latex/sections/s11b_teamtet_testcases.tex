@@ -337,7 +337,7 @@
   \item \TCMethod{I/D}
   \item \TCObj{Demostrar que las interfaces internas críticas existen y son funcionales según la arquitectura desplegada.}
   \item \TCPre{Rover integrado.}
-  \item \TCSetup{Inspección N2/IBD; pruebas de humo: (a) captura CSI con OV5647 en RPi5; (b) lectura UART 115200 del TF02 en RPi5; (c) lectura I2C de INA3221, VL53L0X, MPU-6050 en el Arduino Mega; (d) trigger/echo HC-SR04 en GPIO del Mega; (e) comando PWM a drivers L298N+BTS7960 (sin carga peligrosa); (f) lectura ADC de ACS712 ×6 en el Mega; (g) enlace UART rover (Mega$\leftrightarrow$RPi5) con \texttt{PING$\rightarrow$PONG}.}
+  \item \TCSetup{Inspección N2/IBD; pruebas de humo: (a) captura CSI con OV5647 en RPi5; (b) lectura UART 115200 del TF02 en RPi5; (c) lectura I2C de INA3221, VL53L0X, MPU-6050 en el Arduino Mega; (d) trigger/echo HC-SR04 en GPIO del Mega; (e) comando PWM a los seis drivers BTS7960 (sin carga peligrosa); (f) lectura ADC de ACS712 ×6 en el Mega; (g) enlace UART rover (Mega$\leftrightarrow$RPi5) con \texttt{PING$\rightarrow$PONG}.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}
       \item Verificar en N2/IBD las conexiones CSI (RPi5), UART TF02 (RPi5), I2C sensores (Mega), GPIO HC-SR04 (Mega), PWM drivers (Mega), ADC ACS712 (Mega), UART rover-MCU.
@@ -429,8 +429,8 @@
 \begin{tcblock}
   \item \TCID{VT-SyRS-081}
   \item \TCMethod{I/T}
-  \item \TCObj{Confirmar presencia y funcionamiento de las protecciones EPS \textbf{distribuidas} desplegadas (decisión de diseño 2026-05-17): (a) \textbf{fusibles por banco} en la PDU, (b) \textbf{ACS712 por motor} con disparo \texttt{OC\_FAULT} en LLC, (c) \textbf{INA3221} para monitoreo de tensión bus por banco, (d) \textbf{relay BNK:0} accionable por GCS para corte de emergencia. \textbf{Nota CR-003}: no se utiliza BMS centralizado (Daly 4S 20A retirado); el balanceo de celdas se realiza externamente durante la carga.}
-  \item \TCPre{EPS integrado con 3 bancos 18650 NMC; LLC v2.20 con drivers de INA3221 y ACS712 activos; relay BNK:0 cableado al pin de control LLC; \texttt{OC\_FAULT\_BTS} calibrado (ver memoria \texttt{session\_2026\_04\_29\_llc\_protection}).}
+  \item \TCObj{Confirmar presencia y funcionamiento de las protecciones EPS \textbf{distribuidas} desplegadas (decisión de diseño 2026-05-17): (a) \textbf{fusibles por banco} en la PDU, (b) \textbf{ACS712 por motor} con disparo \texttt{OC\_FAULT} en LLC, (c) \textbf{INA3221} para monitoreo de tensión bus por banco, (d) \textbf{relay BNK:0} accionable por GCS para corte de emergencia. \textbf{Nota CR-005} (supersede EPS de CR-003): el as-built retiene el \textbf{BMS Daly 4S 20A} sobre packs LiPo 4S; las protecciones distribuidas (a)--(d) lo complementan.}
+  \item \TCPre{EPS integrado con packs LiPo 4S + BMS Daly; LLC v2.20 con drivers de INA3221 y ACS712 activos; relay BNK:0 cableado al pin de control LLC; \texttt{OC\_FAULT\_BTS} calibrado (ver memoria \texttt{session\_2026\_04\_29\_llc\_protection}).}
   \item \TCSetup{Inspección física de fusibles, ACS712, INA3221 y relay; multímetro/pinza amperimétrica de referencia; carga programable para inducir sobrecorriente controlada.}
   \item \textbf{Procedimiento:}
     \begin{enumerate}

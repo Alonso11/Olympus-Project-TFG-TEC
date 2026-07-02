@@ -1,78 +1,88 @@
-# Olympus Project - TFG
+# Olympus Project — TFG
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Systems Engineering](https://img.shields.io/badge/Focus-Systems%20Engineering-blue.svg)](#)
 
 ## Overview
 
-This repository contains the development of the Final Graduation Project (TFG) for the Olympus Project. The project is based on the application of Systems Engineering methodologies for the design, analysis, and execution of complex technological solutions.
+This repository contains the systems-engineering documentation for the **Olympus Project**
+(Final Graduation Project, TFG): the design, integration, and verification of a CPU-only
+rover platform built to enable the **physical validation of the ELANaV navigation
+software**, previously stalled in simulation (TRL-3).
 
-The main focus lies on requirements traceability, modular architecture design, and systematic validation processes to ensure system integrity.
+The work raises the platform to **TRL-4** (subsystems and interfaces integrated in the
+laboratory) under real constraints — CPU-only compute, budget, and safety — while keeping
+every design decision traceable to a formal SRS.
+
+The engineering priorities, in order, are:
+**(1) safety/determinism → (2) formal traceability → (3) honest realism (no over-promising).**
 
 ---
 
-## Systems Engineering Methodology
+## Technical Highlights
 
-The development cycle is governed by the following engineering pillars:
-- **Stakeholder Analysis**: Identification and management of critical needs.
-- **Requirements Engineering**: Rigorous definition of functional and technical specifications.
-- **Architecture Design**: Modular structuring following industry standards.
-- **Validation**: Systematic validation procedures to ensure quality and stakeholder needs are met.
+- **Dual HLC/LLC architecture** — separates neural compute (Raspberry Pi 5, YOLOv8n-seg,
+  ≤2 s cycle) from hard real-time control (low-level controller, Rust `no_std`, 20 ms loop)
+  so a software fault cannot compromise physical safety.
+- **Reactive navigation** (YOLOv8n-seg); SLAM deferred (CPU-only budget).
+- **Formal requirements flow** (IEEE 29148): ConOps → Use Cases → RF/RNF →
+  traceability matrix across 7 subsystems.
+- **Verification status:** 2 verified / 8 partial / 2 descoped over 12 system requirements.
+
+---
 
 ## System Sub-components
 
-The project is divided into several specialized repositories that handle different layers of the system:
+The system is split across specialized repositories, one per architectural layer:
 
-- **[Rover Low-Level Controller](https://github.com/Alonso11/rover-low-level-controller)**: Capa de Bajo Nivel (LLC). 
-  Contiene el firmware en Rust para el ATmega2560, incluyendo la máquina de estados MSM y los drivers de sensores.
-- **[Olympus HLC (High-Level Controller)](https://github.com/Alonso11/olympus-hlc-rpi5)**: Embedded Linux system (Yocto Project) for the Raspberry Pi 5. Handles GNC (Guidance, Navigation, and Control), computer vision, traversability analysis, and high-level communications.
-- **Ground Station**: Desktop application based on Python/PyQt for real-time telemetry visualization, manual control, and system monitoring.
+- **[Rover Low-Level Controller (LLC)](https://github.com/Alonso11/rover-low-level-controller)** — Firmware in Rust for the ATmega2560. Manages motor control (BTS7960), encoders, ACS712 current sensors, and low-level safety logic.
+- **[Olympus HLC (High-Level Controller)](https://github.com/Alonso11/olympus-hlc-rpi5)** — Embedded Linux (Yocto Project) for the Raspberry Pi 5. Handles GNC (Guidance, Navigation, and Control), computer vision, traversability analysis, and high-level communications.
+- **Ground Station** — Desktop application (Python/PyQt) for real-time telemetry visualization, manual control, and system monitoring.
 
 ---
 
 ## Repository Structure
 
 ```
-olympus-project/
-├── 📄 README.md                          # This file - project overview and navigation
-├── 📄 CHANGELOG.md                       # Document version history and changes
-├── .github/workflows/                    # CI/CD for documentation quality
-│   └── markdown-check.yml
+Olympus-Project-TFG-TEC/
+├── 📄 README.md                       # This file
+├── 📄 CHANGELOG.md                    # Version history
+├── 📄 LICENSE                         # MIT
+├── .github/workflows/                 # CI for documentation quality
 │
-├── 📂 ground_station/                    # Telemetry and control GUI application
-│   ├── 📄 olympus_gui.py                 # PyQt Main Interface
-│   └── 📄 olympus_station.py             # Communication and protocol logic
+├── 📂 docs/
+│   └── 📂 srs_latex/                  # **SOFTWARE REQUIREMENTS SPECIFICATION (LaTeX)**
+│       ├── main.tex                   #   IEEE 29148 SRS document
+│       ├── main.pdf                   #   Compiled SRS
+│       ├── sections/                  #   s01–s13 (context, ConOps, requirements…)
+│       ├── icd/                       #   Interface Control Documents (CSP, UART/LLC)
+│       ├── vv/                        #   Verification & Validation procedures
+│       ├── figures/
+│       └── references.bib
 │
-├── 📂 docs/                              # Project documentation
-│   ├── 📂 srs_latex/                     # **CORE SRS SOURCE (LaTeX)**
-│   │   ├── 📄 main.tex                   # Main document structure
-│   │   ├── 📂 sections/                  # SRS sections (ISO/IEC/IEEE 29148)
-│   │   ├── 📂 figures/                   # System diagrams and architecture
-│   │   └── 📂 icd/                       # Interface Control Documents
-│   │
-│   └── 📄 validation_results.md          # Summary of V&V activities
-│
-├── 📂 ground_station/                    # Telemetry and control GUI application
+├── 📂 templates/                      # Reusable document templates
+├── 📂 project_management/             # Meeting notes, decisions, task tracking
+└── 📂 references/                     # Supporting research
+```
+
 ---
 
 ## Standards and Compliance
 
-This project follows:
-- **ISO/IEC/IEEE 29148:2018** - Systems and Software Engineering - Requirements Engineering
-- **ISO/IEC/IEEE 12207** - Software Life Cycle Processes
-- **ISO/IEC/IEEE 15288** - System Life Cycle Processes
+- **ISO/IEC/IEEE 29148:2018** — Requirements Engineering
+- **ECSS** (E-ST-10-02C, E-ST-70-11) — referenced for verification and autonomy levels
 
 ---
 
 ## License
 
-This project is distributed under the MIT License. See the LICENSE file for details.
+Distributed under the MIT License. See the `LICENSE` file for details.
 
 ---
 
 ## Author
 
-Fabián Alonso Gómez Quesada     
-Instituto Tecnológico de Costa Rica (TEC)        
-School of Electronics Engineering           
-SETEC Lab – Space Systems Laboratory                  
+Fabián Alonso Gómez Quesada
+Instituto Tecnológico de Costa Rica (TEC)
+School of Electronics Engineering
+SETEC Lab — Space Systems Laboratory

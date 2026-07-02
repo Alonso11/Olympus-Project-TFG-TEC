@@ -197,12 +197,12 @@ En lugar de repetir descripciones detalladas de cada conector, esta sección se 
 \textbf{COMMS}\par(Radio / FPV) & \textbf{[MEC]} Montaje / orientación de antenas & --- & --- & \textbf{[DATA]} TM/CMD Rover--GCS vía C\&DH (USB/UART/SPI, según radio) & --- & --- & \textbf{[PWR]} Alimentación COMMS (5--12\,V DC según radio) \\ \hline
 
 % EPS Row
-\textbf{EPS}\par(18650 NMC, 3 bancos / DC-DC 5\,V \& 12\,V / relés conmutados por LLC) & \textbf{[MEC]} Montaje de baterías, PDU y protecciones & \textbf{[PWR]} Canal TRAC (pPowerChannel\_TRAC) \newline \textbf{[HK]} Medición de tensión multi-banco (Soft-I$^2$C INA3221 modo bus-only); corriente de motor por ACS712 por canal hacia el LLC (ADC) & \textbf{[PWR]} Canal PROP (pPowerChannel\_PROP) \newline \textbf{[HK]} Supervisión potencia motores (sensores internos/ externa, si aplica) & \textbf{[PWR]} 5\,V DC regulado (rail C\&DH + GND) \newline \textbf{[HK]} Telemetría de potencia (pTlmPowerOut $\rightarrow$ C\&DH) & \textbf{[PWR]} Canal GNC (pPowerChannel\_GNC) \newline \textbf{[HK]} Telemetría de potencia hacia EPS/C\&DH (canal común) & \textbf{[PWR]} Canal COMMS (pPowerChannel\_COMMS) \newline \textbf{[HK]} Telemetría de potencia hacia EPS/C\&DH (canal común) & --- \\ \hline
+\textbf{EPS}\par(LiPo 4S + BMS Daly 4S 20A, 3 bancos / DC-DC 5\,V \& 12\,V / relés conmutados por LLC) & \textbf{[MEC]} Montaje de baterías, PDU y protecciones & \textbf{[PWR]} Canal TRAC (pPowerChannel\_TRAC) \newline \textbf{[HK]} Medición de tensión multi-banco (Soft-I$^2$C INA3221 modo bus-only); corriente de motor por ACS712 por canal hacia el LLC (ADC) & \textbf{[PWR]} Canal PROP (pPowerChannel\_PROP) \newline \textbf{[HK]} Supervisión potencia motores (sensores internos/ externa, si aplica) & \textbf{[PWR]} 5\,V DC regulado (rail C\&DH + GND) \newline \textbf{[HK]} Telemetría de potencia (pTlmPowerOut $\rightarrow$ C\&DH) & \textbf{[PWR]} Canal GNC (pPowerChannel\_GNC) \newline \textbf{[HK]} Telemetría de potencia hacia EPS/C\&DH (canal común) & \textbf{[PWR]} Canal COMMS (pPowerChannel\_COMMS) \newline \textbf{[HK]} Telemetría de potencia hacia EPS/C\&DH (canal común) & --- \\ \hline
 
 \end{longtable}
 \end{landscape}
 
-\emph{Nota sobre EPS:} la configuración actual no incluye un BMS dedicado por celda; la protección se distribuye entre NTC por celda (LLC ADC), voltaje multi-banco (INA3221), corriente por motor (ACS712 por canal) y fusibles 10\,A por banco.
+\emph{Nota sobre EPS:} la protección por celda (balanceo y corte por sobre/sub-tensión) la provee un \textbf{BMS Daly 4S 20A} por pack LiPo 4S, complementada con NTC por celda (LLC ADC), voltaje multi-banco (INA3221), corriente por motor (ACS712 por canal) y fusibles 10\,A por banco.
 
 % --- Extensiones N2 para COMMS UHF ---
 \paragraph{Extensiones N2 (COMMS UHF).}

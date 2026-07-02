@@ -98,6 +98,21 @@ Auditoría integral del SRS por consistencia con código (LLC v2.20 \texttt{mixe
 CI-REQ (todas las secciones), CI-VV &
 Aprobado \\ \hline
 
+CR-004 & 2026-06-01 &
+Configuración de propulsión migrada de \emph{mixed-drivers} (1$\times$L298N en FR/FL + 4$\times$BTS7960 en CR/CL/RR/RL, commit \texttt{1845c4a}) a \textbf{all-BTS7960} (seis BTS7960, uno por motor; feature \texttt{all-bts7960} del LLC con sensores ACS712-20A). El ensamble final validado en la tesis emplea seis BTS7960. Las tablas PBS/ASM/masa/potencia de \S\ref{sec:architecture} conservan el baseline mixto previo para trazabilidad histórica; la prosa de \S\ref{sec:system_context}, \S\ref{sec:architecture} (nota PROP) y el ICD-LLC reflejan la configuración final. &
+CI-PBS, CI-ICD, CI-CODE (LLC \texttt{all-bts7960}) &
+Aprobado \\ \hline
+
+CR-005 & 2026-06-01 &
+Corrección de documentación EPS para alinear con el as-built de la tesis; \textbf{supersede la porción EPS de CR-003}. El rover validado \textbf{retiene el BMS Daly 4S 20A} sobre packs \textbf{LiPo 4S} (la decisión 2026-05-17 de retirar el Daly y migrar a 3 bancos 18650 NMC con protección distribuida no se construyó en el rover final). Se reemplaza \emph{18650 NMC} por \textbf{LiPo 4S} y se documenta el BMS Daly en EPS-REQ-002b (\S\ref{sec:requirements}), la nota EPS y matriz N2 (\S\ref{sec:system_interfaces}) y los presupuestos (\S\ref{sec:appendices}). Las tablas ASM/autonomía de \S\ref{sec:architecture} conservan el baseline NMC/no-BMS previo para trazabilidad histórica. &
+CI-REQ, CI-PBS, CI-N2 &
+Aprobado \\ \hline
+
+CR-006 & 2026-06-01 &
+Alineación del requisito de masa al as-built: PHY-REQ-002 \textbf{7,5 $\to$ 10\,kg} (coherente con el análisis de masa de la tesis) y registro de la \textbf{masa medida $\approx$9,3\,kg} en el presupuesto de masa (\S\ref{sec:appendices}), que cumple PHY-002. &
+CI-REQ, CI-PBS &
+Aprobado \\ \hline
+
 \end{tabularx}
 \caption{Registro de Change Requests (CR) aplicados al baseline.}
 \label{tab:change-register}

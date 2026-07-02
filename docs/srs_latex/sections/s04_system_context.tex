@@ -25,7 +25,7 @@ El Rover Olympus es un sistema robótico terrestre (tipo rover) compuesto por ha
 \begin{itemize}
     \item \textbf{Structural:} Provee integridad mecánica y el chasis del rover.
     \item \textbf{Tracción:} Transmisión de potencia al suelo y geometría de locomoción.
-    \item \textbf{Propulsión:} Generación de torque mediante motores DC y drivers de potencia (configuración \emph{mixed-drivers}: L298N para el eje frontal, BTS7960 para los ejes central y trasero; ver \S\ref{sec:architecture}).
+    \item \textbf{Propulsión:} Generación de torque mediante seis motores DC, cada uno con su driver BTS7960 (configuración \emph{all-BTS7960}; ver \S\ref{sec:architecture} y CR-004).
     \item \textbf{C\&DH (Command \& Data Handling):} Computación a bordo (Raspberry Pi 5) y manejo de datos.
     \item \textbf{Energía (EPS):} Gestión, monitoreo de tensión multi-banco (INA3221, modo bus-only para 3 bancos de batería) y distribución de potencia conmutada por relés.
     \item \textbf{COMMS:} Enlace de datos Wi-Fi 2.4\,GHz y UHF/AX.25 (fallback), con protocolo de misión CSP sobre IP/UDP.
