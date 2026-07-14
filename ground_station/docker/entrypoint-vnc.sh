@@ -61,7 +61,7 @@ cat <<EOF
 EOF
 
 # Run the GUI inside the virtual frame buffer. Block on it; tear down on exit.
-python3 olympus_gui.py &
+VNC=1 python3 olympus_gui.py &
 GUI_PID=$!
 
 # Forward signals to the GUI.
