@@ -91,7 +91,7 @@ flowchart LR
     CAM --> CV
     CV --> TRAV --> GNC
     GNC -->|twist cmd| COMM_HLC
-    GS <--.CSP/UART.-> COMM_HLC
+    GS <-->|CSP / UART| COMM_HLC
     COMM_HLC -->|setpoint| MOT
     ENC -->|odom| GNC
     CUR -->|fault flag| WD
