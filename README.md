@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Focus: Systems Engineering](https://img.shields.io/badge/Focus-Systems%20Engineering-blue.svg)](#)
 [![TRL-4](https://img.shields.io/badge/TRL-4%20Lab%20Validation-orange.svg)](#verification-status)
-[![SRS PDF](https://img.shields.io/badge/SRS-PDF%20download-red.svg)](https://raw.githubusercontent.com/Alonso11/Olympus-Project-TFG-TEC/main/docs/srs_latex/main.pdf)
+[![SRS PDF](https://img.shields.io/badge/SRS-PDF%20download-red.svg)](https://github.com/Alonso11/Olympus-Project-TFG-TEC/blob/main/docs/srs_latex/main.pdf)
 
 [![Architecture: HLC/LLC](https://img.shields.io/badge/Architecture-HLC%2FLLC-purple.svg)](#system-architecture)
 [![Compute: CPU-only](https://img.shields.io/badge/Compute-CPU--only-lightgrey.svg)](#constraints)
@@ -245,7 +245,7 @@ Olympus-Project-TFG-TEC/
 └── 📂 references/                     # Supporting research
 ```
 
-**Reading order for reviewers:** `Overview` (above) → [SRS PDF](https://raw.githubusercontent.com/Alonso11/Olympus-Project-TFG-TEC/main/docs/srs_latex/main.pdf) → `docs/srs_latex/sections/s11_v_v_acceptance.tex` for verification evidence.
+**Reading order for reviewers:** `Overview` (above) → [SRS PDF](https://github.com/Alonso11/Olympus-Project-TFG-TEC/blob/main/docs/srs_latex/main.pdf) → `docs/srs_latex/sections/s11_v_v_acceptance.tex` for verification evidence.
 
 ---
 
