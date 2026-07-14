@@ -1,0 +1,16 @@
+# Olympus Ground Station — root .dockerignore
+.git
+.github
+docs
+images
+**/logs
+**/__pycache__
+**/*.pyc
+**/.venv
+**/backups
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+*.md
+!ground_station/README.md
+LICENSE

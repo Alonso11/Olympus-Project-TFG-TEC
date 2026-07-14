@@ -1,0 +1,26 @@
+# Olympus Ground Station — Docker Compose
+#   docker compose run --rm gs gui
+#   docker compose run --rm gs capture 172.21.255.241 30
+#   docker compose run --rm gs client  172.21.255.241 --auto 10
+
+services:
+  gs:
+    build:
+      context: ..
+      dockerfile: ground_station/Dockerfile
+    image: olympus-gs:latest
+    container_name: olympus-gs
+    network_mode: host            # reach the Pi over LAN; reuse SSH agent
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      DISPLAY: "${DISPLAY:-:0}"
+      QT_QPA_PLATFORM: xcb
+      XAUTHORITY: /tmp/.docker.xauth
+      SSH_AUTH_SOCK: "${SSH_AUTH_SOCK:-}"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - ./logs:/app/logs
+      - ./evidencia_tesis:/app/evidencia_tesis
+      - "${HOME}/.ssh:/home/${USER}/.ssh:ro
+      - "${SSH_AUTH_SOCK:-/dev/null}:/ssh-agent"
+    command: gui

@@ -1,0 +1,8 @@
+# Olympus Ground Station — Python dependencies (pinned)
+# PyQt5: GUI toolkit (XCB-backed on Linux)
+# numpy:  numeric arrays for telemetry / image handling
+# opencv-python-headless: OpenCV without GUI deps; matches the README's cv2 import
+#                         without pulling X11/Qt binaries that conflict with PyQt5.
+PyQt5==5.15.11
+numpy==2.2.6
+opencv-python-headless==4.11.0.86
