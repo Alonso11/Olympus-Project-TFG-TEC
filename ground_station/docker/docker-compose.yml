@@ -2,6 +2,10 @@
 #   docker compose run --rm gs gui
 #   docker compose run --rm gs capture 172.21.255.241 30
 #   docker compose run --rm gs client  172.21.255.241 --auto 10
+#
+# VNC variant (works on Docker Desktop / macOS / Windows — no host X server):
+#   docker compose --profile vnc up gsvnc
+#   then open http://localhost:8080/vnc.html  (VNC password: olympus)
 
 services:
   gs:
@@ -25,3 +29,23 @@ services:
       - "${HOME}/.ssh:/root/.ssh:ro"
       - "${SSH_AUTH_SOCK:-/dev/null}:/ssh-agent"
     command: gui
+
+  gsvnc:
+    build:
+      context: ..
+      dockerfile: ground_station/Dockerfile.vnc
+    image: olympus-gs-vnc:latest
+    container_name: olympus-gs-vnc
+    ports:
+      - "8080:8080"   # noVNC web client
+      - "5900:5900"   # raw VNC (optional)
+    environment:
+      RESOLUTION: "${GS_RESOLUTION:-1280x720x16}"
+      VNC_PASSWORD: "${GS_VNC_PASSWORD:-olympus}"
+      NOVNC_PORT: "8080"
+    volumes:
+      - ./logs:/app/logs
+      - ./evidencia_tesis:/app/evidencia_tesis
+      - "${HOME}/.ssh:/root/.ssh:ro"
+    command: gui
+    profiles: ["vnc"]

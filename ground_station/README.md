@@ -123,3 +123,48 @@ docker compose run --rm gs client  172.21.255.241 --auto 10
   and use the bridge network with `--add-host`.
 - The image runs as the host UID/GID when invoked via Compose so log files
   written into the mounted volume are owned by you, not root.
+
+---
+
+## Running in Docker (VNC variant — macOS / Windows / headless hosts)
+
+If you're on Docker Desktop, or a host without an X server, the GUI can't
+borrow the host display. The **VNC variant** runs a virtual framebuffer
+(`Xvfb`) + VNC server (`x11vnc`) + a noVNC web client inside the container,
+so you drive the same PyQt5 GUI from any browser.
+
+**Build:**
+```bash
+docker build -t olympus-gs-vnc -f ground_station/Dockerfile.vnc .
+```
+
+**Run — then open <http://localhost:8080/vnc.html> in a browser:**
+```bash
+docker run --rm -it \
+  -p 8080:8080 -p 5900:5900 \
+  -v "$(pwd)/ground_station/logs:/app/logs" \
+  -v "$(pwd)/ground_station/evidencia_tesis:/app/evidencia_tesis" \
+  -v "$HOME/.ssh:/root/.ssh:ro" \
+  olympus-gs-vnc gui
+```
+- **Web (recommended):** <http://localhost:8080/vnc.html> — works from any browser.
+- **VNC viewer:** `localhost:5900` — password `olympus` (override with `-e VNC_PASSWORD=...`).
+- **Resolution:** defaults to `1280x720`; override with `-e RESOLUTION=1920x1080x16`.
+
+The VNC image still supports the same `capture` and `client` headless modes
+(no X server involved) — they just bypass the framebuffer:
+```bash
+docker run --rm olympus-gs-vnc capture 172.21.255.241 30 MODE:AUTO
+```
+
+### With Docker Compose (both variants)
+
+`ground_station/docker/docker-compose.yml` defines two services:
+
+| Service | Use case | Command |
+|---|---|---|
+| `gs` (default) | Linux host with X11 | `docker compose run --rm gs gui` |
+| `gsvnc` | Docker Desktop / macOS / Windows / headless | `docker compose --profile vnc up gsvnc` |
+
+The VNC one is opt-in via a Compose `profile` so the default `docker compose up`
+won't try to start it. Tunables via env: `GS_RESOLUTION`, `GS_VNC_PASSWORD`.
