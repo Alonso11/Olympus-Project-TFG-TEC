@@ -16,11 +16,12 @@ services:
       DISPLAY: "${DISPLAY:-:0}"
       QT_QPA_PLATFORM: xcb
       XAUTHORITY: /tmp/.docker.xauth
-      SSH_AUTH_SOCK: "${SSH_AUTH_SOCK:-}"
+      SSH_AUTH_SOCK: "/ssh-agent"
+      HOME: /root
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
       - ./logs:/app/logs
       - ./evidencia_tesis:/app/evidencia_tesis
-      - "${HOME}/.ssh:/home/${USER}/.ssh:ro
+      - "${HOME}/.ssh:/root/.ssh:ro"
       - "${SSH_AUTH_SOCK:-/dev/null}:/ssh-agent"
     command: gui
