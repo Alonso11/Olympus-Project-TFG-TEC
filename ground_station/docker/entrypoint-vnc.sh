@@ -54,9 +54,10 @@ cat <<EOF
 ─────────────────────────────────────────────────────────────────
  Olympus Ground Station (VNC variant)
 ─────────────────────────────────────────────────────────────────
-  • Web browser (recommended) : http://localhost:8080/vnc.html?autoconnect=true&resize=off
-  • VNC viewer (any client)   : localhost:5900
-  • VNC password              : $VNC_PASSWORD
+  • Full-size  (1:1 scroll) : http://localhost:8080/vnc.html?autoconnect=true&resize=off
+  • Scaled     (fit browser) : http://localhost:8080/vnc.html?autoconnect=true&resize=scale
+  • VNC viewer (any client)  : localhost:5900
+  • VNC password             : $VNC_PASSWORD
 ─────────────────────────────────────────────────────────────────
 EOF
 
