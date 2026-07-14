@@ -61,19 +61,8 @@ cat <<EOF
 EOF
 
 # Run the GUI inside the virtual frame buffer. Block on it; tear down on exit.
-python3 olympus_gui.py &
+VNC=1 python3 olympus_gui.py &
 GUI_PID=$!
-
-# Wait for the window to appear, then move it to (0,0) to eliminate the
-# setGeometry(80, 80) offset that leaves a black bar at the top.
-for i in $(seq 1 20); do
-    WID=$(xdotool search --name "Olympus" 2>/dev/null | head -1) && break
-    sleep 0.3
-done
-if [ -n "${WID:-}" ]; then
-    xdotool windowmove "$WID" 0 0
-    xdotool windowsize "$WID" 1200 800
-fi
 
 # Forward signals to the GUI.
 trap 'kill $GUI_PID $WS_PID $XVFB_PID 2>/dev/null; exit 0' INT TERM

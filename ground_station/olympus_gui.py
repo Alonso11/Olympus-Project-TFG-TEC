@@ -245,7 +245,10 @@ class OlympusStation(QMainWindow):
     # ── UI ────────────────────────────────────────────────────────────────────
     def _init_ui(self):
         self.setWindowTitle("Olympus — Estacion de Tierra")
-        self.setGeometry(80, 80, 1100, 720)
+        if os.environ.get("VNC") == "1":
+            self.showMaximized()
+        else:
+            self.setGeometry(80, 80, 1100, 720)
         central = QWidget()
         self.setCentralWidget(central)
         root = QVBoxLayout(central)
