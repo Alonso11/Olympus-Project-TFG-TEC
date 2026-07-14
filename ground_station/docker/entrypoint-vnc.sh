@@ -20,7 +20,8 @@ esac
 cd /app
 
 # Silent Qt's XDG_RUNTIME_DIR warning by giving it a writable dir.
-mkdir -p /tmp/runtime-root && export XDG_RUNTIME_DIR=/tmp/runtime-root
+# Qt REQUIRES 0700 perms on XDG_RUNTIME_DIR or it prints a warning every event.
+mkdir -p /tmp/runtime-root && chmod 0700 /tmp/runtime-root && export XDG_RUNTIME_DIR=/tmp/runtime-root
 
 # --- Bring up a virtual X server -------------------------------------------
 # Xvfb on :1 at the configured resolution.

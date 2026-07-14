@@ -149,7 +149,7 @@ docker run --rm -it \
 ```
 - **Web (recommended):** <http://localhost:8080/vnc.html> — works from any browser.
 - **VNC viewer:** `localhost:5900` — password `olympus` (override with `-e VNC_PASSWORD=...`).
-- **Resolution:** defaults to `1280x720`; override with `-e RESOLUTION=1920x1080x16`.
+- **Resolution:** defaults to `1920x1080`; override with `-e RESOLUTION=1280x720x24`.
 
 The VNC image still supports the same `capture` and `client` headless modes
 (no X server involved) — they just bypass the framebuffer:
