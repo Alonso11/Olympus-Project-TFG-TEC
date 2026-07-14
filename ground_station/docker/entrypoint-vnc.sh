@@ -19,6 +19,9 @@ esac
 
 cd /app
 
+# Silent Qt's XDG_RUNTIME_DIR warning by giving it a writable dir.
+mkdir -p /tmp/runtime-root && export XDG_RUNTIME_DIR=/tmp/runtime-root
+
 # --- Bring up a virtual X server -------------------------------------------
 # Xvfb on :1 at the configured resolution.
 Xvfb :1 -screen 0 "$RESOLUTION" -nolisten tcp &
@@ -28,11 +31,15 @@ XVFB_PID=$!
 sleep 1
 
 # Start x11vnc on :1, mirrored to port 5900 with a password (POSIX-safe).
+# x11vnc -storepasswd takes the password as a literal ARG (not stdin) when
+# given two args: it reads the plain-text password from $1 and writes the
+# VNC-auth binary file to $2. Avoids the trailing-newline mismatch that
+# broke auth when piping via 'printf | -storepasswd - file'.
 mkdir -p /root/.vnc
 PASS_FILE=/root/.vnc/passwd
 VNC_ARGS="-display :1 -rfbport 5900 -forever -shared -bg -o /tmp/x11vnc.log -quiet"
 if [ -n "$VNC_PASSWORD" ]; then
-    printf '%s\n' "$VNC_PASSWORD" | x11vnc -storepasswd - "$PASS_FILE" >/dev/null 2>&1 || true
+    x11vnc -storepasswd "$VNC_PASSWORD" "$PASS_FILE" >/dev/null 2>&1 || true
     [ -f "$PASS_FILE" ] && VNC_ARGS="$VNC_ARGS -rfbauth $PASS_FILE"
 fi
 x11vnc $VNC_ARGS >/dev/null 2>&1 || true
