@@ -27,10 +27,15 @@ XVFB_PID=$!
 # Give Xvfb a moment to come up.
 sleep 1
 
-# Start x11vnc on :1, mirrored to port 5900 with a password.
+# Start x11vnc on :1, mirrored to port 5900 with a password (POSIX-safe).
 mkdir -p /root/.vnc
-x11vnc -display :1 -rfbport 5900 -rfbauth <(printf '%s\n' "$VNC_PASSWORD" | x11vnc -storepasswd - 2>/dev/null | awk '{print $NF}') \
-       -forever -shared -bg -o /tmp/x11vnc.log -quiet 2>/dev/null || true
+PASS_FILE=/root/.vnc/passwd
+VNC_ARGS="-display :1 -rfbport 5900 -forever -shared -bg -o /tmp/x11vnc.log -quiet"
+if [ -n "$VNC_PASSWORD" ]; then
+    printf '%s\n' "$VNC_PASSWORD" | x11vnc -storepasswd - "$PASS_FILE" >/dev/null 2>&1 || true
+    [ -f "$PASS_FILE" ] && VNC_ARGS="$VNC_ARGS -rfbauth $PASS_FILE"
+fi
+x11vnc $VNC_ARGS >/dev/null 2>&1 || true
 
 # noVNC web client → bridge port 8080 to the VNC port 5900.
 websockify --web /usr/share/novnc/ "$NOVNC_PORT" localhost:5900 >/tmp/novnc.log 2>&1 &
