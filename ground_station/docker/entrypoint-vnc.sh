@@ -54,14 +54,14 @@ cat <<EOF
 ─────────────────────────────────────────────────────────────────
  Olympus Ground Station (VNC variant)
 ─────────────────────────────────────────────────────────────────
-  • Web browser (recommended) : http://localhost:8080/vnc.html?autoconnect=true
+  • Web browser (recommended) : http://localhost:8080/vnc.html?autoconnect=true&resize=off
   • VNC viewer (any client)   : localhost:5900
   • VNC password              : $VNC_PASSWORD
 ─────────────────────────────────────────────────────────────────
 EOF
 
 # Run the GUI inside the virtual frame buffer. Block on it; tear down on exit.
-VNC=1 python3 olympus_gui.py &
+python3 olympus_gui.py &
 GUI_PID=$!
 
 # Forward signals to the GUI.
