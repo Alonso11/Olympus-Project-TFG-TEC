@@ -256,11 +256,14 @@ class OlympusStation(QMainWindow):
     # ── UI ────────────────────────────────────────────────────────────────────
     def _init_ui(self):
         self.setWindowTitle("Olympus — Estacion de Tierra")
+        screen = QApplication.primaryScreen().geometry()
+        sw, sh = screen.width(), screen.height()
         if os.environ.get("VNC") == "1":
-            screen = QApplication.primaryScreen().geometry()
-            self.setGeometry(0, 0, screen.width(), screen.height())
+            self.setGeometry(0, 0, sw, sh)
         else:
-            self.setGeometry(0, 0, 1300, 820)
+            self.setGeometry(0, 0, min(sw, 1300), min(sh, 820))
+        cam_min_h = max(200, int(sh * 0.45))
+        log_max_h = max(50, int(sh * 0.10))
         central = QWidget()
         self.setCentralWidget(central)
         root = QVBoxLayout(central)
@@ -304,19 +307,27 @@ class OlympusStation(QMainWindow):
         cbl = QVBoxLayout(cam_box)
         self.cam_label = QLabel("Sin video")
         self.cam_label.setAlignment(Qt.AlignCenter)
-        self.cam_label.setMinimumSize(640, 480)
+        self.cam_label.setMinimumSize(200, 150)
+        self.cam_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.cam_label.setStyleSheet("background:#06090d; color:#3a434f; border:1px solid #1f2933; border-radius:8px;")
         cbl.addWidget(self.cam_label)
         self.cmd_label = QLabel("CMD —")
         self.cmd_label.setAlignment(Qt.AlignCenter)
         self.cmd_label.setStyleSheet("font-family:'JetBrains Mono','DejaVu Sans Mono',monospace; font-size:22px; font-weight:bold; padding:8px; letter-spacing:2px; color:#8b9aad;")
         cbl.addWidget(self.cmd_label)
-        mid.addWidget(cam_box, 2)
+        mid.addWidget(cam_box, 3)
 
-        # Panel derecho
+        # Panel derecho (scrollable — el contenido supera la pantalla en laptops)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+        scroll.setStyleSheet("QScrollArea { background: transparent; border: none; }")
         panel = QWidget()
         pl = QVBoxLayout(panel)
-        mid.addWidget(panel, 1)
+        pl.setContentsMargins(0, 0, 6, 0)
+        scroll.setWidget(panel)
+        scroll.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        mid.addWidget(scroll, 2)
 
         # Modo
         mode_box = QGroupBox("Modo")
@@ -437,7 +448,7 @@ class OlympusStation(QMainWindow):
         # Log
         self.log = QTextEdit()
         self.log.setReadOnly(True)
-        self.log.setMaximumHeight(120)
+        self.log.setMaximumHeight(log_max_h)
         root.addWidget(self.log)
 
         self.statusBar().showMessage("Desconectado")
