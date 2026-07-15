@@ -32,7 +32,7 @@ from PyQt5.QtGui import *
 # el mismo agente/clave que ya funciona en la terminal (evita el fallo de auth
 # de paramiko con claves RSA frente a servidores OpenSSH nuevos).
 
-PI_HOST_DEFAULT = "172.21.255.241"
+PI_HOST_DEFAULT = "192.168.100.1"
 PI_USER_DEFAULT = "root"
 VIDEO_PORT = 5005
 CTRL_PORT = 5006
@@ -260,7 +260,7 @@ class OlympusStation(QMainWindow):
             screen = QApplication.primaryScreen().geometry()
             self.setGeometry(0, 0, screen.width(), screen.height())
         else:
-            self.setGeometry(0, 0, 1100, 720)
+            self.setGeometry(0, 0, 1300, 820)
         central = QWidget()
         self.setCentralWidget(central)
         root = QVBoxLayout(central)
