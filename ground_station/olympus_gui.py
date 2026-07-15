@@ -152,6 +152,7 @@ class CtrlThread(QThread):
     cmd = pyqtSignal(str)
     dets = pyqtSignal(list)       # [(x1,y1,x2,y2,conf)]
     evt = pyqtSignal(str)
+    sys = pyqtSignal(list)        # [cpu_pct, ram_used_mb, ram_total_mb, temp_c]
     status = pyqtSignal(str)
 
     def __init__(self, host):
@@ -184,6 +185,8 @@ class CtrlThread(QThread):
                         self.cmd.emit(line[4:])
                     elif line.startswith("DET:"):
                         self.dets.emit(self._parse_dets(line[4:]))
+                    elif line.startswith("SYS:"):
+                        self.sys.emit(self._parse_sys(line[4:]))
                     elif line.startswith("EVT:"):
                         self.evt.emit(line[4:])
             except OSError:
@@ -205,6 +208,14 @@ class CtrlThread(QThread):
             except ValueError:
                 pass
         return out
+
+    def _parse_sys(self, payload):
+        """SYS:<cpu%>,<ram_used_mb>,<ram_total_mb>,<temp_c> → [f, f, f, f]."""
+        try:
+            parts = payload.split(",")
+            return [float(p) for p in parts[:4]] + [0.0] * (4 - len(parts))
+        except ValueError:
+            return [0.0, 0.0, 0.0, 0.0]
 
     def send(self, command):
         with self._lock:
@@ -405,6 +416,22 @@ class OlympusStation(QMainWindow):
         self.ntc_label = QLabel("—"); self.ntc_label.setStyleSheet(MONO)
         tg.addWidget(self.ntc_label, row, 1)
         pl.addWidget(tlm_box)
+
+        # Diagnóstico del controlador (RPi5): CPU, RAM, temp SoC — frames SYS:
+        # muestreados por olympus_hlc/sysmon.py cada sys_sample_s (~0.5 Hz).
+        sys_box = QGroupBox("CONTROLADOR (RPi5)")
+        sg = QGridLayout(sys_box)
+        self.sys_labels = {}
+        srow = 0
+        for key, lbl in [("cpu", "CPU %"), ("ram", "RAM MB"),
+                         ("ram_pct", "RAM %"), ("temp", "SoC °C")]:
+            dl = QLabel(lbl); dl.setStyleSheet(DIM)
+            sg.addWidget(dl, srow, 0)
+            v = QLabel("—"); v.setStyleSheet(VAL)
+            self.sys_labels[key] = v
+            sg.addWidget(v, srow, 1)
+            srow += 1
+        pl.addWidget(sys_box)
         pl.addStretch(1)
 
         # Log
@@ -494,6 +521,7 @@ class OlympusStation(QMainWindow):
         self.ctrl.tlm.connect(self.on_tlm)
         self.ctrl.cmd.connect(self.on_cmd)
         self.ctrl.dets.connect(self.on_dets)
+        self.ctrl.sys.connect(self.on_sys)
         self.ctrl.evt.connect(self._on_evt)
         self.ctrl.status.connect(self._on_ctrl_status)
         self.ctrl.start()
@@ -631,6 +659,25 @@ class OlympusStation(QMainWindow):
 
     def on_dets(self, dets):
         self.last_dets = dets
+
+    def on_sys(self, s):
+        """Frame SYS: [cpu%, ram_used_mb, ram_total_mb, temp_c] → panel."""
+        cpu, ram_u, ram_t, temp = s
+        ram_pct = (ram_u / ram_t * 100.0) if ram_t else 0.0
+        self.sys_labels["cpu"].setText(f"{cpu:5.1f}")
+        self.sys_labels["ram"].setText(f"{ram_u:.0f} / {ram_t:.0f}")
+        self.sys_labels["ram_pct"].setText(f"{ram_pct:4.1f}")
+        self.sys_labels["temp"].setText(f"{temp:4.1f}" if temp else "—")
+        # Colorear CPU: verde <70%, ambar <90%, rojo >=90%.
+        cc = OKC if cpu < 70 else (WARNC if cpu < 90 else DANGER)
+        self.sys_labels["cpu"].setStyleSheet(
+            f"font-family:'JetBrains Mono','DejaVu Sans Mono',monospace; "
+            f"color:{cc}; font-weight:600;")
+        # Colorear temp: verde <65, ambar <75, rojo >=75 (RPi5 throttle a 80).
+        tc = OKC if temp < 65 else (WARNC if temp < 75 else DANGER) if temp else "#8b9aad"
+        self.sys_labels["temp"].setStyleSheet(
+            f"font-family:'JetBrains Mono','DejaVu Sans Mono',monospace; "
+            f"color:{tc}; font-weight:600;")
 
     def on_cmd(self, cmd):
         self.last_cmd = cmd
